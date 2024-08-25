@@ -1,0 +1,10 @@
+- [ ] Mockup
+  - [ ] Home screen
+  - [ ] Apps screen
+  - [ ] Tasks screen
+  - [ ] Notes screen
+  - [ ] Settings screen
+- [ ] Backend
+  - [ ] Settings
+  - [ ] Tasks
+  - [ ] Notes
