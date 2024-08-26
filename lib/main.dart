@@ -73,7 +73,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> _fetchApps() async {
     try {
-      List<AppInfo> apps = await InstalledApps.getInstalledApps();
+      List<AppInfo> apps = await InstalledApps.getInstalledApps(true, true);
       if (mounted) {
         setState(() {
           _apps = apps;
@@ -120,41 +120,61 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         backgroundColor: colorScheme.surfaceContainerLowest,
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                    fit: FlexFit.loose,
-                    child: GestureDetector(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                  fit: FlexFit.loose,
+                  child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onVerticalDragEnd: (details) {
-                        if (details.velocity.pixelsPerSecond.dy < 0) {
-                          setActiveScreen(ActiveScreen.apps);
-                        } else if (details.velocity.pixelsPerSecond.dy > 0) {
-                          setActiveScreen(ActiveScreen.start);
+                        if (details.velocity.pixelsPerSecond.dx.abs() < 1000) {
+                          if (details.velocity.pixelsPerSecond.dy < -1000) {
+                            setActiveScreen(ActiveScreen.apps);
+                          } else if (details.velocity.pixelsPerSecond.dy >
+                              1000) {
+                            setActiveScreen(ActiveScreen.start);
+                          }
                         }
+                        print(
+                            "x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
-                      child: activeScreen == ActiveScreen.start
-                          ? StartWidget(
-                              textTheme: textTheme,
-                            )
-                          : AppsWidget(
-                              textTheme: textTheme,
-                              inputValue: text,
-                              apps: _apps,
-                              isLoading: _isLoading,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation.drive(
+                              Tween<double>(
+                                begin: 0,
+                                end: 1,
+                              ).chain(
+                                CurveTween(curve: Curves.easeIn),
+                              ),
                             ),
-                    )),
-                const SizedBox(height: 16),
-                Bottom(
+                            child: child,
+                          );
+                        },
+                        child: activeScreen == ActiveScreen.start
+                            ? StartWidget(
+                                textTheme: textTheme,
+                              )
+                            : AppsWidget(
+                                textTheme: textTheme,
+                                inputValue: text,
+                                apps: _apps,
+                                isLoading: _isLoading,
+                              ),
+                      ))),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Bottom(
                   activeScreen: activeScreen,
                   setActiveScreen: setActiveScreen,
                   setInput: setInput,
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
       ),

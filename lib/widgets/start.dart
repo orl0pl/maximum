@@ -14,24 +14,27 @@ class StartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Top(),
-        const SizedBox(height: 32),
-        Text(
-          'Oś czasu',
-          style: textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        ImportantEvent(textTheme: textTheme),
-        const SizedBox(height: 16),
-        const TaskItem(title: 'Obejrzyj mecz', subtitle: 'za minutę'),
-        const TaskItem(title: 'Pij wodę', subtitle: '6 / 8'),
-        const Spacer(),
-        const Inspiration(),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Top(),
+          const SizedBox(height: 32),
+          Text(
+            'Oś czasu',
+            style: textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          ImportantEvent(textTheme: textTheme),
+          const SizedBox(height: 16),
+          const TaskItem(title: 'Obejrzyj mecz', subtitle: 'za minutę'),
+          const TaskItem(title: 'Pij wodę', subtitle: '6 / 8'),
+          const Spacer(),
+          const Inspiration(),
+        ],
+      ),
     );
   }
 }

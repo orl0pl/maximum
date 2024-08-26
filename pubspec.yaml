@@ -33,6 +33,9 @@ dependencies:
   android_intent_plus: ^5.1.0
   dynamic_color: ^1.4.0
   installed_apps: ^1.5.0
+  transparent_image: ^2.0.1
+  package_info_plus: ^8.0.2
+  android_package_manager: ^0.7.1
   flutter:
     sdk: flutter
 

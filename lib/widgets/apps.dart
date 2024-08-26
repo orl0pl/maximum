@@ -25,40 +25,72 @@ class AppsWidget extends StatefulWidget {
 class _AppsWidgetState extends State<AppsWidget> {
   @override
   Widget build(BuildContext context) {
-    List<AppInfo> apps = widget.apps;
+    List<AppInfo> allapps = widget.apps;
     bool isLoading = widget.isLoading;
 
-    final fuse = Fuzzy(apps.map((e) => e.name).toList());
-    final matches = fuse.search(widget.inputValue);
+    final fuse = Fuzzy(allapps.map((e) => e.name.toLowerCase()).toList());
+    final matches = fuse.search(widget.inputValue.toLowerCase());
     final appMatches = widget.inputValue == ""
-        ? apps
-        : matches.where((match) => match.score < 0.99).map((match) {
-            return apps.firstWhere((app) => app.name == match.item);
+        ? allapps
+        : matches.where((match) => match.score < 0.50).map((match) {
+            return allapps
+                .firstWhere((app) => app.name.toLowerCase() == match.item);
           }).toList();
 
-    apps = appMatches;
+    List<AppInfo> apps = appMatches;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Apps", style: widget.textTheme.titleLarge),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: widget.inputValue != ""
+              ? Text(
+                  "Best match:",
+                  style: widget.textTheme.titleSmall,
+                )
+              : Text(
+                  "All apps",
+                  style: widget.textTheme.titleSmall,
+                ),
+        ),
         Flexible(
           flex: 1,
           child: isLoading
               ? const CircularProgressIndicator()
-              : ListView.builder(
-                  itemCount: apps.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(apps[index].name),
-                      subtitle: Text(apps[index].packageName),
-                      onTap: () {
-                        // Add functionality if needed
+              : apps.isEmpty
+                  ? const Center(
+                      child: Text("No apps found"),
+                    )
+                  : ListView.builder(
+                      itemCount: apps.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          tileColor: index == 0 && widget.inputValue != ""
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : null,
+                          leading: apps[index].icon != null
+                              ? Image.memory(
+                                  apps[index].icon!,
+                                  width: 40,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.error);
+                                  },
+                                )
+                              : null,
+                          trailing: index == 0 && widget.inputValue != ""
+                              ? const Icon(Icons.chevron_right)
+                              : null,
+                          title: Text(apps[index].name),
+                          // subtitle: Text(
+                          //     "Match: ${(1 - matches[index].score) * 100}%"),
+                          onTap: () {
+                            // Add functionality if needed
+                          },
+                        );
                       },
-                    );
-                  },
-                ),
+                    ),
         )
       ],
     );
