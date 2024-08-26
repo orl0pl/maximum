@@ -1,0 +1,7 @@
+{
+    "@@locale": "en",
+    "timeline": "Timeline",
+    "@timeline": {
+        "description": "Short title for timeline page and widget"
+    }
+}

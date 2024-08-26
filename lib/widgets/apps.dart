@@ -39,60 +39,68 @@ class _AppsWidgetState extends State<AppsWidget> {
 
     List<AppInfo> apps = appMatches;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-          child: widget.inputValue != ""
-              ? Text(
-                  "Best match:",
-                  style: widget.textTheme.titleSmall,
-                )
-              : Text(
-                  "All apps",
-                  style: widget.textTheme.titleSmall,
-                ),
-        ),
-        Flexible(
-          flex: 1,
-          child: isLoading
-              ? const CircularProgressIndicator()
-              : apps.isEmpty
-                  ? const Center(
-                      child: Text("No apps found"),
-                    )
-                  : ListView.builder(
-                      itemCount: apps.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          tileColor: index == 0 && widget.inputValue != ""
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : null,
-                          leading: apps[index].icon != null
-                              ? Image.memory(
-                                  apps[index].icon!,
-                                  width: 40,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons.error);
-                                  },
-                                )
-                              : null,
-                          trailing: index == 0 && widget.inputValue != ""
-                              ? const Icon(Icons.chevron_right)
-                              : null,
-                          title: Text(apps[index].name),
-                          // subtitle: Text(
-                          //     "Match: ${(1 - matches[index].score) * 100}%"),
-                          onTap: () {
-                            // Add functionality if needed
-                          },
-                        );
-                      },
-                    ),
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: widget.inputValue != ""
+                ? Text(
+                    "Best match:",
+                    style: widget.textTheme.titleSmall,
+                  )
+                : Text(
+                    "All apps",
+                    style: widget.textTheme.titleSmall,
+                  ),
+          ),
+          Flexible(
+            flex: 1,
+            child: isLoading
+                ? const CircularProgressIndicator()
+                : apps.isEmpty
+                    ? const Center(
+                        child: Text("No apps found"),
+                      )
+                    : ListView.builder(
+                        itemCount: apps.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            tileColor: index == 0 && widget.inputValue != ""
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+
+                            leading: apps[index].icon != null
+                                ? Image.memory(
+                                    apps[index].icon!,
+                                    width: 40,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(Icons.error);
+                                    },
+                                  )
+                                : null,
+                            trailing: index == 0 && widget.inputValue != ""
+                                ? const Icon(Icons.chevron_right)
+                                : null,
+                            title: Text(apps[index].name),
+                            // subtitle: Text(
+                            //     "Match: ${(1 - matches[index].score) * 100}%"),
+                            onTap: () {
+                              // Add functionality if needed
+                            },
+                          );
+                        },
+                      ),
+          )
+        ],
+      ),
     );
   }
 }

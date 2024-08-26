@@ -3,6 +3,7 @@ import 'package:maximum/widgets/important_event.dart';
 import 'package:maximum/widgets/inspiration.dart';
 import 'package:maximum/widgets/task_item.dart';
 import 'package:maximum/widgets/top.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StartWidget extends StatelessWidget {
   const StartWidget({
@@ -23,7 +24,7 @@ class StartWidget extends StatelessWidget {
           const Top(),
           const SizedBox(height: 32),
           Text(
-            'Oś czasu',
+            AppLocalizations.of(context)?.timeline ?? '',
             style: textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
