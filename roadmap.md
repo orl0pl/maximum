@@ -1,6 +1,7 @@
 - [ ] Mockup
-  - [ ] Home screen
-  - [ ] Apps screen
+  - [x] Home screen
+  - [ ] Adding screen
+  - [x] Apps screen
   - [ ] Tasks screen
   - [ ] Notes screen
   - [ ] Settings screen
