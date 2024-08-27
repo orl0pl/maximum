@@ -7,5 +7,10 @@
     "task": "Zadanie",
     "location_services_disabled": "Usługi lokalizacji są wyłączone",
     "location_permissions_denied": "Odmowa dostępu do lokalizacji",
-    "location_permissions_denied_forever": "Odmowa dostępu do lokalizacji na zawsze. Dokonaj zmian w ustawieniach uprawnień aplikacji"
+    "location_permissions_denied_forever": "Odmowa dostępu do lokalizacji na zawsze. Dokonaj zmian w ustawieniach uprawnień aplikacji",
+    "today": "Dzisiaj",
+    "asap": "Jak najwczesniej",
+    "pick_date": "Wybierz date",
+    "pick_time": "Wybierz czas",
+    "someday": "Kiedyś"
 }

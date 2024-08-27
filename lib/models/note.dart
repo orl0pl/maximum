@@ -1,5 +1,3 @@
-import 'package:fuzzy/bitap/bitap.dart';
-
 class Note {
   int? id;
   String text;

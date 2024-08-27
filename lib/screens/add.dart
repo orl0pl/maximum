@@ -75,6 +75,79 @@ class _AddScreenState extends State<AddScreen> {
           Spacer(),
           Column(
             children: [
+              entryType == EntryType.task
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          FilterChip(
+                            label: Text(l?.today ?? "today"),
+                            selected: taskDraft.date ==
+                                DateFormat('yyyyMMdd').format(DateTime.now()),
+                            onSelected: (bool value) {
+                              setState(() {
+                                taskDraft.date = DateFormat('yyyyMMdd')
+                                    .format(DateTime.now());
+                              });
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: Text(l?.asap ?? "asap"),
+                            selected: taskDraft.date == 'ASAP',
+                            onSelected: (bool value) {
+                              setState(() {
+                                taskDraft.date = 'ASAP';
+                              });
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: taskDraft.date != '' &&
+                                    taskDraft.date != 'ASAP' &&
+                                    taskDraft.date !=
+                                        DateFormat('yyyyMMdd')
+                                            .format(DateTime.now())
+                                ? Text(DateFormat.yMEd().format(
+                                    taskDraft.convertDatetime() ??
+                                        DateTime.now()))
+                                : Text(l?.pick_date ?? "pick date"),
+                            selected: taskDraft.date != '' &&
+                                taskDraft.date != 'ASAP' &&
+                                taskDraft.date !=
+                                    DateFormat('yyyyMMdd')
+                                        .format(DateTime.now()),
+                            onSelected: (bool value) async {
+                              final selectedDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime(1970),
+                                  lastDate: DateTime(2100),
+                                  currentDate: taskDraft.convertDatetime() ??
+                                      DateTime.now());
+                              if (selectedDate != null && mounted) {
+                                setState(() {
+                                  taskDraft.date = DateFormat('yyyyMMdd')
+                                      .format(selectedDate);
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: Text(l?.pick_time ?? "pick time"),
+                            onSelected: (bool value) {},
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: Text(l?.someday ?? "someday"),
+                            selected: taskDraft.date == '',
+                            onSelected: (bool value) {},
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(),
+              SizedBox(height: 16),
               Row(
                 children: [
                   FilterChip(
@@ -108,7 +181,9 @@ class _AddScreenState extends State<AddScreen> {
           if (entryType == EntryType.note) {
             db.insert("Note", noteDraft.toMap());
           }
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          if (mounted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
         },
         child: const Icon(Icons.check),
       ),

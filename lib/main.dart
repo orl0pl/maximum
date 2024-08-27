@@ -11,16 +11,32 @@ import 'package:maximum/widgets/apps.dart';
 import 'package:maximum/widgets/start.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl_standalone.dart';
 
-void main() {
+Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    findSystemLocale().then((locale) => {Intl.systemLocale = locale});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    WidgetsFlutterBinding.ensureInitialized();
+
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
       return MaterialApp(
@@ -266,6 +282,8 @@ class Bottom extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const AddScreen()));
+
+                  setActiveScreen(ActiveScreen.start);
                 },
                 child: const Icon(Icons.add),
               ),

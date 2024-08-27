@@ -1,18 +1,18 @@
 class Task {
-  final int? id;
-  final int completed;
-  final String title;
-  final String attachments;
-  final String? time;
-  final String date;
-  final int isDeadline;
-  final String? repeatType;
-  final int? repeatInterval;
-  final String? repeatDays;
-  final String? endType;
-  final String? endOn;
-  final String? exclude;
-  final int? placeId;
+  int? id;
+  int completed;
+  String title;
+  String attachments;
+  String? time;
+  String date;
+  int isDeadline;
+  String? repeatType;
+  int? repeatInterval;
+  String? repeatDays;
+  String? endType;
+  String? endOn;
+  String? exclude;
+  int? placeId;
 
   Task({
     this.id,
@@ -23,7 +23,7 @@ class Task {
     /// HHMM
     this.time,
 
-    /// YYYYMMDD
+    /// YYYYMMDD or ASAP or empty for no date
     required this.date,
     this.isDeadline = 0,
     this.repeatType,
@@ -71,5 +71,34 @@ class Task {
       exclude: map['exclude'],
       placeId: map['place_id'],
     );
+  }
+
+  bool isAsap() {
+    return date == 'ASAP';
+  }
+
+  bool isPlanned() {
+    return date.isNotEmpty;
+  }
+
+  DateTime? convertDatetime() {
+    if (date.length != 8) {
+      return null;
+    }
+    if (time != null) {
+      return DateTime(
+        int.parse(date.substring(0, 4)),
+        int.parse(date.substring(4, 6)),
+        int.parse(date.substring(6, 8)),
+        int.parse(time!.substring(0, 2)),
+        int.parse(time!.substring(2, 4)),
+      );
+    } else {
+      return DateTime(
+        int.parse(date.substring(0, 4)),
+        int.parse(date.substring(4, 6)),
+        int.parse(date.substring(6, 8)),
+      );
+    }
   }
 }

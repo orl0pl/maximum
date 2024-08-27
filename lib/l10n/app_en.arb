@@ -28,5 +28,10 @@
     "location_permissions_denied_forever": "Location permissions are denied forever. Enable them in the app settings.",
     "@location_permissions_denied_forever": {
         "description": "Snackbar text for denied forever location permissions with how to enable them in the app settings"
-    }
+    },
+    "today": "Today",
+    "asap": "ASAP",
+    "pick_date": "Pick date",
+    "pick_time": "Pick time",
+    "someday": "Someday"
 }
