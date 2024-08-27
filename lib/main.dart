@@ -63,6 +63,7 @@ class MainScreen extends StatefulWidget {
 enum ActiveScreen { start, apps }
 
 class _MainScreenState extends State<MainScreen> {
+  GlobalKey<AppsWidgetState> appsKey = GlobalKey<AppsWidgetState>();
   ActiveScreen activeScreen = ActiveScreen.start;
   String text = "";
   List<AppInfo> _apps = [];
@@ -174,6 +175,7 @@ class _MainScreenState extends State<MainScreen> {
                                 textTheme: textTheme,
                               )
                             : AppsWidget(
+                                key: appsKey,
                                 textTheme: textTheme,
                                 inputValue: text,
                                 apps: _apps,
@@ -184,6 +186,7 @@ class _MainScreenState extends State<MainScreen> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Bottom(
+                  appsKey: appsKey,
                   activeScreen: activeScreen,
                   setActiveScreen: setActiveScreen,
                   setInput: setInput,
@@ -198,16 +201,19 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class Bottom extends StatelessWidget {
-  const Bottom({
+  Bottom({
     super.key,
     required this.activeScreen,
     required this.setActiveScreen,
     required this.setInput,
+    required this.appsKey,
   });
 
   final ActiveScreen activeScreen;
   final void Function(ActiveScreen) setActiveScreen;
   final void Function(String) setInput;
+
+  final GlobalKey<AppsWidgetState> appsKey;
 
   @override
   Widget build(BuildContext context) {
@@ -275,6 +281,11 @@ class Bottom extends StatelessWidget {
             onTap: () {
               if (activeScreen != ActiveScreen.apps) {
                 setActiveScreen(ActiveScreen.apps);
+              }
+            },
+            onSubmitted: (value) {
+              if (activeScreen == ActiveScreen.apps) {
+                appsKey.currentState?.openTopMatch();
               }
             },
             leading: IconButton(

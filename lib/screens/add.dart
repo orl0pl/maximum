@@ -108,6 +108,7 @@ class _AddScreenState extends State<AddScreen> {
           if (entryType == EntryType.note) {
             db.insert("Note", noteDraft.toMap());
           }
+          Navigator.of(context).popUntil((route) => route.isFirst);
         },
         child: const Icon(Icons.check),
       ),

@@ -1,3 +1,5 @@
+import 'package:fuzzy/bitap/bitap.dart';
+
 class Note {
   int? id;
   String text;
@@ -45,5 +47,15 @@ class Note {
       lng: map['lng'],
       tags: map['tags'],
     );
+  }
+
+  DateTime converDatetime() {
+    return DateTime(
+        int.parse(datetime.substring(0, 4)),
+        int.parse(datetime.substring(4, 6)),
+        int.parse(datetime.substring(6, 8)),
+        int.parse(datetime.substring(8, 10)),
+        int.parse(datetime.substring(10, 12)),
+        int.parse(datetime.substring(12, 14)));
   }
 }
