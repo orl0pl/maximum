@@ -12,7 +12,7 @@ CREATE TABLE Task (
     completed BOOLEAN NOT NULL DEFAULT 0,
     title TEXT NOT NULL,
     attachments TEXT NOT NULL DEFAULT '', -- list of file paths
-    time TEXT NOT NULL DEFAULT '', -- time in 24h format (e.g. 1200 = 12:00) or empty string if not set
+    time TEXT, -- time in 24h format (e.g. 1200 = 12:00)
     date TEXT NOT NULL, -- date in YYYYMMDD format (e.g. 20220101 = 2022-01-01)
     is_deadline BOOLEAN NOT NULL DEFAULT 0, 
     repeat_type TEXT CHECK (repeat_type IN (NULL, 'DAILY', 'WEEKLY', 'MONTHLY_DAY_WEEK', 'MONTHLY_DAY', 'YEARLY')), -- NULL = no repeat ...
@@ -25,3 +25,12 @@ CREATE TABLE Task (
     exclude TEXT -- list of dates in YYYYMMDD format (e.g. 20220101 = 2022-01-01)
     place_id INTEGER REFERENCES Place(id)
 );
+CREATE TABLE Note (
+    id INTEGER AUTOINCREMENT PRIMARY KEY,
+    text TEXT NOT NULL,
+    datetime TEXT NOT NULL, -- datetime of adding in YYYYMMDDHHMMSS format (e.g. 20220101120000 = 2022-01-01 12:00:00)
+    attachments TEXT NOT NULL DEFAULT '' -- list of file paths
+    lat REAL,
+    lng REAL,
+    tags TEXT NOT NULL DEFAULT '' -- list of tags separated by comma
+)
