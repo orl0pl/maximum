@@ -15,6 +15,7 @@ class StartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations? l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -24,7 +25,7 @@ class StartWidget extends StatelessWidget {
           const Top(),
           const SizedBox(height: 32),
           Text(
-            AppLocalizations.of(context)?.timeline ?? '',
+            l?.timeline ?? '',
             style: textTheme.titleSmall,
           ),
           const SizedBox(height: 8),

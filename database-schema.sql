@@ -1,36 +1,36 @@
 -- SQLite database schema for app
 -- List is separated by comma
-CREATE TABLE Place (
-    id INTEGER AUTOINCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Place (
+    id INTEGER PRIMARY KEY AUTOINCREMENT ,
     name TEXT NOT NULL,
     lat REAL NOT NULL,
-    lng REAL NOT NULL
+    lng REAL NOT NULL,
     precision INTEGER DEFAULT 50 -- in meters
 );
-CREATE TABLE Task (
-    id INTEGER AUTOINCREMENT PRIMARY KEY,
-    completed BOOLEAN NOT NULL DEFAULT 0,
+CREATE TABLE IF NOT EXISTS Task (
+    id INTEGER PRIMARY KEY AUTOINCREMENT ,
+    completed INTEGER NOT NULL DEFAULT 0,
     title TEXT NOT NULL,
     attachments TEXT NOT NULL DEFAULT '', -- list of file paths
     time TEXT, -- time in 24h format (e.g. 1200 = 12:00)
     date TEXT NOT NULL, -- date in YYYYMMDD format (e.g. 20220101 = 2022-01-01)
-    is_deadline BOOLEAN NOT NULL DEFAULT 0, 
+    is_deadline INTEGER NOT NULL DEFAULT 0, 
     repeat_type TEXT CHECK (repeat_type IN (NULL, 'DAILY', 'WEEKLY', 'MONTHLY_DAY_WEEK', 'MONTHLY_DAY', 'YEARLY')), -- NULL = no repeat ...
     repeat_interval INTEGER, -- every N days, weeks, months, or years
-    repeat_days TEXT -- list of days of week for WEEKLY repeat (monday=0, tuesday=1, ...)
+    repeat_days TEXT, -- list of days of week for WEEKLY repeat (monday=0, tuesday=1, ...)
     -- or number of week in month and list of days of week speparated by comma for MONTHLY_DAY_WEEK repeat
     -- or list of days of month for MONTHLY_DAY
     end_type TEXT CHECK (end_type IN (NULL, 'DATE', 'TIMES')), -- NULL = no end ...
-    end_on TEXT -- date in YYYYMMDD format (e.g. 20220101 = 2022-01-01) or number of times
-    exclude TEXT -- list of dates in YYYYMMDD format (e.g. 20220101 = 2022-01-01)
+    end_on TEXT, -- date in YYYYMMDD format (e.g. 20220101 = 2022-01-01) or number of times
+    exclude TEXT, -- list of dates in YYYYMMDD format (e.g. 20220101 = 2022-01-01)
     place_id INTEGER REFERENCES Place(id)
 );
-CREATE TABLE Note (
-    id INTEGER AUTOINCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Note (
+    id INTEGER PRIMARY KEY AUTOINCREMENT ,
     text TEXT NOT NULL,
     datetime TEXT NOT NULL, -- datetime of adding in YYYYMMDDHHMMSS format (e.g. 20220101120000 = 2022-01-01 12:00:00)
-    attachments TEXT NOT NULL DEFAULT '' -- list of file paths
+    attachments TEXT NOT NULL DEFAULT '', -- list of file paths
     lat REAL,
     lng REAL,
     tags TEXT NOT NULL DEFAULT '' -- list of tags separated by comma
-)
+);

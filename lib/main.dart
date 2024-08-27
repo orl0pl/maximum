@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
+import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/apps.dart';
 import 'package:maximum/widgets/start.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -129,6 +130,18 @@ class _MainScreenState extends State<MainScreen> {
                   fit: FlexFit.loose,
                   child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
+                      onHorizontalDragEnd: (details) {
+                        if (details.velocity.pixelsPerSecond.dy.abs() < 1000) {
+                          if (details.velocity.pixelsPerSecond.dx < -1000) {
+                            setActiveScreen(ActiveScreen.apps);
+                          } else if (details.velocity.pixelsPerSecond.dx >
+                              1000) {
+                            setActiveScreen(ActiveScreen.start);
+                          }
+                        }
+                        print(
+                            "horizontal x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
+                      },
                       onVerticalDragEnd: (details) {
                         if (details.velocity.pixelsPerSecond.dx.abs() < 1000) {
                           if (details.velocity.pixelsPerSecond.dy < -1000) {
@@ -139,7 +152,7 @@ class _MainScreenState extends State<MainScreen> {
                           }
                         }
                         print(
-                            "x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
+                            "vertical x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
@@ -244,7 +257,10 @@ class Bottom extends StatelessWidget {
             Flexible(
               flex: 25,
               child: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const AddScreen()));
+                },
                 child: const Icon(Icons.add),
               ),
             ),

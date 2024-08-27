@@ -1,4 +1,11 @@
 {
     "@@locale": "pl",
-    "timeline": "Oś czasu"
+    "timeline": "Oś czasu",
+    "add": "Dodaj",
+    "content_to_add": "Treść do dodania",
+    "note": "Notatka",
+    "task": "Zadanie",
+    "location_services_disabled": "Usługi lokalizacji są wyłączone",
+    "location_permissions_denied": "Odmowa dostępu do lokalizacji",
+    "location_permissions_denied_forever": "Odmowa dostępu do lokalizacji na zawsze. Dokonaj zmian w ustawieniach uprawnień aplikacji"
 }
