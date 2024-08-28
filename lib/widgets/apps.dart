@@ -46,6 +46,7 @@ class AppsWidget extends StatefulWidget {
 
 class AppsWidgetState extends State<AppsWidget> {
   List<Element> allMatches = [];
+
   bool notesLoaded = false;
   List<Note> allnotes = [];
 
@@ -57,22 +58,8 @@ class AppsWidgetState extends State<AppsWidget> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
-    List<AppInfo> allapps = widget.apps;
-    bool isLoading = widget.isLoading;
-
-    final fuse = Fuzzy(allapps.map((e) => e.name.toLowerCase()).toList());
-    final matches = fuse.search(widget.inputValue.toLowerCase());
-    final appMatches = widget.inputValue == ""
-        ? allapps
-        : matches.where((match) => match.score < 0.50).map((match) {
-            return allapps
-                .firstWhere((app) => app.name.toLowerCase() == match.item);
-          }).toList();
-
-    List<AppInfo> apps = appMatches;
-
-    var noteMatches = [];
     DatabaseHelper().database.then((db) async {
       if (!notesLoaded) {
         db.query('Note').then((notes) {
@@ -80,22 +67,31 @@ class AppsWidgetState extends State<AppsWidget> {
             allnotes = notes.map((note) => Note.fromMap(note)).toList();
             notesLoaded = true;
           });
-
-          print(notes);
         });
       }
     });
-    var notefuse = Fuzzy(allnotes.map((e) => e.text.toLowerCase()).toList());
-    var notematches = notefuse.search(widget.inputValue.toLowerCase());
 
-    noteMatches = notematches.where((match) => match.score < 0.50).map((match) {
-      return allnotes
-          .firstWhere((note) => note.text.toLowerCase() == match.item);
-    }).toList();
-    allMatches = widget.inputValue == ""
-        ? apps.map((e) => Element.fromApp(e)).toList()
-        : apps.map((e) => Element.fromApp(e)).toList() +
-            noteMatches.map((e) => Element.fromNote(e)).toList();
+    if (widget.inputValue.isEmpty) {
+      allMatches = widget.apps.map((e) => Element.fromApp(e)).toList();
+    } else {
+      Fuzzy<Element> fuse = Fuzzy(
+          allnotes.map((e) => (Element.fromNote(e))).toList() +
+              widget.apps.map((e) => (Element.fromApp(e))).toList(),
+          options: FuzzyOptions(keys: [
+            WeightedKey(
+                name: 'name',
+                getter: (obj) {
+                  if (obj.type == ElementType.note) {
+                    return obj.note!.text.toLowerCase();
+                  } else {
+                    return obj.app!.name.toLowerCase();
+                  }
+                },
+                weight: 1)
+          ], threshold: 0.4));
+      final matches = fuse.search(widget.inputValue.toLowerCase());
+      allMatches = matches.map((e) => e.item).toList();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -104,7 +100,8 @@ class AppsWidgetState extends State<AppsWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             child: widget.inputValue != ""
                 ? Text(
                     "Best match:",
@@ -115,14 +112,9 @@ class AppsWidgetState extends State<AppsWidget> {
                     style: widget.textTheme.titleSmall,
                   ),
           ),
-          Text(allMatches
-              .where((x) => x.type == ElementType.note)
-              .length
-              .toString()),
-          Text(allnotes.length.toString()),
           Flexible(
             flex: 1,
-            child: isLoading
+            child: widget.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : allMatches.isEmpty
                     ? const Center(
@@ -160,6 +152,10 @@ class AppsWidgetState extends State<AppsWidget> {
                           } else if (allMatches[index].type ==
                               ElementType.note) {
                             return ListTile(
+                              leading: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Icon(Icons.note_outlined),
+                              ),
                               tileColor: index == 0 && widget.inputValue != ""
                                   ? Theme.of(context)
                                       .colorScheme

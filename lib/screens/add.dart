@@ -41,7 +41,7 @@ class _AddScreenState extends State<AddScreen> {
         noteDraft.lng = position.longitude;
       });
     }
-    print(position);
+    // print(position);
   }
 
   @override
@@ -134,8 +134,26 @@ class _AddScreenState extends State<AddScreen> {
                           ),
                           SizedBox(width: 8),
                           FilterChip(
-                            label: Text(l?.pick_time ?? "pick time"),
-                            onSelected: (bool value) {},
+                            label: taskDraft.time != null
+                                ? TimeOfDay(
+                                        hour: int.parse(
+                                            taskDraft.time!.substring(0, 2)),
+                                        minute: int.parse(
+                                            taskDraft.time!.substring(2, 4)))
+                                    .format(context)
+                                : Text(l?.pick_time ?? "pick time"),
+                            onSelected: (bool value) async {
+                              final selectedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now());
+                              if (selectedTime != null && mounted) {
+                                setState(() {
+                                  taskDraft.time = DateFormat("HHmm").format(
+                                      DateTime(2000, 1, 1, selectedTime.hour,
+                                          selectedTime.minute));
+                                });
+                              }
+                            },
                           ),
                           SizedBox(width: 8),
                           FilterChip(
@@ -175,13 +193,13 @@ class _AddScreenState extends State<AddScreen> {
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          print(noteDraft.toMap());
           DatabaseHelper dh = DatabaseHelper();
           Database db = await dh.database;
           if (entryType == EntryType.note) {
             db.insert("Note", noteDraft.toMap());
           }
           if (mounted) {
+            // ignore: use_build_context_synchronously
             Navigator.of(context).popUntil((route) => route.isFirst);
           }
         },

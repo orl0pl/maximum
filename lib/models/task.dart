@@ -1,3 +1,5 @@
+import 'package:maximum/database/database_helper.dart';
+
 class Task {
   int? id;
   int completed;
@@ -39,6 +41,7 @@ class Task {
     return {
       'id': id,
       'completed': completed,
+      'target_progress': 0,
       'title': title,
       'attachments': attachments,
       'time': time,
@@ -73,6 +76,14 @@ class Task {
     );
   }
 
+  // int? progressOnDate(DateTime date) {
+  //   late TaskProgress? taskProgressForDay;
+  //   DatabaseHelper().database.then((db) {
+
+  //   })
+
+  // }
+
   bool isAsap() {
     return date == 'ASAP';
   }
@@ -102,3 +113,5 @@ class Task {
     }
   }
 }
+
+class TaskProgress {}

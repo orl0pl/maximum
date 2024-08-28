@@ -12,7 +12,6 @@ import 'package:maximum/widgets/start.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 
 Future<void> main() async {
@@ -156,8 +155,8 @@ class _MainScreenState extends State<MainScreen> {
                             setActiveScreen(ActiveScreen.start);
                           }
                         }
-                        print(
-                            "horizontal x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
+                        // print(
+                        //     "horizontal x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
                       onVerticalDragEnd: (details) {
                         if (details.velocity.pixelsPerSecond.dx.abs() < 1000) {
@@ -168,8 +167,8 @@ class _MainScreenState extends State<MainScreen> {
                             setActiveScreen(ActiveScreen.start);
                           }
                         }
-                        print(
-                            "vertical x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
+                        // print(
+                        //     "vertical x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
@@ -217,7 +216,7 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class Bottom extends StatelessWidget {
-  Bottom({
+  const Bottom({
     super.key,
     required this.activeScreen,
     required this.setActiveScreen,
