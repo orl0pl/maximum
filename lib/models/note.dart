@@ -47,7 +47,7 @@ class Note {
     );
   }
 
-  DateTime converDatetime() {
+  DateTime get datetimeClass {
     return DateTime(
         int.parse(datetime.substring(0, 4)),
         int.parse(datetime.substring(4, 6)),

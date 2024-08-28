@@ -166,9 +166,8 @@ class AppsWidgetState extends State<AppsWidget> {
                               ),
                               title: Text(allMatches[index].note!.text),
                               subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
-                                  .format(allMatches[index]
-                                      .note!
-                                      .converDatetime())),
+                                  .format(
+                                      allMatches[index].note!.datetimeClass)),
                             );
                           }
                           return null;

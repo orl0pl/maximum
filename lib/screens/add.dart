@@ -73,6 +73,7 @@ class _AddScreenState extends State<AddScreen> {
                 labelText: l?.content_to_add ?? "Content to add"),
           ),
           Spacer(),
+          Text(taskDraft.toMap().toString()),
           Column(
             children: [
               entryType == EntryType.task
@@ -93,55 +94,11 @@ class _AddScreenState extends State<AddScreen> {
                           ),
                           SizedBox(width: 8),
                           FilterChip(
-                            label: Text(l?.asap ?? "asap"),
-                            selected: taskDraft.date == 'ASAP',
-                            onSelected: (bool value) {
-                              setState(() {
-                                taskDraft.date = 'ASAP';
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: taskDraft.date != '' &&
-                                    taskDraft.date != 'ASAP' &&
-                                    taskDraft.date !=
-                                        DateFormat('yyyyMMdd')
-                                            .format(DateTime.now())
-                                ? Text(DateFormat.yMEd().format(
-                                    taskDraft.convertDatetime() ??
-                                        DateTime.now()))
-                                : Text(l?.pick_date ?? "pick date"),
-                            selected: taskDraft.date != '' &&
-                                taskDraft.date != 'ASAP' &&
-                                taskDraft.date !=
-                                    DateFormat('yyyyMMdd')
-                                        .format(DateTime.now()),
-                            onSelected: (bool value) async {
-                              final selectedDate = await showDatePicker(
-                                  context: context,
-                                  firstDate: DateTime(1970),
-                                  lastDate: DateTime(2100),
-                                  currentDate: taskDraft.convertDatetime() ??
-                                      DateTime.now());
-                              if (selectedDate != null && mounted) {
-                                setState(() {
-                                  taskDraft.date = DateFormat('yyyyMMdd')
-                                      .format(selectedDate);
-                                });
-                              }
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
                             label: taskDraft.time != null
-                                ? TimeOfDay(
-                                        hour: int.parse(
-                                            taskDraft.time!.substring(0, 2)),
-                                        minute: int.parse(
-                                            taskDraft.time!.substring(2, 4)))
-                                    .format(context)
+                                ? Text(DateFormat.Hm().format(
+                                    taskDraft.datetime ?? DateTime.now()))
                                 : Text(l?.pick_time ?? "pick time"),
+                            selected: taskDraft.isTimeSet,
                             onSelected: (bool value) async {
                               final selectedTime = await showTimePicker(
                                   context: context,
@@ -157,9 +114,55 @@ class _AddScreenState extends State<AddScreen> {
                           ),
                           SizedBox(width: 8),
                           FilterChip(
+                            label: Text(l?.asap ?? "asap"),
+                            selected: taskDraft.date == 'ASAP',
+                            onSelected: (bool value) {
+                              setState(() {
+                                taskDraft.date = 'ASAP';
+                                taskDraft.time = null;
+                              });
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: taskDraft.date != '' &&
+                                    taskDraft.date != 'ASAP' &&
+                                    taskDraft.date !=
+                                        DateFormat('yyyyMMdd')
+                                            .format(DateTime.now())
+                                ? Text(DateFormat.yMEd().format(
+                                    taskDraft.datetime ?? DateTime.now()))
+                                : Text(l?.pick_date ?? "pick date"),
+                            selected: taskDraft.date != '' &&
+                                taskDraft.date != 'ASAP' &&
+                                taskDraft.date !=
+                                    DateFormat('yyyyMMdd')
+                                        .format(DateTime.now()),
+                            onSelected: (bool value) async {
+                              final selectedDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime(1970),
+                                  lastDate: DateTime(2100),
+                                  currentDate:
+                                      taskDraft.datetime ?? DateTime.now());
+                              if (selectedDate != null && mounted) {
+                                setState(() {
+                                  taskDraft.date = DateFormat('yyyyMMdd')
+                                      .format(selectedDate);
+                                });
+                              }
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          FilterChip(
                             label: Text(l?.someday ?? "someday"),
-                            selected: taskDraft.date == '',
-                            onSelected: (bool value) {},
+                            selected: taskDraft.isSomeday,
+                            onSelected: (bool value) {
+                              setState(() {
+                                taskDraft.date = '';
+                                taskDraft.time = null;
+                              });
+                            },
                           ),
                         ],
                       ),

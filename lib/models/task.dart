@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:maximum/database/database_helper.dart';
 
 class Task {
   int? id;
   int completed;
+  int targetProgress;
   String title;
   String attachments;
   String? time;
@@ -19,6 +21,7 @@ class Task {
   Task({
     this.id,
     this.completed = 0,
+    this.targetProgress = 0,
     required this.title,
     this.attachments = '',
 
@@ -61,6 +64,7 @@ class Task {
     return Task(
       id: map['id'],
       completed: map['completed'],
+      targetProgress: map['target_progress'],
       title: map['title'],
       attachments: map['attachments'],
       time: map['time'],
@@ -76,23 +80,44 @@ class Task {
     );
   }
 
-  // int? progressOnDate(DateTime date) {
-  //   late TaskProgress? taskProgressForDay;
-  //   DatabaseHelper().database.then((db) {
+  List<TaskProgress> get taskProgressList {
+    List<TaskProgress> taskProgressList = [];
+    DatabaseHelper().database.then((db) async {
+      db.query('TaskProgress', where: 'task_id = ?', whereArgs: [id]).then(
+          (value) {
+        taskProgressList = value.map((e) => TaskProgress.fromMap(e)).toList();
+      });
+    });
 
-  //   })
+    return taskProgressList;
+  }
 
-  // }
+  int getProgressOnDate(DateTime wantedDate) {
+    final progressList = taskProgressList;
 
-  bool isAsap() {
+    if (progressList.isNotEmpty) {
+      progressList.where((x) => DateUtils.isSameDay(x.datetime, wantedDate));
+    }
+    return 0;
+  }
+
+  bool get isAsap {
     return date == 'ASAP';
   }
 
-  bool isPlanned() {
-    return date.isNotEmpty;
+  bool get isDateSet {
+    return date.isNotEmpty && date != 'ASAP';
   }
 
-  DateTime? convertDatetime() {
+  bool get isTimeSet {
+    return time != null && date != 'ASAP' && date != '';
+  }
+
+  bool get isSomeday {
+    return date == '' && time == null;
+  }
+
+  DateTime? get datetime {
     if (date.length != 8) {
       return null;
     }
@@ -113,5 +138,44 @@ class Task {
     }
   }
 }
+/*
+ CREATE TABLE IF NOT EXISTS TaskProgress (
+        task_id INTEGER NOT NULL REFERENCES Task(id),
+        date TEXT NOT NULL,
+        current_progress INT DEFAULT 0,
+        PRIMARY KEY (task_id, date)
+*/
 
-class TaskProgress {}
+class TaskProgress {
+  int taskId;
+  String date;
+
+  int currentProgress = 0;
+
+  TaskProgress(
+      {required this.taskId, required this.date, this.currentProgress = 0});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'task_id': taskId,
+      'date': date,
+      'current_progress': currentProgress,
+    };
+  }
+
+  static TaskProgress fromMap(Map<String, dynamic> map) {
+    return TaskProgress(
+      taskId: map['task_id'],
+      date: map['date'],
+      currentProgress: map['current_progress'],
+    );
+  }
+
+  DateTime get datetime {
+    return DateTime(
+      int.parse(date.substring(0, 4)),
+      int.parse(date.substring(4, 6)),
+      int.parse(date.substring(6, 8)),
+    );
+  }
+}
