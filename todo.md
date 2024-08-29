@@ -1,0 +1,13 @@
+- [ ] Refractor database helper
+
+- [ ] Repeat
+  - [ ] Proper schema for completed status tracking
+  - [x] Day repeat options
+  - [x] Week repeat options
+  - [ ] Month repeat options
+  - [ ] Year repeat options
+- [ ] Progress tracking
+- [ ] Note and task attachments
+- [ ] Places
+  - [ ] Places for tasks
+  - [ ] Places management

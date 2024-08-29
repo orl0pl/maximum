@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:maximum/database/database_helper.dart';
+import 'package:maximum/models/task.dart';
 import 'package:maximum/widgets/info_chip.dart';
 
 class TaskItem extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final Task task;
 
-  const TaskItem({super.key, required this.title, required this.subtitle});
+  const TaskItem({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +18,21 @@ class TaskItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              Checkbox(value: false, onChanged: (value) {}),
+              Checkbox(
+                  value: task.completed == 1,
+                  onChanged: (value) {
+                    var newTask = task;
+                    newTask.completed = value == true ? 1 : 0;
+                    DatabaseHelper().database.then((db) {
+                      db.update('Task', newTask.toMap(),
+                          where: "id = ?", whereArgs: [task.id]);
+                    });
+                  }),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    task.title,
                     style: textTheme.bodyLarge,
                   ),
                 ],
@@ -32,9 +42,11 @@ class TaskItem extends StatelessWidget {
           Row(
             children: [
               InfoChip(
-                  subtitle: subtitle,
+                  subtitle: task.date,
                   textTheme: textTheme,
-                  variant: ChipVariant.secondary)
+                  variant: task.datetime?.isAfter(DateTime.now()) ?? task.isAsap
+                      ? ChipVariant.primary
+                      : ChipVariant.secondary),
             ],
           )
         ],

@@ -67,8 +67,11 @@ class _AddScreenState extends State<AddScreen> {
           TextField(
             autofocus: true,
             onChanged: (value) {
-              text = value.trim();
-              noteDraft.text = text;
+              setState(() {
+                text = value.trim();
+                noteDraft.text = value.trim();
+                taskDraft.title = value.trim();
+              });
             },
             decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -78,30 +81,35 @@ class _AddScreenState extends State<AddScreen> {
           Text(taskDraft.toMap().toString()),
           Column(
             children: [
-              entryType == EntryType.task
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(children: [
-                        ActionChip(
-                          label: Text("Repeat"),
-                          onPressed: () async {
-                            var result = await showDialog(
-                                context: context,
-                                builder: (context) => PickRepeatDialog(
-                                      taskDraft: taskDraft,
-                                    ));
-                            if (result != null && mounted) {
-                              setState(() {
-                                taskDraft.repeatDays = result[2];
-                                taskDraft.repeatInterval = result[1];
-                                taskDraft.repeatType = result[0];
-                              });
-                            }
-                          },
-                        ),
-                        SizedBox(width: 8),
-                      ]))
-                  : SizedBox(),
+              // entryType == EntryType.task
+              //     ? SingleChildScrollView(
+              //         scrollDirection: Axis.horizontal,
+              //         child: Row(children: [
+              //           ActionChip(
+              //             avatar: Icon(Icons.repeat_on),
+              //             label: Text(getFormatedRepeat(
+              //                 taskDraft.repeatType ?? "",
+              //                 taskDraft.repeatInterval ?? 0,
+              //                 taskDraft.repeatDays ?? "",
+              //                 l)),
+              //             onPressed: () async {
+              //               var result = await showDialog(
+              //                   context: context,
+              //                   builder: (context) => PickRepeatDialog(
+              //                         taskDraft: taskDraft,
+              //                       ));
+              //               if (result != null && mounted) {
+              //                 setState(() {
+              //                   taskDraft.repeatDays = result[2];
+              //                   taskDraft.repeatInterval = result[1];
+              //                   taskDraft.repeatType = result[0];
+              //                 });
+              //               }
+              //             },
+              //           ),
+              //           SizedBox(width: 8),
+              //         ]))
+              //     : SizedBox(),
               entryType == EntryType.task
                   ? SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -175,7 +183,7 @@ class _AddScreenState extends State<AddScreen> {
                               : SizedBox(),
                           SizedBox(width: taskDraft.isDateSet ? 8 : 0),
                           FilterChip(
-                            label: Text("Is deadline"),
+                            label: Text(l?.deadline ?? "deadline"),
                             selected: taskDraft.isDeadline == 1,
                             onSelected: (value) {
                               setState(() {
@@ -232,6 +240,8 @@ class _AddScreenState extends State<AddScreen> {
           Database db = await dh.database;
           if (entryType == EntryType.note) {
             db.insert("Note", noteDraft.toMap());
+          } else if (entryType == EntryType.task) {
+            db.insert("Task", taskDraft.toMap());
           }
           if (mounted) {
             // ignore: use_build_context_synchronously
@@ -244,6 +254,20 @@ class _AddScreenState extends State<AddScreen> {
   }
 }
 
+getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
+    AppLocalizations? l) {
+  if (repeatType == "DAILY") {
+    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${l?.pick_repeat_dialog_select_daily(repeatInterval)}";
+  } else if (repeatType == "WEEKLY") {
+    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
+      (e) {
+        return DateFormat.EEEE().dateSymbols.WEEKDAYS[int.parse(e)];
+      },
+    )}";
+  }
+  return "";
+}
+
 class PickRepeatDialog extends StatefulWidget {
   const PickRepeatDialog({required this.taskDraft, super.key});
 
@@ -254,7 +278,7 @@ class PickRepeatDialog extends StatefulWidget {
 }
 
 class PickRepeatDialogState extends State<PickRepeatDialog> {
-  late String repeatType = widget.taskDraft.repeatType ?? "DAY";
+  late String repeatType = widget.taskDraft.repeatType ?? "DAILY";
   late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
   late String repeatDays = widget.taskDraft.repeatDays ?? "";
 
@@ -289,12 +313,12 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                   key: ValueKey(repeatInterval), // force redraw when changed
                   dropdownMenuEntries: [
                     DropdownMenuEntry(
-                        value: "DAY",
+                        value: "DAILY",
                         label: l?.pick_repeat_dialog_select_daily(
                                 repeatInterval) ??
                             "l.daily"),
                     DropdownMenuEntry(
-                        value: "WEEK",
+                        value: "WEEKLY",
                         label: l?.pick_repeat_dialog_select_weekly(
                                 repeatInterval) ??
                             "l.weekly"),
@@ -313,9 +337,9 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                   initialSelection: repeatType,
                   onSelected: (value) {
                     setState(() {
-                      repeatType = value ?? "DAY";
+                      repeatType = value ?? "DAILY";
                     });
-                    if (repeatType == "WEEK") {
+                    if (repeatType == "WEEKLY") {
                       setState(() {
                         repeatDays = "${DateTime.now().weekday}";
                       });
@@ -324,7 +348,7 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                 )
               ],
             ),
-            repeatType == "WEEK"
+            repeatType == "WEEKLY"
                 ? Column(
                     children: [
                       Column(
@@ -345,6 +369,8 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                                           repeatDaysList
                                               .remove(index.toString());
                                         }
+                                        repeatDaysList
+                                            .removeWhere((e) => (e.isEmpty));
                                         setState(() {
                                           repeatDays = repeatDaysList.join(",");
                                         });
@@ -373,9 +399,12 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
         ),
         TextButton(
           child: Text('OK'),
-          onPressed: () {
-            Navigator.of(context).pop([repeatType, repeatInterval, repeatDays]);
-          },
+          onPressed: repeatType == "WEEKLY" && repeatDays.split(",").isEmpty
+              ? null
+              : () {
+                  Navigator.of(context)
+                      .pop([repeatType, repeatInterval, repeatDays]);
+                },
         ),
       ],
     );
