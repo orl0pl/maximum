@@ -12,5 +12,11 @@
     "asap": "Jak najwczesniej",
     "pick_date": "Wybierz date",
     "pick_time": "Wybierz czas",
-    "someday": "Kiedyś"
+    "someday": "Kiedyś",
+    "pick_repeat_dialog_title": "Wybierz powtarzanie",
+    "pick_repeat_dialog_each_text": "Co",
+    "pick_repeat_dialog_select_daily": "{daysNum, plural, =0{dni} =1{dzień} =2{dni} few{dni} many{dni} other{dni}}",
+    "pick_repeat_dialog_select_weekly": "{weeksNum, plural, =0{tygodnie} =1{tydzień} =2{tygodnie} few{tygodnie} many{tygodnie} other{tygodnie}}",
+    "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{miesiące} =1{miesiąc} =2{miesiące} few{miesiące} many{miesiące} other{miesiące}}",
+    "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{lata} =1{rok} =2{lata} few{lata} many{lat} other{lat}}"
 }

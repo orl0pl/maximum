@@ -7,7 +7,8 @@ import 'package:maximum/database/database_helper.dart';
 import 'package:maximum/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/models/task.dart';
-import 'package:maximum/utils.dart/location.dart';
+import 'package:maximum/utils/location.dart';
+import 'package:maximum/utils/relative_date.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AddScreen extends StatefulWidget {
@@ -56,6 +57,7 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations? l = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(title: Text(l?.add ?? "Add")),
       body: SafeArea(
@@ -79,87 +81,110 @@ class _AddScreenState extends State<AddScreen> {
               entryType == EntryType.task
                   ? SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      child: Row(children: [
+                        ActionChip(
+                          label: Text("Repeat"),
+                          onPressed: () {
+                            var result = showDialog(
+                                context: context,
+                                builder: (context) => PickRepeatDialog(
+                                      taskDraft: taskDraft,
+                                    ));
+                          },
+                        ),
+                        SizedBox(width: 8),
+                      ]))
+                  : SizedBox(),
+              entryType == EntryType.task
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           FilterChip(
-                            label: Text(l?.today ?? "today"),
-                            selected: taskDraft.date ==
-                                DateFormat('yyyyMMdd').format(DateTime.now()),
-                            onSelected: (bool value) {
-                              setState(() {
-                                taskDraft.date = DateFormat('yyyyMMdd')
-                                    .format(DateTime.now());
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: taskDraft.time != null
-                                ? Text(DateFormat.Hm().format(
-                                    taskDraft.datetime ?? DateTime.now()))
-                                : Text(l?.pick_time ?? "pick time"),
-                            selected: taskDraft.isTimeSet,
+                            avatar: !taskDraft.isDateSet
+                                ? Icon(Icons.calendar_month)
+                                : null,
+                            label: taskDraft.isDateSet
+                                ? Text(formatDate(taskDraft.datetime!, l))
+                                : Text(l?.pick_date ?? "pick date"),
+                            selected: taskDraft.isDateSet,
                             onSelected: (bool value) async {
-                              final selectedTime = await showTimePicker(
+                              if (value) {
+                                final selectedDate = await showDatePicker(
                                   context: context,
-                                  initialTime: TimeOfDay.now());
-                              if (selectedTime != null && mounted) {
+                                  firstDate: DateTime(1970),
+                                  lastDate: DateTime(2100),
+                                  initialDate:
+                                      taskDraft.datetime ?? DateTime.now(),
+                                );
+                                if (selectedDate != null && mounted) {
+                                  setState(() {
+                                    taskDraft.date = DateFormat('yyyyMMdd')
+                                        .format(selectedDate);
+                                  });
+                                }
+                              } else {
                                 setState(() {
-                                  taskDraft.time = DateFormat("HHmm").format(
-                                      DateTime(2000, 1, 1, selectedTime.hour,
-                                          selectedTime.minute));
+                                  taskDraft.date = '';
+                                  taskDraft.time = null;
                                 });
                               }
                             },
                           ),
                           SizedBox(width: 8),
+                          taskDraft.isDateSet
+                              ? FilterChip(
+                                  label: taskDraft.time != null
+                                      ? Text(DateFormat.Hm().format(
+                                          taskDraft.datetime ?? DateTime.now()))
+                                      : Text(l?.pick_time ?? "pick time"),
+                                  selected: taskDraft.isTimeSet,
+                                  onSelected: (bool value) async {
+                                    if (value) {
+                                      final selectedTime = await showTimePicker(
+                                          context: context,
+                                          initialTime: TimeOfDay.now());
+                                      if (selectedTime != null && mounted) {
+                                        setState(() {
+                                          taskDraft.time = DateFormat("HHmm")
+                                              .format(DateTime(
+                                                  2000,
+                                                  1,
+                                                  1,
+                                                  selectedTime.hour,
+                                                  selectedTime.minute));
+                                        });
+                                      }
+                                    } else {
+                                      if (mounted) {
+                                        setState(() {
+                                          taskDraft.time = null;
+                                        });
+                                      }
+                                    }
+                                  },
+                                )
+                              : SizedBox(),
+                          SizedBox(width: taskDraft.isDateSet ? 8 : 0),
+                          FilterChip(
+                            label: Text("Is deadline"),
+                            selected: taskDraft.isDeadline == 1,
+                            onSelected: (value) {
+                              setState(() {
+                                taskDraft.isDeadline = value ? 1 : 0;
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
                           FilterChip(
                             label: Text(l?.asap ?? "asap"),
                             selected: taskDraft.date == 'ASAP',
                             onSelected: (bool value) {
                               setState(() {
                                 taskDraft.date = 'ASAP';
-                                taskDraft.time = null;
-                              });
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: taskDraft.date != '' &&
-                                    taskDraft.date != 'ASAP' &&
-                                    taskDraft.date !=
-                                        DateFormat('yyyyMMdd')
-                                            .format(DateTime.now())
-                                ? Text(DateFormat.yMEd().format(
-                                    taskDraft.datetime ?? DateTime.now()))
-                                : Text(l?.pick_date ?? "pick date"),
-                            selected: taskDraft.date != '' &&
-                                taskDraft.date != 'ASAP' &&
-                                taskDraft.date !=
-                                    DateFormat('yyyyMMdd')
-                                        .format(DateTime.now()),
-                            onSelected: (bool value) async {
-                              final selectedDate = await showDatePicker(
-                                  context: context,
-                                  firstDate: DateTime(1970),
-                                  lastDate: DateTime(2100),
-                                  currentDate:
-                                      taskDraft.datetime ?? DateTime.now());
-                              if (selectedDate != null && mounted) {
-                                setState(() {
-                                  taskDraft.date = DateFormat('yyyyMMdd')
-                                      .format(selectedDate);
-                                });
-                              }
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: Text(l?.someday ?? "someday"),
-                            selected: taskDraft.isSomeday,
-                            onSelected: (bool value) {
-                              setState(() {
-                                taskDraft.date = '';
                                 taskDraft.time = null;
                               });
                             },
@@ -208,6 +233,142 @@ class _AddScreenState extends State<AddScreen> {
         },
         child: const Icon(Icons.check),
       ),
+    );
+  }
+}
+
+class PickRepeatDialog extends StatefulWidget {
+  const PickRepeatDialog({required this.taskDraft, super.key});
+
+  final Task taskDraft;
+
+  @override
+  PickRepeatDialogState createState() => PickRepeatDialogState();
+}
+
+class PickRepeatDialogState extends State<PickRepeatDialog> {
+  late String repeatType = widget.taskDraft.repeatType ?? "DAY";
+  late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
+  late String repeatDays = widget.taskDraft.repeatDays ?? "";
+
+  @override
+  Widget build(BuildContext context) {
+    AppLocalizations? l = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l?.pick_repeat_dialog_title ?? "Pick repeat"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l?.pick_repeat_dialog_each_text ?? "Every"),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 40,
+                child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      repeatInterval = int.parse(value.isEmpty ? "0" : value);
+                    });
+                  },
+                  keyboardType: TextInputType.number,
+                  initialValue: (1).toString(),
+                ),
+              ),
+              SizedBox(width: 8),
+              DropdownMenu(
+                key: ValueKey(repeatInterval), // force redraw when changed
+                dropdownMenuEntries: [
+                  DropdownMenuEntry(
+                      value: "DAY",
+                      label:
+                          l?.pick_repeat_dialog_select_daily(repeatInterval) ??
+                              "l.daily"),
+                  DropdownMenuEntry(
+                      value: "WEEK",
+                      label:
+                          l?.pick_repeat_dialog_select_weekly(repeatInterval) ??
+                              "l.weekly"),
+                  DropdownMenuEntry(
+                      value: "MONTHLY_DAY",
+                      label: l?.pick_repeat_dialog_select_monthly(
+                              repeatInterval) ??
+                          "l.monthly_day"),
+                  DropdownMenuEntry(
+                      value: "YEARLY",
+                      label:
+                          l?.pick_repeat_dialog_select_yearly(repeatInterval) ??
+                              "l.yearly"),
+                ],
+                initialSelection: repeatType,
+                onSelected: (value) {
+                  setState(() {
+                    repeatType = value ?? "DAY";
+                  });
+                  if (repeatType == "WEEK") {
+                    setState(() {
+                      repeatDays = "${DateTime.now().weekday}";
+                    });
+                  }
+                },
+              )
+            ],
+          ),
+          repeatType == "WEEK"
+              ? Column(
+                  children: [
+                    Column(
+                      children: List.generate(
+                          7,
+                          (index) => Row(
+                                children: [
+                                  Checkbox(
+                                    value: repeatDays
+                                        .split(",")
+                                        .contains(index.toString()),
+                                    onChanged: (value) {
+                                      List<String> repeatDaysList =
+                                          repeatDays.split(",");
+                                      if (value ?? false) {
+                                        repeatDaysList.add(index.toString());
+                                      } else {
+                                        repeatDaysList.remove(index.toString());
+                                      }
+                                      setState(() {
+                                        repeatDays = repeatDaysList.join(",");
+                                      });
+                                    },
+                                  ),
+                                  Text(DateFormat.EEEE()
+                                      .dateSymbols
+                                      .WEEKDAYS[index])
+                                ],
+                              )),
+                    ),
+                  ],
+                )
+              : repeatDays == "MONTHLY_DAY"
+                  ? Column(children: [])
+                  : SizedBox()
+        ],
+      ),
+      actions: [
+        TextButton(
+          child: Text('Cancel'),
+          onPressed: () {
+            // Close the popup without returning a value
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('OK'),
+          onPressed: () {
+            // Close the popup and return a value
+            Navigator.of(context).pop('success');
+          },
+        ),
+      ],
     );
   }
 }

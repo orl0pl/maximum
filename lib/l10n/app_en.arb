@@ -33,5 +33,19 @@
     "asap": "ASAP",
     "pick_date": "Pick date",
     "pick_time": "Pick time",
-    "someday": "Someday"
+    "someday": "Someday",
+    "pick_repeat_dialog_title": "Repeat",
+    "pick_repeat_dialog_each_text": "Every",
+    "pick_repeat_dialog_select_daily": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
+    "@pick_repeat_dialog_select_daily": {
+        "placeholders": {
+            "daysNum": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+    "pick_repeat_dialog_select_weekly": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
+    "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
+    "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}"
 }
