@@ -30,11 +30,9 @@ class _StartWidgetState extends State<StartWidget> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations? l = AppLocalizations.of(context);
-    DatabaseHelper().database.then((db) async {
-      db.query('Task').then((notes) {
-        setState(() {
-          allTasks = notes.map((note) => Task.fromMap(note)).toList();
-        });
+    DatabaseHelper().tasks.then((tasks) {
+      setState(() {
+        allTasks = tasks;
       });
     });
     return Padding(

@@ -237,11 +237,10 @@ class _AddScreenState extends State<AddScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           DatabaseHelper dh = DatabaseHelper();
-          Database db = await dh.database;
           if (entryType == EntryType.note) {
-            db.insert("Note", noteDraft.toMap());
+            dh.insertNote(noteDraft);
           } else if (entryType == EntryType.task) {
-            db.insert("Task", taskDraft.toMap());
+            dh.insertTask(taskDraft);
           }
           if (mounted) {
             // ignore: use_build_context_synchronously

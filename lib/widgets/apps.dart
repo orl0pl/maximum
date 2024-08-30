@@ -60,16 +60,11 @@ class AppsWidgetState extends State<AppsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseHelper().database.then((db) async {
-      if (!notesLoaded) {
-        db.query('Note').then((notes) {
-          setState(() {
-            allnotes = notes.map((note) => Note.fromMap(note)).toList();
-            notesLoaded = true;
-          });
-        });
-      }
-    });
+    if (!notesLoaded) {
+      DatabaseHelper().notes.then((notes) async {
+        allnotes = notes;
+      });
+    }
 
     if (widget.inputValue.isEmpty) {
       allMatches = widget.apps.map((e) => Element.fromApp(e)).toList();

@@ -1,3 +1,5 @@
+import 'package:maximum/models/note.dart';
+import 'package:maximum/models/task.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -92,5 +94,67 @@ class DatabaseHelper {
       )
     ''');
     }
+  }
+
+  Future<List<Note>> get notes async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('Note');
+    return List.generate(maps.length, (i) {
+      return Note.fromMap(maps[i]);
+    });
+  }
+
+  Future<Note> getNote(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('Note', where: 'id = ?', whereArgs: [id]);
+    return Note.fromMap(maps.first);
+  }
+
+  Future insertNote(Note note) async {
+    final db = await database;
+    await db.insert('Note', note.toMap());
+  }
+
+  Future updateNote(Note note) async {
+    final db = await database;
+    await db
+        .update('Note', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
+  }
+
+  Future deleteNote(int id) async {
+    final db = await database;
+    await db.delete('Note', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Task>> get tasks async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('Task');
+    return List.generate(maps.length, (i) {
+      return Task.fromMap(maps[i]);
+    });
+  }
+
+  Future<Task> getTask(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+        await db.query('Task', where: 'id = ?', whereArgs: [id]);
+    return Task.fromMap(maps.first);
+  }
+
+  Future insertTask(Task task) async {
+    final db = await database;
+    await db.insert('Task', task.toMap());
+  }
+
+  Future updateTask(Task task) async {
+    final db = await database;
+    await db
+        .update('Task', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
+  }
+
+  Future deleteTask(int id) async {
+    final db = await database;
+    await db.delete('Task', where: 'id = ?', whereArgs: [id]);
   }
 }

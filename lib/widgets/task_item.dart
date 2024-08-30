@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maximum/database/database_helper.dart';
 import 'package:maximum/models/task.dart';
+import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/info_chip.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskItem extends StatelessWidget {
   final Task task;
@@ -11,6 +14,7 @@ class TaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
+    AppLocalizations? l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -23,10 +27,7 @@ class TaskItem extends StatelessWidget {
                   onChanged: (value) {
                     var newTask = task;
                     newTask.completed = value == true ? 1 : 0;
-                    DatabaseHelper().database.then((db) {
-                      db.update('Task', newTask.toMap(),
-                          where: "id = ?", whereArgs: [task.id]);
-                    });
+                    DatabaseHelper().updateTask(newTask);
                   }),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,11 +43,12 @@ class TaskItem extends StatelessWidget {
           Row(
             children: [
               InfoChip(
-                  subtitle: task.date,
+                  subtitle: task.isDateSet ? formatDate(task.datetime!, l) : '',
                   textTheme: textTheme,
-                  variant: task.datetime?.isAfter(DateTime.now()) ?? task.isAsap
-                      ? ChipVariant.primary
-                      : ChipVariant.secondary),
+                  variant:
+                      task.datetime?.isBefore(DateTime.now()) ?? task.isAsap
+                          ? ChipVariant.primary
+                          : ChipVariant.secondary),
             ],
           )
         ],
