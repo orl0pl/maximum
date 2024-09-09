@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maximum/database/database_helper.dart';
 import 'package:maximum/models/task.dart';
+import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/important_event.dart';
 import 'package:maximum/widgets/inspiration.dart';
 import 'package:maximum/widgets/task_item.dart';
@@ -32,7 +33,10 @@ class _StartWidgetState extends State<StartWidget> {
     AppLocalizations? l = AppLocalizations.of(context);
     DatabaseHelper().tasks.then((tasks) {
       setState(() {
-        allTasks = tasks;
+        allTasks = tasks
+            .where(
+                (task) => task.completed == 0 && (task.isDue || task.isToday))
+            .toList();
       });
     });
     return Padding(
@@ -43,19 +47,33 @@ class _StartWidgetState extends State<StartWidget> {
         children: [
           const Top(),
           const SizedBox(height: 32),
-          Text(
-            l?.timeline ?? '',
-            style: widget.textTheme.titleSmall,
-          ),
-          const SizedBox(height: 8),
-          // ImportantEvent(textTheme: widget.textTheme),
-          // const SizedBox(height: 16),
-          Column(
-            children: allTasks.map((Task task) {
-              return TaskItem(
-                task: task,
-              );
-            }).toList(),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const TimelineScreen()));
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l?.timeline ?? '',
+                  style: widget.textTheme.titleSmall,
+                ),
+                const SizedBox(height: 8),
+                // ImportantEvent(textTheme: widget.textTheme),
+                // const SizedBox(height: 16),
+                Column(
+                  children: allTasks.map((Task task) {
+                    return TaskItem(
+                      task: task,
+                      refresh: () {
+                        setState(() {});
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
         ],

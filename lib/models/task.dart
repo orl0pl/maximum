@@ -137,6 +137,30 @@ class Task {
       );
     }
   }
+
+  bool get isDue {
+    return isDateSet && datetime!.isBefore(DateTime.now());
+  }
+
+  bool get isToday {
+    return DateUtils.isSameDay(DateTime.now(), datetime!);
+  }
+
+  bool get isTomorrow {
+    return DateUtils.isSameDay(
+        DateTime.now().add(const Duration(days: 1)), datetime);
+  }
+
+  bool get isInNextSevenDays {
+    return !isDue &&
+        !isToday &&
+        !isTomorrow &&
+        datetime!.isBefore(DateTime.now().add(const Duration(days: 7)));
+  }
+
+  bool get isInFuture {
+    return datetime!.isAfter(DateTime.now().add(const Duration(days: 7)));
+  }
 }
 /*
  CREATE TABLE IF NOT EXISTS TaskProgress (

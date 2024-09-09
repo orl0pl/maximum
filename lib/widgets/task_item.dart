@@ -9,7 +9,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class TaskItem extends StatelessWidget {
   final Task task;
 
-  const TaskItem({super.key, required this.task});
+  final Function refresh;
+
+  const TaskItem({super.key, required this.task, required this.refresh});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class TaskItem extends StatelessWidget {
                     var newTask = task;
                     newTask.completed = value == true ? 1 : 0;
                     DatabaseHelper().updateTask(newTask);
+                    refresh();
                   }),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
