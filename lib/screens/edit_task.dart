@@ -29,7 +29,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     AppLocalizations? l = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("l.edit_task")),
+      appBar: AppBar(title: Text(l?.edit_task ?? "Edit task")),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -34,14 +34,15 @@ class TaskItem extends StatelessWidget {
         child: InkWell(
           onTap: clickable
               ? () async {
-                  bool edited = await Navigator.push(context, MaterialPageRoute(
+                  bool? edited =
+                      await Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
                       return EditTaskScreen(
                         task: task,
                       );
                     },
                   ));
-                  if (edited) refresh();
+                  if (edited == true) refresh();
                 }
               : null,
           child: Row(
