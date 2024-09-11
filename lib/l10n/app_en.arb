@@ -49,5 +49,11 @@
     "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
     "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
 
-    "deadline": "Deadline"
+    "deadline": "Deadline",
+
+    "due_tasks": "Due tasks",
+    "tommorow": "Tommorow",
+    "this_week": "This week",
+    "in_future": "In future",
+    "now": "Now"
 }

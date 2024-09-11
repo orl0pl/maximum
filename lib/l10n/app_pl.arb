@@ -20,5 +20,10 @@
     "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{miesiący} =1{miesiąc} =2{miesiące} few{miesiące} many{miesiące} other{miesiące}}",
     "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{lata} =1{rok} =2{lata} few{lata} many{lat} other{lat}}",
 
-    "deadline": "Termin"
+    "deadline": "Termin",
+    "due_tasks": "Zaległe zadania",
+    "tommorow": "Jutro",
+    "this_week": "W tym tygodniu",
+    "in_future": "W przyszłości",
+    "now": "Teraz"
 }
