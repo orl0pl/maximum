@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:maximum/database/database_helper.dart';
 import 'package:maximum/models/task.dart';
 import 'package:maximum/screens/edit_task.dart';
+import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/info_chip.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -32,6 +32,9 @@ class TaskItem extends StatelessWidget {
           return ScaleTransition(scale: animation, child: child);
         },
         child: InkWell(
+          onLongPress: () => {
+            print(task.datetime),
+          },
           onTap: clickable
               ? () async {
                   bool? edited =
@@ -44,20 +47,17 @@ class TaskItem extends StatelessWidget {
                   ));
                   if (edited == true) refresh();
                 }
-              : null,
+              : () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const TimelineScreen()));
+                },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Checkbox(
-                      value: task.completed == 1,
-                      onChanged: (value) {
-                        var newTask = task;
-                        newTask.completed = value == true ? 1 : 0;
-                        DatabaseHelper().updateTask(newTask);
-                        refresh();
-                      }),
+                      value: task.completed == 1, onChanged: checkCheckbox),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -73,12 +73,14 @@ class TaskItem extends StatelessWidget {
                 children: [
                   InfoChip(
                       subtitle:
-                          task.isDateSet ? formatDate(task.datetime!, l) : '',
+                          task.isDateSet ? formatTaskDateAndTime(task, l) : '',
                       textTheme: textTheme,
-                      variant:
-                          task.datetime?.isBefore(DateTime.now()) ?? task.isAsap
-                              ? ChipVariant.primary
-                              : ChipVariant.secondary),
+                      variant: task.isDue || task.isAsap
+                          ? ChipVariant.primary
+                          : task.datetime!.isBefore(
+                                  DateTime.now().add(const Duration(days: 7)))
+                              ? ChipVariant.secondary
+                              : ChipVariant.outline),
                 ],
               )
             ],
@@ -86,5 +88,12 @@ class TaskItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void checkCheckbox(bool? value) {
+    var newTask = task;
+    newTask.completed = value == true ? 1 : 0;
+    DatabaseHelper().updateTask(newTask);
+    refresh();
   }
 }

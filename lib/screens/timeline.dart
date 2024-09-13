@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/main.dart';
-import 'package:maximum/models/note.dart';
-import 'package:intl/intl.dart';
 import 'package:maximum/models/task.dart';
 import 'package:maximum/screens/add.dart';
-import 'package:maximum/utils/location.dart';
-import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/task_item.dart';
-import 'package:sqflite/sqflite.dart';
 
 class TimelineScreen extends StatefulWidget {
-  const TimelineScreen({Key? key}) : super(key: key);
+  const TimelineScreen({super.key});
   @override
-  _TimelineScreenState createState() => _TimelineScreenState();
+  TimelineScreenState createState() => TimelineScreenState();
 }
 
-class _TimelineScreenState extends State<TimelineScreen> {
+class TimelineScreenState extends State<TimelineScreen> {
   bool archiveMode = false;
   late DatabaseHelper _databaseHelper;
   List<Task> _tasks = [];
@@ -27,15 +20,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
   List<Task> get todayTasksBeforeNow => _tasks
       .where((task) =>
           task.isToday &&
-          DateTime.now().isBefore(
-              task.datetime ?? DateTime.fromMillisecondsSinceEpoch(0)))
+          DateTime.now()
+              .isAfter(task.datetime ?? DateTime.fromMillisecondsSinceEpoch(0)))
       .toList();
 
   List<Task> get todayTasksAfterNow => _tasks
       .where((task) =>
           task.isToday &&
-          DateTime.now()
-              .isAfter(task.datetime ?? DateTime.fromMillisecondsSinceEpoch(0)))
+          DateTime.now().isBefore(
+              task.datetime ?? DateTime.fromMillisecondsSinceEpoch(0)))
       .toList();
 
   List<Task> get tomorrowTasks =>
@@ -117,8 +110,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       clickable: true,
                     ),
                 ],
-                if (todayTasksBeforeNow.isNotEmpty) ...[
+                if (todayTasksAfterNow.isNotEmpty ||
+                    todayTasksBeforeNow.isNotEmpty) ...[
                   Text(l.today, style: textTheme.labelLarge),
+                ],
+                if (todayTasksBeforeNow.isNotEmpty) ...[
                   for (Task task in todayTasksBeforeNow)
                     TaskItem(task: task, refresh: refresh, clickable: true),
                 ],
@@ -163,21 +159,25 @@ class NowText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 20,
-      width: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(14),
-          topRight: Radius.circular(14),
-        ),
-        color: theme.colorScheme.primary,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
-        child: Text(l.now,
-            style: textTheme.labelSmall
-                ?.copyWith(color: theme.colorScheme.onPrimary)),
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Row(
+        children: [
+          Container(
+            height: 12,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: theme.colorScheme.tertiary,
+            ),
+            width: 12,
+          ),
+          Expanded(
+            child: Container(
+              height: 2,
+              color: theme.colorScheme.tertiary,
+            ),
+          ),
+        ],
       ),
     );
   }

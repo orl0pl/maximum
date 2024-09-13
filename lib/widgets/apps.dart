@@ -51,10 +51,12 @@ class AppsWidgetState extends State<AppsWidget> {
   List<Note> allnotes = [];
 
   void openTopMatch() {
-    if (allMatches[0].type == ElementType.app) {
-      LaunchApp.openApp(
-        androidPackageName: allMatches[0].app!.packageName,
-      );
+    if (allMatches.isNotEmpty) {
+      if (allMatches[0].type == ElementType.app) {
+        LaunchApp.openApp(
+          androidPackageName: allMatches[0].app!.packageName,
+        );
+      }
     }
   }
 
@@ -142,7 +144,11 @@ class AppsWidgetState extends State<AppsWidget> {
                                   ? const Icon(Icons.chevron_right)
                                   : null,
                               title: Text(allMatches[index].app!.name),
-                              onTap: openTopMatch,
+                              onTap: () {
+                                LaunchApp.openApp(
+                                    androidPackageName:
+                                        allMatches[index].app!.packageName);
+                              },
                             );
                           } else if (allMatches[index].type ==
                               ElementType.note) {

@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:maximum/models/task.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
-import 'package:sqflite/sqflite.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -267,145 +266,146 @@ getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
   return "";
 }
 
-class PickRepeatDialog extends StatefulWidget {
-  const PickRepeatDialog({required this.taskDraft, super.key});
+// TODO: make proper implementation and add it again
+// class PickRepeatDialog extends StatefulWidget {
+//   const PickRepeatDialog({required this.taskDraft, super.key});
 
-  final Task taskDraft;
+//   final Task taskDraft;
 
-  @override
-  PickRepeatDialogState createState() => PickRepeatDialogState();
-}
+//   @override
+//   PickRepeatDialogState createState() => PickRepeatDialogState();
+// }
 
-class PickRepeatDialogState extends State<PickRepeatDialog> {
-  late String repeatType = widget.taskDraft.repeatType ?? "DAILY";
-  late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
-  late String repeatDays = widget.taskDraft.repeatDays ?? "";
+// class PickRepeatDialogState extends State<PickRepeatDialog> {
+//   late String repeatType = widget.taskDraft.repeatType ?? "DAILY";
+//   late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
+//   late String repeatDays = widget.taskDraft.repeatDays ?? "";
 
-  @override
-  Widget build(BuildContext context) {
-    AppLocalizations? l = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(l?.pick_repeat_dialog_title ?? "Pick repeat"),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l?.pick_repeat_dialog_each_text ?? "Every"),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 40,
-                  child: TextFormField(
-                    onChanged: (value) {
-                      setState(() {
-                        repeatInterval = int.parse(value.isEmpty ? "0" : value);
-                      });
-                    },
-                    keyboardType: TextInputType.number,
-                    initialValue: (1).toString(),
-                  ),
-                ),
-                SizedBox(width: 8),
-                DropdownMenu(
-                  key: ValueKey(repeatInterval), // force redraw when changed
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                        value: "DAILY",
-                        label: l?.pick_repeat_dialog_select_daily(
-                                repeatInterval) ??
-                            "l.daily"),
-                    DropdownMenuEntry(
-                        value: "WEEKLY",
-                        label: l?.pick_repeat_dialog_select_weekly(
-                                repeatInterval) ??
-                            "l.weekly"),
-                    // TODO: Handle month and year repeats in the future
-                    // DropdownMenuEntry(
-                    //     value: "MONTHLY_DAY",
-                    //     label: l?.pick_repeat_dialog_select_monthly(
-                    //             repeatInterval) ??
-                    //         "l.monthly_day"),
-                    // DropdownMenuEntry(
-                    //     value: "YEARLY",
-                    //     label: l?.pick_repeat_dialog_select_yearly(
-                    //             repeatInterval) ??
-                    //         "l.yearly"),
-                  ],
-                  initialSelection: repeatType,
-                  onSelected: (value) {
-                    setState(() {
-                      repeatType = value ?? "DAILY";
-                    });
-                    if (repeatType == "WEEKLY") {
-                      setState(() {
-                        repeatDays = "${DateTime.now().weekday}";
-                      });
-                    }
-                  },
-                )
-              ],
-            ),
-            repeatType == "WEEKLY"
-                ? Column(
-                    children: [
-                      Column(
-                        children: List.generate(
-                            7,
-                            (index) => Row(
-                                  children: [
-                                    Checkbox(
-                                      value: repeatDays
-                                          .split(",")
-                                          .contains(index.toString()),
-                                      onChanged: (value) {
-                                        List<String> repeatDaysList =
-                                            repeatDays.split(",");
-                                        if (value ?? false) {
-                                          repeatDaysList.add(index.toString());
-                                        } else {
-                                          repeatDaysList
-                                              .remove(index.toString());
-                                        }
-                                        repeatDaysList
-                                            .removeWhere((e) => (e.isEmpty));
-                                        setState(() {
-                                          repeatDays = repeatDaysList.join(",");
-                                        });
-                                      },
-                                    ),
-                                    Text(DateFormat.EEEE()
-                                        .dateSymbols
-                                        .WEEKDAYS[index])
-                                  ],
-                                )),
-                      ),
-                    ],
-                  )
-                : repeatDays == "MONTHLY_DAY"
-                    ? Column(children: const [])
-                    : SizedBox()
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          child: Text('Cancel'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        TextButton(
-          child: Text('OK'),
-          onPressed: repeatType == "WEEKLY" && repeatDays.split(",").isEmpty
-              ? null
-              : () {
-                  Navigator.of(context)
-                      .pop([repeatType, repeatInterval, repeatDays]);
-                },
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     AppLocalizations? l = AppLocalizations.of(context);
+//     return AlertDialog(
+//       title: Text(l?.pick_repeat_dialog_title ?? "Pick repeat"),
+//       content: SingleChildScrollView(
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(l?.pick_repeat_dialog_each_text ?? "Every"),
+//             Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 SizedBox(
+//                   width: 40,
+//                   child: TextFormField(
+//                     onChanged: (value) {
+//                       setState(() {
+//                         repeatInterval = int.parse(value.isEmpty ? "0" : value);
+//                       });
+//                     },
+//                     keyboardType: TextInputType.number,
+//                     initialValue: (1).toString(),
+//                   ),
+//                 ),
+//                 SizedBox(width: 8),
+//                 DropdownMenu(
+//                   key: ValueKey(repeatInterval), // force redraw when changed
+//                   dropdownMenuEntries: [
+//                     DropdownMenuEntry(
+//                         value: "DAILY",
+//                         label: l?.pick_repeat_dialog_select_daily(
+//                                 repeatInterval) ??
+//                             "l.daily"),
+//                     DropdownMenuEntry(
+//                         value: "WEEKLY",
+//                         label: l?.pick_repeat_dialog_select_weekly(
+//                                 repeatInterval) ??
+//                             "l.weekly"),
+//                     // TODO: Handle month and year repeats in the future
+//                     // DropdownMenuEntry(
+//                     //     value: "MONTHLY_DAY",
+//                     //     label: l?.pick_repeat_dialog_select_monthly(
+//                     //             repeatInterval) ??
+//                     //         "l.monthly_day"),
+//                     // DropdownMenuEntry(
+//                     //     value: "YEARLY",
+//                     //     label: l?.pick_repeat_dialog_select_yearly(
+//                     //             repeatInterval) ??
+//                     //         "l.yearly"),
+//                   ],
+//                   initialSelection: repeatType,
+//                   onSelected: (value) {
+//                     setState(() {
+//                       repeatType = value ?? "DAILY";
+//                     });
+//                     if (repeatType == "WEEKLY") {
+//                       setState(() {
+//                         repeatDays = "${DateTime.now().weekday}";
+//                       });
+//                     }
+//                   },
+//                 )
+//               ],
+//             ),
+//             repeatType == "WEEKLY"
+//                 ? Column(
+//                     children: [
+//                       Column(
+//                         children: List.generate(
+//                             7,
+//                             (index) => Row(
+//                                   children: [
+//                                     Checkbox(
+//                                       value: repeatDays
+//                                           .split(",")
+//                                           .contains(index.toString()),
+//                                       onChanged: (value) {
+//                                         List<String> repeatDaysList =
+//                                             repeatDays.split(",");
+//                                         if (value ?? false) {
+//                                           repeatDaysList.add(index.toString());
+//                                         } else {
+//                                           repeatDaysList
+//                                               .remove(index.toString());
+//                                         }
+//                                         repeatDaysList
+//                                             .removeWhere((e) => (e.isEmpty));
+//                                         setState(() {
+//                                           repeatDays = repeatDaysList.join(",");
+//                                         });
+//                                       },
+//                                     ),
+//                                     Text(DateFormat.EEEE()
+//                                         .dateSymbols
+//                                         .WEEKDAYS[index])
+//                                   ],
+//                                 )),
+//                       ),
+//                     ],
+//                   )
+//                 : repeatDays == "MONTHLY_DAY"
+//                     ? Column(children: const [])
+//                     : SizedBox()
+//           ],
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//           child: Text('Cancel'),
+//           onPressed: () {
+//             Navigator.of(context).pop();
+//           },
+//         ),
+//         TextButton(
+//           child: Text('OK'),
+//           onPressed: repeatType == "WEEKLY" && repeatDays.split(",").isEmpty
+//               ? null
+//               : () {
+//                   Navigator.of(context)
+//                       .pop([repeatType, repeatInterval, repeatDays]);
+//                 },
+//         ),
+//       ],
+//     );
+//   }
+// }

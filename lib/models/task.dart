@@ -139,7 +139,9 @@ class Task {
   }
 
   bool get isDue {
-    return isDateSet && datetime!.isBefore(DateTime.now());
+    return isDateSet &&
+        datetime!.isBefore(DateTime.now()) &&
+        !DateUtils.isSameDay(DateTime.now(), datetime!);
   }
 
   bool get isToday {

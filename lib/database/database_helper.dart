@@ -129,7 +129,8 @@ class DatabaseHelper {
 
   Future<List<Task>> get tasks async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('Task');
+    final List<Map<String, dynamic>> maps =
+        await db.query('Task', orderBy: 'date');
     return List.generate(maps.length, (i) {
       return Task.fromMap(maps[i]);
     });

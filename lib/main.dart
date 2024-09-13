@@ -215,7 +215,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-class Bottom extends StatelessWidget {
+class Bottom extends StatefulWidget {
   const Bottom({
     super.key,
     required this.activeScreen,
@@ -231,7 +231,23 @@ class Bottom extends StatelessWidget {
   final GlobalKey<AppsWidgetState> appsKey;
 
   @override
+  State<Bottom> createState() => _BottomState();
+}
+
+class _BottomState extends State<Bottom> {
+  FocusNode focus = FocusNode();
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.activeScreen == ActiveScreen.start) {
+      focus.unfocus();
+    }
+    if (widget.activeScreen == ActiveScreen.apps) {
+      focus.requestFocus();
+    }
+    if (widget.activeScreen == ActiveScreen.apps && !focus.hasFocus) {
+      widget.setActiveScreen(ActiveScreen.start);
+    }
     return Column(
       children: [
         Row(
@@ -282,7 +298,7 @@ class Bottom extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const AddScreen()));
 
-                  setActiveScreen(ActiveScreen.start);
+                  widget.setActiveScreen(ActiveScreen.start);
                 },
                 child: const Icon(Icons.add),
               ),
@@ -291,18 +307,19 @@ class Bottom extends StatelessWidget {
         ),
         SearchBar(
             hintText: "Szukaj w aplikacjach i nie tylko",
-            autoFocus: activeScreen == ActiveScreen.apps,
+            focusNode: focus,
             onChanged: (value) {
-              setInput(value);
+              widget.setInput(value);
             },
             onTap: () {
-              if (activeScreen != ActiveScreen.apps) {
-                setActiveScreen(ActiveScreen.apps);
+              if (widget.activeScreen != ActiveScreen.apps) {
+                widget.setActiveScreen(ActiveScreen.apps);
               }
             },
             onSubmitted: (value) {
-              if (activeScreen == ActiveScreen.apps) {
-                appsKey.currentState?.openTopMatch();
+              if (widget.activeScreen == ActiveScreen.apps &&
+                  value.isNotEmpty) {
+                widget.appsKey.currentState?.openTopMatch();
               }
             },
             leading: IconButton(

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:maximum/database/database_helper.dart';
 import 'package:maximum/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
-import 'package:maximum/widgets/important_event.dart';
-import 'package:maximum/widgets/inspiration.dart';
 import 'package:maximum/widgets/task_item.dart';
 import 'package:maximum/widgets/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
