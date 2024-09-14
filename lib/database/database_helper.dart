@@ -3,6 +3,7 @@ import 'package:maximum/models/task.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+@Deprecated("use new DatabaseHelper instead")
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._();
   static Database? _database;
