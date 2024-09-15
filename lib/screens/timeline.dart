@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/task_item.dart';
 
@@ -55,7 +55,12 @@ class TimelineScreenState extends State<TimelineScreen> {
     List<Task> tasks = await _databaseHelper.tasks;
     tasks.sort((a, b) => a.datetime!.compareTo(b.datetime!));
     if (!archiveMode) {
-      tasks = tasks.where((task) => task.completed == 0).toList();
+      tasks = (await Future.wait(tasks.map((task) async {
+        bool completed = await task.completed;
+        return completed ? null : task;
+      })))
+          .where((task) => task != null)
+          .toList() as List<Task>;
     }
     setState(() {
       _tasks = tasks;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/task_item.dart';
 import 'package:maximum/widgets/top.dart';
@@ -30,11 +30,13 @@ class _StartWidgetState extends State<StartWidget> {
   Widget build(BuildContext context) {
     AppLocalizations? l = AppLocalizations.of(context);
     DatabaseHelper().tasks.then((tasks) {
-      setState(() {
-        allTasks = tasks
-            .where(
-                (task) => task.completed == 0 && (task.isDue || task.isToday))
-            .toList();
+      setState(() async {
+        allTasks = (await Future.wait(tasks.map((task) async {
+          bool completed = (await task.completed) && (task.showInStart);
+          return completed ? null : task;
+        })))
+            .where((task) => task != null)
+            .toList() as List<Task>;
       });
     });
     return Padding(

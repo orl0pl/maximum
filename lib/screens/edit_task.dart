@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/utils/relative_date.dart';
 
@@ -26,25 +26,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations? l = AppLocalizations.of(context);
+    AppLocalizations l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l?.edit_task ?? "Edit task")),
+      appBar: AppBar(title: Text(l.edit_task)),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: [
           TextFormField(
             autofocus: true,
-            initialValue: taskDraft.title,
+            initialValue: taskDraft.text,
             onChanged: (value) {
               setState(() {
-                taskDraft.title = value.trim();
+                taskDraft.text = value.trim();
               });
             },
             decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: l?.content_to_add ?? "Content to add"),
+                border: OutlineInputBorder(), labelText: l.content_to_add),
           ),
           Spacer(),
           Text(taskDraft.toMap().toString()),
@@ -61,7 +60,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           : null,
                       label: taskDraft.isDateSet
                           ? Text(formatDate(taskDraft.datetime!, l))
-                          : Text(l?.pick_date ?? "pick date"),
+                          : Text(l.pick_date),
                       selected: taskDraft.isDateSet,
                       onSelected: (bool value) async {
                         if (value) {
@@ -91,7 +90,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                             label: taskDraft.time != null
                                 ? Text(DateFormat.Hm().format(
                                     taskDraft.datetime ?? DateTime.now()))
-                                : Text(l?.pick_time ?? "pick time"),
+                                : Text(l.pick_time),
                             selected: taskDraft.isTimeSet,
                             onSelected: (bool value) async {
                               if (value) {
@@ -117,23 +116,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         : SizedBox(),
                     SizedBox(width: taskDraft.isDateSet ? 8 : 0),
                     FilterChip(
-                        label: Text(l?.deadline ?? "deadline"),
-                        selected: taskDraft.isDeadline == 1,
-                        onSelected: (value) {
-                          setState(() {
-                            taskDraft.isDeadline = value ? 1 : 0;
-                          });
-                        }),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    FilterChip(
-                      label: Text(l?.asap ?? "asap"),
-                      selected: taskDraft.date == 'ASAP',
-                      onSelected: (bool value) {
+                      label: taskDraft.datetime != null
+                          ? Text(l.deadline)
+                          : Text(l.asap),
+                      selected: taskDraft.isAsap == 1,
+                      onSelected: (value) {
                         setState(() {
-                          taskDraft.date = 'ASAP';
-                          taskDraft.time = null;
+                          taskDraft.isAsap = value ? 1 : 0;
                         });
                       },
                     ),

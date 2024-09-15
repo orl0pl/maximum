@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:maximum/data/database_helper.dart';
-import 'place.dart';
 
 enum TaskTimeType {
   unset,
@@ -10,17 +10,84 @@ enum TaskTimeType {
   dateAndTimeDeadline
 }
 
+enum RepeatType { daily, dayOfWeek }
+
+class RepeatData {
+  RepeatType repeatType;
+  String repeatData;
+
+  RepeatData({required this.repeatType, required this.repeatData});
+
+  @override
+  String toString() {
+    return repeatData;
+  }
+
+  static RepeatType repeatTypeFromString(String str) {
+    switch (str) {
+      case "DAILY":
+        return RepeatType.daily;
+      case "DAY_OF_WEEK":
+        return RepeatType.dayOfWeek;
+      default:
+        throw Exception("Unknown repeat type: $str");
+    }
+  }
+
+  static RepeatData fromString(String str, String type) {
+    return RepeatData(repeatType: repeatTypeFromString(type), repeatData: str);
+  }
+
+  int? get repeatInterval {
+    if (repeatType == RepeatType.daily) {
+      return int.tryParse(repeatData);
+    }
+    return null;
+  }
+
+  bool? get monday => repeatData[0] == '1' ? true : false;
+  bool? get tuesday => repeatData[1] == '1' ? true : false;
+  bool? get wednesday => repeatData[2] == '1' ? true : false;
+  bool? get thursday => repeatData[3] == '1' ? true : false;
+  bool? get friday => repeatData[4] == '1' ? true : false;
+  bool? get saturday => repeatData[5] == '1' ? true : false;
+  bool? get sunday => repeatData[6] == '1' ? true : false;
+
+  List<bool> get weekdays {
+    return [
+      monday ?? false,
+      tuesday ?? false,
+      wednesday ?? false,
+      thursday ?? false,
+      friday ?? false,
+      saturday ?? false,
+      sunday ?? false
+    ];
+  }
+}
+
 class Task {
   int? taskId;
   String text;
-  String? date;
-  String? time;
+  String? date; // DateFormat('yyyyMMdd')
+  String? time; // DateFormat('HHmm')
   int isAsap =
       0; // when date is set this represents date and time as a deadline
   int targetValue = 1;
   String? exclusions; // list of DDMMYYYY for days to exclude
   String? repeatType; // DAILY, DAY_OF_WEEK
   String? repeatData;
+  /*
+  repeatData is in format:
+  for DAILY:
+  days interval number
+  eg. "2" - every 2 days
+
+  for DAY_OF_WEEK:
+  bitmak of days of week
+  eg. "0110110" - tuesday, wednesday, friday, saturday
+  
+  */
   int? placeId;
   int active = 1;
 
@@ -70,7 +137,29 @@ class Task {
     );
   }
 
-  bool get asap => isAsap == 1;
+  bool get asap {
+    if (datetime == null) {
+      return isAsap == 1;
+    } else {
+      return false;
+    }
+  }
+
+  bool get deadline {
+    if (datetime == null) {
+      return false;
+    } else {
+      return isAsap == 1;
+    }
+  }
+
+  RepeatData? get repeat {
+    if (repeatType == null || repeatData == null) {
+      return null;
+    } else {
+      return RepeatData.fromString(repeatData!, repeatType!);
+    }
+  }
 
   DateTime? get datetime {
     if (date == null) {
@@ -97,7 +186,7 @@ class Task {
     }
   }
 
-  get taskTimeType {
+  TaskTimeType get taskTimeType {
     if (date == null && time == null) {
       if (asap) {
         return TaskTimeType.asap;
@@ -122,66 +211,114 @@ class Task {
   }
 
   bool occursOn(DateTime date) {
-    if (taskTimeType != TaskTimeType.dateAndTime ||
-        taskTimeType != TaskTimeType.date) {
+    if ((taskTimeType != TaskTimeType.dateAndTime &&
+            taskTimeType != TaskTimeType.date) ||
+        datetime == null) {
       return false;
+    } else {
+      if (repeat == null) {
+        return DateUtils.isSameDay(datetime!, date);
+      } else if (repeat?.repeatType == RepeatType.daily) {
+        final difference = date.difference(datetime!).inDays;
+        return (difference % (repeat?.repeatInterval ?? 0)) == 0;
+      } else if (repeat?.repeatType == RepeatType.dayOfWeek) {
+        return repeat?.weekdays[date.weekday - 1] == true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool get isToday {
+    if (date == null) {
+      return false;
+    } else {
+      return occursOn(DateTime.now());
+    }
+  }
+
+  bool get isTomorrow {
+    if (date == null) {
+      return false;
+    } else {
+      return occursOn(DateTime.now().add(const Duration(days: 1)));
+    }
+  }
+
+  bool get isInNextSevenDays {
+    for (int i = 0; i < 7; i++) {
+      if (occursOn(DateTime.now().add(Duration(days: i)))) {
+        return true;
+      } else {
+        continue;
+      }
+    }
+    return false;
+  }
+
+  bool get isInFuture {
+    return !isDue && !isToday && !isTomorrow && !isInNextSevenDays;
+  }
+
+  Future<int> getRecentProgress() async {
+    final value = await DatabaseHelper().getMostRecentTaskStatus(taskId ?? -1);
+    return value;
+  }
+
+  Future<int> getProgressOnDatetime(DateTime date) async {
+    final statuses = await DatabaseHelper().getTaskStatuses(taskId ?? -1);
+
+    if (statuses.isEmpty) {
+      return 0;
+    } else {
+      final lastStatusBeforeDate = statuses.firstWhere((status) =>
+          DateTime.fromMillisecondsSinceEpoch(status.datetime).isBefore(date));
+      return lastStatusBeforeDate.value;
+    }
+  }
+
+  Future<bool> get completed async {
+    final value = await getRecentProgress();
+    return value >= targetValue;
+  }
+
+  bool get showInStart => isDue || isToday;
+
+  bool get isDateSet => datetime != null;
+
+  bool get isTimeSet => time != null;
+
+  bool get isDue {
+    if (datetime == null) {
+      return false;
+    } else if (taskTimeType == TaskTimeType.date) {
+      if (datetime!.isBefore(DateTime.now()) &&
+          !DateUtils.isSameDay(datetime!, DateTime.now())) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (taskTimeType == TaskTimeType.dateAndTime) {
+      if (datetime!.isBefore(DateTime.now())) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (taskTimeType == TaskTimeType.dateDeadline) {
+      if (datetime!.isBefore(DateTime.now()) ||
+          DateUtils.isSameDay(datetime!, DateTime.now())) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (taskTimeType == TaskTimeType.dateAndTimeDeadline) {
+      if (datetime!.isBefore(DateTime.now())) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
   }
 }
-
-enum RepeatType { daily, dayOfWeek }
-
-class RepeatData {
-  int repeatInterval = 1;
-  List<int> repeatDays = [];
-}
-
-// DELETEME
-// class Task {
-//   final int? id;
-//   final String text;
-//   final String? date;
-//   final String? time;
-//   final bool
-//       isAsap; // when date is set this represents date and time as a deadline
-//   final int targetValue;
-//   final List<String>? exclusions;
-//   final RepeatType? repeatType;
-//   final String? repeatData;
-//   final bool active;
-
-//   Task({
-//     this.id,
-//     required this.text,
-//     this.date,
-//     this.time,
-//     this.isAsap = false,
-//     this.targetValue = 1,
-//     this.exclusions,
-//     this.repeatType,
-//     this.repeatData,
-//     this.active = true,
-//   });
-
-//   static Task fromRaw(Task raw) {
-//     DatabaseHelper dbHelper = DatabaseHelper();
-//     if (raw.placeId != null) {
-//       dbHelper.getPlace(raw.placeId!).then((place) => taskPlace = place);
-//     }
-//     return Task(
-//       id: raw.taskId,
-//       text: raw.text,
-//       date: raw.date,
-//       time: raw.time,
-//       isAsap: raw.isAsap == 1,
-//       targetValue: raw.targetValue,
-//       exclusions: raw.exclusions?.split(',').map((e) => e.trim()).toList(),
-//       repeatType:
-//           raw.repeatType == 'DAILY' ? RepeatType.daily : RepeatType.dayOfWeek,
-//       repeatData: raw.repeatData,
-//       active: raw.active == 1,
-//     );
-//   }
-// }

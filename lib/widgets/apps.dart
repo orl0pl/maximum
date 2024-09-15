@@ -2,8 +2,8 @@ import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:installed_apps/app_info.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/note.dart';
+import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 
 enum ElementType { app, note }
@@ -167,8 +167,8 @@ class AppsWidgetState extends State<AppsWidget> {
                               ),
                               title: Text(allMatches[index].note!.text),
                               subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
-                                  .format(
-                                      allMatches[index].note!.datetimeClass)),
+                                  .format(DateTime.fromMillisecondsSinceEpoch(
+                                      allMatches[index].note!.datetime))),
                             );
                           }
                           return null;

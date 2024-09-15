@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/note.dart';
+import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/models/task.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
 
@@ -25,11 +25,11 @@ class _AddScreenState extends State<AddScreen> {
 
   Note noteDraft = Note(
     text: "",
-    datetime: DateFormat('yyyyMMddHHmmss').format(DateTime.now()),
+    datetime: DateTime.now().millisecondsSinceEpoch,
   );
 
   Task taskDraft = Task(
-    title: "",
+    text: "",
     date: DateFormat('yyyyMMdd').format(DateTime.now()),
   );
 
@@ -55,10 +55,10 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations? l = AppLocalizations.of(context);
+    AppLocalizations l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l?.add ?? "Add")),
+      appBar: AppBar(title: Text(l.add)),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,12 +69,11 @@ class _AddScreenState extends State<AddScreen> {
               setState(() {
                 text = value.trim();
                 noteDraft.text = value.trim();
-                taskDraft.title = value.trim();
+                taskDraft.text = value.trim();
               });
             },
             decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: l?.content_to_add ?? "Content to add"),
+                border: OutlineInputBorder(), labelText: l.content_to_add),
           ),
           Spacer(),
           Text(taskDraft.toMap().toString()),
@@ -121,7 +120,7 @@ class _AddScreenState extends State<AddScreen> {
                                 : null,
                             label: taskDraft.isDateSet
                                 ? Text(formatDate(taskDraft.datetime!, l))
-                                : Text(l?.pick_date ?? "pick date"),
+                                : Text(l.pick_date),
                             selected: taskDraft.isDateSet,
                             onSelected: (bool value) async {
                               if (value) {
@@ -152,7 +151,7 @@ class _AddScreenState extends State<AddScreen> {
                                   label: taskDraft.time != null
                                       ? Text(DateFormat.Hm().format(
                                           taskDraft.datetime ?? DateTime.now()))
-                                      : Text(l?.pick_time ?? "pick time"),
+                                      : Text(l.pick_time),
                                   selected: taskDraft.isTimeSet,
                                   onSelected: (bool value) async {
                                     if (value) {
@@ -182,24 +181,13 @@ class _AddScreenState extends State<AddScreen> {
                               : SizedBox(),
                           SizedBox(width: taskDraft.isDateSet ? 8 : 0),
                           FilterChip(
-                            label: Text(l?.deadline ?? "deadline"),
-                            selected: taskDraft.isDeadline == 1,
+                            label: taskDraft.datetime != null
+                                ? Text(l.deadline)
+                                : Text(l.asap),
+                            selected: taskDraft.isAsap == 1,
                             onSelected: (value) {
                               setState(() {
-                                taskDraft.isDeadline = value ? 1 : 0;
-                              });
-                            },
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          FilterChip(
-                            label: Text(l?.asap ?? "asap"),
-                            selected: taskDraft.date == 'ASAP',
-                            onSelected: (bool value) {
-                              setState(() {
-                                taskDraft.date = 'ASAP';
-                                taskDraft.time = null;
+                                taskDraft.isAsap = value ? 1 : 0;
                               });
                             },
                           ),
@@ -211,7 +199,7 @@ class _AddScreenState extends State<AddScreen> {
               Row(
                 children: [
                   FilterChip(
-                      label: Text(l?.note ?? "note"),
+                      label: Text(l.note),
                       selected: entryType == EntryType.note,
                       onSelected: (bool selected) {
                         setState(() {
@@ -220,7 +208,7 @@ class _AddScreenState extends State<AddScreen> {
                       }),
                   SizedBox(width: 8),
                   FilterChip(
-                      label: Text(l?.task ?? "task"),
+                      label: Text(l.task),
                       selected: entryType == EntryType.task,
                       onSelected: (bool selected) {
                         setState(() {
@@ -253,11 +241,11 @@ class _AddScreenState extends State<AddScreen> {
 }
 
 getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
-    AppLocalizations? l) {
+    AppLocalizations l) {
   if (repeatType == "DAILY") {
-    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${l?.pick_repeat_dialog_select_daily(repeatInterval)}";
+    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${l.pick_repeat_dialog_select_daily(repeatInterval)}";
   } else if (repeatType == "WEEKLY") {
-    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
+    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
       (e) {
         return DateFormat.EEEE().dateSymbols.WEEKDAYS[int.parse(e)];
       },
@@ -277,7 +265,7 @@ getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
 // }
 
 // class PickRepeatDialogState extends State<PickRepeatDialog> {
-//   late String repeatType = widget.taskDraft.repeatType ?? "DAILY";
+//   late String repeatType = widget.taskDraft.repeatType;
 //   late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
 //   late String repeatDays = widget.taskDraft.repeatDays ?? "";
 
@@ -285,13 +273,13 @@ getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
 //   Widget build(BuildContext context) {
 //     AppLocalizations? l = AppLocalizations.of(context);
 //     return AlertDialog(
-//       title: Text(l?.pick_repeat_dialog_title ?? "Pick repeat"),
+//       title: Text(l.pick_repeat_dialog_title),
 //       content: SingleChildScrollView(
 //         child: Column(
 //           mainAxisSize: MainAxisSize.min,
 //           crossAxisAlignment: CrossAxisAlignment.start,
 //           children: [
-//             Text(l?.pick_repeat_dialog_each_text ?? "Every"),
+//             Text(l.pick_repeat_dialog_each_text),
 //             Row(
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
@@ -313,30 +301,30 @@ getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
 //                   dropdownMenuEntries: [
 //                     DropdownMenuEntry(
 //                         value: "DAILY",
-//                         label: l?.pick_repeat_dialog_select_daily(
+//                         label: l.pick_repeat_dialog_select_daily(
 //                                 repeatInterval) ??
 //                             "l.daily"),
 //                     DropdownMenuEntry(
 //                         value: "WEEKLY",
-//                         label: l?.pick_repeat_dialog_select_weekly(
+//                         label: l.pick_repeat_dialog_select_weekly(
 //                                 repeatInterval) ??
 //                             "l.weekly"),
 //                     // TODO: Handle month and year repeats in the future
 //                     // DropdownMenuEntry(
 //                     //     value: "MONTHLY_DAY",
-//                     //     label: l?.pick_repeat_dialog_select_monthly(
+//                     //     label: l.pick_repeat_dialog_select_monthly(
 //                     //             repeatInterval) ??
 //                     //         "l.monthly_day"),
 //                     // DropdownMenuEntry(
 //                     //     value: "YEARLY",
-//                     //     label: l?.pick_repeat_dialog_select_yearly(
+//                     //     label: l.pick_repeat_dialog_select_yearly(
 //                     //             repeatInterval) ??
 //                     //         "l.yearly"),
 //                   ],
 //                   initialSelection: repeatType,
 //                   onSelected: (value) {
 //                     setState(() {
-//                       repeatType = value ?? "DAILY";
+//                       repeatType = value;
 //                     });
 //                     if (repeatType == "WEEKLY") {
 //                       setState(() {

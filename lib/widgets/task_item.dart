@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maximum/database/database_helper.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/edit_task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/relative_date.dart';
@@ -32,9 +31,6 @@ class TaskItem extends StatelessWidget {
           return ScaleTransition(scale: animation, child: child);
         },
         child: InkWell(
-          onLongPress: () => {
-            print(task.datetime),
-          },
           onTap: clickable
               ? () async {
                   bool? edited =
@@ -56,13 +52,24 @@ class TaskItem extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Checkbox(
-                      value: task.completed == 1, onChanged: checkCheckbox),
+                  FutureBuilder(
+                    future: task.completed,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Checkbox(
+                          value: snapshot.data,
+                          onChanged: checkCheckbox,
+                        );
+                      } else {
+                        return Container(); // or a loading indicator
+                      }
+                    },
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        task.title,
+                        task.text,
                         style: textTheme.bodyLarge,
                       ),
                     ],
@@ -75,7 +82,7 @@ class TaskItem extends StatelessWidget {
                       subtitle:
                           task.isDateSet ? formatTaskDateAndTime(task, l) : '',
                       textTheme: textTheme,
-                      variant: task.isDue || task.isAsap
+                      variant: task.isDue || task.asap || task.deadline
                           ? ChipVariant.primary
                           : task.datetime!.isBefore(
                                   DateTime.now().add(const Duration(days: 7)))
@@ -91,9 +98,9 @@ class TaskItem extends StatelessWidget {
   }
 
   void checkCheckbox(bool? value) {
-    var newTask = task;
-    newTask.completed = value == true ? 1 : 0;
-    DatabaseHelper().updateTask(newTask);
+    // var newTask = task;
+    // newTask.completed = value == true ? 1 : 0;
+    // DatabaseHelper().updateTask(newTask);
     refresh();
   }
 }

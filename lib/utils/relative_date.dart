@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/models/task.dart';
+import 'package:maximum/data/models/task.dart';
 
 String formatDate(DateTime date, AppLocalizations? l) {
   DateTime today = DateTime.now();
