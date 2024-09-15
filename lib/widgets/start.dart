@@ -29,15 +29,19 @@ class _StartWidgetState extends State<StartWidget> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations? l = AppLocalizations.of(context);
-    DatabaseHelper().tasks.then((tasks) {
-      setState(() async {
-        allTasks = (await Future.wait(tasks.map((task) async {
-          bool completed = (await task.completed) && (task.showInStart);
-          return completed ? null : task;
-        })))
-            .where((task) => task != null)
-            .toList() as List<Task>;
-      });
+    DatabaseHelper().tasks.then((tasks) async {
+      List<Task> filteredTasks = (await Future.wait(tasks.map((task) async {
+        bool completed = (await task.completed) && (task.showInStart);
+        return completed ? null : task;
+      })))
+          .where((task) => task != null)
+          .toList()
+          .cast<Task>();
+      if (mounted) {
+        setState(() {
+          allTasks = filteredTasks;
+        });
+      }
     });
     return Padding(
       padding: const EdgeInsets.all(16.0),

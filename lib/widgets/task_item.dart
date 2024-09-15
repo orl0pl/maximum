@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
+import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/relative_date.dart';
@@ -97,10 +99,19 @@ class TaskItem extends StatelessWidget {
     );
   }
 
-  void checkCheckbox(bool? value) {
-    // var newTask = task;
-    // newTask.completed = value == true ? 1 : 0;
-    // DatabaseHelper().updateTask(newTask);
+  Future<void> checkCheckbox(bool? value) async {
+    DatabaseHelper dh = DatabaseHelper();
+    if (task.targetValue == 1 && task.taskId != null) {
+      dh.insertTaskStatus(TaskStatus(
+          taskId: task.taskId!,
+          datetime: DateTime.now().millisecondsSinceEpoch,
+          value: value == true ? 1 : 0));
+    } else if (task.taskId != null) {
+      dh.insertTaskStatus(TaskStatus(
+          taskId: task.taskId!,
+          datetime: DateTime.now().millisecondsSinceEpoch,
+          value: await task.getRecentProgress() + (value == true ? 1 : 0)));
+    }
     refresh();
   }
 }

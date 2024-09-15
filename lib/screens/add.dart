@@ -76,7 +76,9 @@ class _AddScreenState extends State<AddScreen> {
                 border: OutlineInputBorder(), labelText: l.content_to_add),
           ),
           Spacer(),
-          Text(taskDraft.toMap().toString()),
+          Text(entryType == EntryType.task
+              ? taskDraft.toMap().toString()
+              : noteDraft.toMap().toString()),
           Column(
             children: [
               // entryType == EntryType.task

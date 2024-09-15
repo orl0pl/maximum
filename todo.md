@@ -1,3 +1,10 @@
+- [ ] Tag system
+  - [x] Database tables
+  - [x] Classes
+  - [ ] Database helper methods
+  - [ ] Support in adding screen
+  - [ ] Support in editing screen
+  - [ ] Support in timeline screen
 - [ ] Repeat
   - [ ] Month repeat options
   - [ ] Year repeat options

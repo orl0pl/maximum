@@ -60,7 +60,8 @@ class TimelineScreenState extends State<TimelineScreen> {
         return completed ? null : task;
       })))
           .where((task) => task != null)
-          .toList() as List<Task>;
+          .toList()
+          .cast<Task>();
     }
     setState(() {
       _tasks = tasks;

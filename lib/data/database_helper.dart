@@ -223,6 +223,11 @@ class DatabaseHelper {
     return await db.insert('Place', place.toMap());
   }
 
+  Future<int> insertTaskStatus(TaskStatus taskStatus) async {
+    Database db = await database;
+    return await db.insert('TaskStatus', taskStatus.toMap());
+  }
+
   Future<int> updateTask(Task task) async {
     Database db = await database;
     return await db.update(
