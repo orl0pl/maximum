@@ -1,16 +1,13 @@
-# maximum
+![app icon](android\app\src\main\res\mipmap-xhdpi\ic_launcher.png)
 
-A new Flutter project.
+# Maximum
 
-## Getting Started
+Productivity focused android launcher.
 
-This project is a starting point for a Flutter application.
+## Installation
 
-A few resources to get you started if this is your first Flutter project:
+You can find stable version in [last release](https://github.com/orl0pl/maximum/releases/latest). You can find unstable version in [GitHub Actions](https://github.com/orl0pl/maximum/actions).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Contributing
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+All contributions are welcome. This project is still in early development, so there is a lot of room for improvement. If you found a problem or have an idea, please create an issue. If you can fix a bug, implement a new feature or improve the app, fork the project and submit a pull request. Thank you.
