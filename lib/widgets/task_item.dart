@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
@@ -7,6 +8,24 @@ import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/info_chip.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+String formatTaskRepeat(Task task, AppLocalizations l) {
+  if (task.repeat == null) {
+    return "";
+  }
+  if (task.repeat!.repeatType == RepeatType.daily) {
+    return "${l.pick_repeat_dialog_each_text} ${task.repeat!.repeatData} ${l.pick_repeat_dialog_select_daily(task.repeat!.repeatInterval as num)}";
+  }
+  if (task.repeat!.repeatType == RepeatType.dayOfWeek) {
+    String days = task.repeat!.repeatData
+        .split("")
+        .map((e) => DateFormat.EEEE().dateSymbols.WEEKDAYS[int.parse(e)])
+        .join(", ");
+    return l.pick_repeat_dialog_each_x_days + " " + days;
+  }
+
+  return "";
+}
 
 class TaskItem extends StatelessWidget {
   final Task task;
@@ -21,10 +40,20 @@ class TaskItem extends StatelessWidget {
       required this.refresh,
       this.clickable = false});
 
+  String getSubtitleText(AppLocalizations l) {
+    if (task.repeat != null) {
+      return formatTaskRepeat(task, l);
+    }
+    if (task.isDateSet) {
+      return formatTaskDateAndTime(task, l);
+    }
+    return "";
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    AppLocalizations? l = AppLocalizations.of(context);
+    AppLocalizations l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: AnimatedSwitcher(
@@ -81,8 +110,7 @@ class TaskItem extends StatelessWidget {
               Row(
                 children: [
                   InfoChip(
-                      subtitle:
-                          task.isDateSet ? formatTaskDateAndTime(task, l) : '',
+                      subtitle: getSubtitleText(l),
                       textTheme: textTheme,
                       variant: task.isDue || task.asap || task.deadline
                           ? ChipVariant.primary

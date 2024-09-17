@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';
+import 'package:maximum/screens/add.dart';
 import 'package:maximum/utils/relative_date.dart';
 
 class EditTaskScreen extends StatefulWidget {
@@ -53,6 +55,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     FilterChip(
                       avatar: !taskDraft.isDateSet
@@ -124,6 +127,26 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         setState(() {
                           taskDraft.isAsap = value ? 1 : 0;
                         });
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    FilterChip(
+                      label: Text(l.repeat),
+                      avatar: taskDraft.repeat != null
+                          ? Icon(Icons.repeat)
+                          : Icon(MdiIcons.repeatOff),
+                      showCheckmark: false,
+                      selected: taskDraft.repeat != null,
+                      onSelected: (value) async {
+                        RepeatData? newRepeat = await showDialog(
+                            context: context,
+                            builder: (context) =>
+                                PickRepeatDialog(taskDraft: taskDraft));
+                        if (mounted) {
+                          setState(() {
+                            taskDraft = taskDraft.replaceRepeat(newRepeat);
+                          });
+                        }
                       },
                     ),
                   ],
