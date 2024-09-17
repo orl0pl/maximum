@@ -4,6 +4,22 @@ class Tag {
   final String name;
 
   Tag({this.tagId, required this.color, required this.name});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'tagId': tagId,
+      'color': color,
+      'name': name,
+    };
+  }
+
+  static Tag fromMap(Map<String, dynamic> map) {
+    return Tag(
+      tagId: map['tagId'],
+      color: map['color'],
+      name: map['name'],
+    );
+  }
 }
 
 class TaskTag extends Tag {

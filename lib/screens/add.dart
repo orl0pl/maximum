@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
@@ -32,6 +33,8 @@ class _AddScreenState extends State<AddScreen> {
     text: "",
     date: DateFormat('yyyyMMdd').format(DateTime.now()),
   );
+
+  get canAdd => text.isNotEmpty;
 
   Future<void> fetchAndSetLatLng() async {
     Position? position = await determinePositionWithSnackBar(context, mounted);
@@ -80,36 +83,8 @@ class _AddScreenState extends State<AddScreen> {
               ? taskDraft.toMap().toString()
               : noteDraft.toMap().toString()),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // entryType == EntryType.task
-              //     ? SingleChildScrollView(
-              //         scrollDirection: Axis.horizontal,
-              //         child: Row(children: [
-              //           ActionChip(
-              //             avatar: Icon(Icons.repeat_on),
-              //             label: Text(getFormatedRepeat(
-              //                 taskDraft.repeatType ?? "",
-              //                 taskDraft.repeatInterval ?? 0,
-              //                 taskDraft.repeatDays ?? "",
-              //                 l)),
-              //             onPressed: () async {
-              //               var result = await showDialog(
-              //                   context: context,
-              //                   builder: (context) => PickRepeatDialog(
-              //                         taskDraft: taskDraft,
-              //                       ));
-              //               if (result != null && mounted) {
-              //                 setState(() {
-              //                   taskDraft.repeatDays = result[2];
-              //                   taskDraft.repeatInterval = result[1];
-              //                   taskDraft.repeatType = result[0];
-              //                 });
-              //               }
-              //             },
-              //           ),
-              //           SizedBox(width: 8),
-              //         ]))
-              //     : SizedBox(),
               entryType == EntryType.task
                   ? SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -193,11 +168,34 @@ class _AddScreenState extends State<AddScreen> {
                               });
                             },
                           ),
+                          SizedBox(width: 8),
+                          FilterChip(
+                            label: Text(l.repeat),
+                            avatar: taskDraft.repeat != null
+                                ? Icon(Icons.repeat)
+                                : Icon(MdiIcons.repeatOff),
+                            showCheckmark: false,
+                            selected: taskDraft.repeat != null,
+                            onSelected: (value) async {
+                              RepeatData? newRepeat = await showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      PickRepeatDialog(taskDraft: taskDraft));
+                              if (mounted) {
+                                setState(() {
+                                  taskDraft =
+                                      taskDraft.replaceRepeat(newRepeat);
+                                });
+                              }
+                            },
+                          ),
                         ],
                       ),
                     )
                   : Container(),
-              SizedBox(height: 16),
+              Divider(
+                thickness: 1,
+              ),
               Row(
                 children: [
                   FilterChip(
@@ -223,21 +221,23 @@ class _AddScreenState extends State<AddScreen> {
           )
         ]),
       )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          DatabaseHelper dh = DatabaseHelper();
-          if (entryType == EntryType.note) {
-            dh.insertNote(noteDraft);
-          } else if (entryType == EntryType.task) {
-            dh.insertTask(taskDraft);
-          }
-          if (mounted) {
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          }
-        },
-        child: const Icon(Icons.check),
-      ),
+      floatingActionButton: canAdd
+          ? FloatingActionButton(
+              onPressed: () async {
+                DatabaseHelper dh = DatabaseHelper();
+                if (entryType == EntryType.note) {
+                  dh.insertNote(noteDraft);
+                } else if (entryType == EntryType.task) {
+                  dh.insertTask(taskDraft);
+                }
+                if (mounted) {
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
+              },
+              child: const Icon(Icons.check),
+            )
+          : null,
     );
   }
 }
@@ -256,146 +256,132 @@ getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
   return "";
 }
 
-// TODO: make proper implementation and add it again
-// class PickRepeatDialog extends StatefulWidget {
-//   const PickRepeatDialog({required this.taskDraft, super.key});
+class PickRepeatDialog extends StatefulWidget {
+  const PickRepeatDialog({required this.taskDraft, super.key});
 
-//   final Task taskDraft;
+  final Task taskDraft;
 
-//   @override
-//   PickRepeatDialogState createState() => PickRepeatDialogState();
-// }
+  @override
+  PickRepeatDialogState createState() => PickRepeatDialogState();
+}
 
-// class PickRepeatDialogState extends State<PickRepeatDialog> {
-//   late String repeatType = widget.taskDraft.repeatType;
-//   late int repeatInterval = widget.taskDraft.repeatInterval ?? 1;
-//   late String repeatDays = widget.taskDraft.repeatDays ?? "";
+class PickRepeatDialogState extends State<PickRepeatDialog> {
+  RepeatData? repeatData;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     AppLocalizations? l = AppLocalizations.of(context);
-//     return AlertDialog(
-//       title: Text(l.pick_repeat_dialog_title),
-//       content: SingleChildScrollView(
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(l.pick_repeat_dialog_each_text),
-//             Row(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                 SizedBox(
-//                   width: 40,
-//                   child: TextFormField(
-//                     onChanged: (value) {
-//                       setState(() {
-//                         repeatInterval = int.parse(value.isEmpty ? "0" : value);
-//                       });
-//                     },
-//                     keyboardType: TextInputType.number,
-//                     initialValue: (1).toString(),
-//                   ),
-//                 ),
-//                 SizedBox(width: 8),
-//                 DropdownMenu(
-//                   key: ValueKey(repeatInterval), // force redraw when changed
-//                   dropdownMenuEntries: [
-//                     DropdownMenuEntry(
-//                         value: "DAILY",
-//                         label: l.pick_repeat_dialog_select_daily(
-//                                 repeatInterval) ??
-//                             "l.daily"),
-//                     DropdownMenuEntry(
-//                         value: "WEEKLY",
-//                         label: l.pick_repeat_dialog_select_weekly(
-//                                 repeatInterval) ??
-//                             "l.weekly"),
-//                     // TODO: Handle month and year repeats in the future
-//                     // DropdownMenuEntry(
-//                     //     value: "MONTHLY_DAY",
-//                     //     label: l.pick_repeat_dialog_select_monthly(
-//                     //             repeatInterval) ??
-//                     //         "l.monthly_day"),
-//                     // DropdownMenuEntry(
-//                     //     value: "YEARLY",
-//                     //     label: l.pick_repeat_dialog_select_yearly(
-//                     //             repeatInterval) ??
-//                     //         "l.yearly"),
-//                   ],
-//                   initialSelection: repeatType,
-//                   onSelected: (value) {
-//                     setState(() {
-//                       repeatType = value;
-//                     });
-//                     if (repeatType == "WEEKLY") {
-//                       setState(() {
-//                         repeatDays = "${DateTime.now().weekday}";
-//                       });
-//                     }
-//                   },
-//                 )
-//               ],
-//             ),
-//             repeatType == "WEEKLY"
-//                 ? Column(
-//                     children: [
-//                       Column(
-//                         children: List.generate(
-//                             7,
-//                             (index) => Row(
-//                                   children: [
-//                                     Checkbox(
-//                                       value: repeatDays
-//                                           .split(",")
-//                                           .contains(index.toString()),
-//                                       onChanged: (value) {
-//                                         List<String> repeatDaysList =
-//                                             repeatDays.split(",");
-//                                         if (value ?? false) {
-//                                           repeatDaysList.add(index.toString());
-//                                         } else {
-//                                           repeatDaysList
-//                                               .remove(index.toString());
-//                                         }
-//                                         repeatDaysList
-//                                             .removeWhere((e) => (e.isEmpty));
-//                                         setState(() {
-//                                           repeatDays = repeatDaysList.join(",");
-//                                         });
-//                                       },
-//                                     ),
-//                                     Text(DateFormat.EEEE()
-//                                         .dateSymbols
-//                                         .WEEKDAYS[index])
-//                                   ],
-//                                 )),
-//                       ),
-//                     ],
-//                   )
-//                 : repeatDays == "MONTHLY_DAY"
-//                     ? Column(children: const [])
-//                     : SizedBox()
-//           ],
-//         ),
-//       ),
-//       actions: [
-//         TextButton(
-//           child: Text('Cancel'),
-//           onPressed: () {
-//             Navigator.of(context).pop();
-//           },
-//         ),
-//         TextButton(
-//           child: Text('OK'),
-//           onPressed: repeatType == "WEEKLY" && repeatDays.split(",").isEmpty
-//               ? null
-//               : () {
-//                   Navigator.of(context)
-//                       .pop([repeatType, repeatInterval, repeatDays]);
-//                 },
-//         ),
-//       ],
-//     );
-//   }
-// }
+  @override
+  void initState() {
+    super.initState();
+    repeatData = widget.taskDraft.repeat;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l.pick_repeat_dialog_title),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  FilterChip(
+                      label: Text(l.off),
+                      selected: repeatData == null,
+                      onSelected: (value) {
+                        setState(() {
+                          repeatData = null;
+                        });
+                      }),
+                  SizedBox(width: 8),
+                  FilterChip(
+                      label: Text(l.pick_repeat_dialog_each_x_days),
+                      selected: repeatData?.repeatType == RepeatType.daily,
+                      onSelected: (value) {
+                        setState(() {
+                          repeatData = RepeatData(
+                              repeatType: RepeatType.daily, repeatData: "1");
+                        });
+                      }),
+                  SizedBox(width: 8),
+                  FilterChip(
+                    label: Text(l.pick_repeat_dialog_weekdays),
+                    selected: repeatData?.repeatType == RepeatType.dayOfWeek,
+                    onSelected: (value) {
+                      setState(() {
+                        repeatData = RepeatData(
+                            repeatType: RepeatType.dayOfWeek,
+                            repeatData: "0000000");
+                      });
+                    },
+                  )
+                ],
+              ),
+            ),
+            if (repeatData != null) ...[
+              Divider(),
+              if (repeatData!.repeatType == RepeatType.daily) ...[
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  initialValue: repeatData!.repeatInterval.toString(),
+                  onChanged: (value) {
+                    setState(() {
+                      final int? interval = int.tryParse(value);
+                      if (interval != null && interval > 0) {
+                        repeatData!.repeatInterval = interval;
+                      }
+                    });
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    final int? interval = int.tryParse(value ?? "");
+                    if (interval == null || interval <= 0) {
+                      return "l.pick_repeat_dialog_error_interval";
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text(l.pick_repeat_dialog_select_daily(
+                          repeatData?.repeatInterval ?? 1))),
+                )
+              ],
+              if (repeatData!.repeatType == RepeatType.dayOfWeek) ...[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                      children: List.generate(7, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: FilterChip(
+                        label:
+                            Text(DateFormat.EEEE().dateSymbols.WEEKDAYS[index]),
+                        selected: repeatData!.weekdays[index],
+                        onSelected: (bool selected) {
+                          setState(() {
+                            repeatData!.setWeekday(index, selected);
+                          });
+                        },
+                      ),
+                    );
+                  }, growable: false)),
+                )
+              ]
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(repeatData);
+          },
+          child: Text(l.save),
+        ),
+      ],
+    );
+  }
+}

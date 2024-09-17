@@ -43,6 +43,7 @@ dependencies:
   geocoding: ^3.0.0
   sqflite: ^2.3.3
   path: ^1.9.0
+  flutter_material_design_icons: ^1.1.7447
   flutter:
     sdk: flutter
   # The following adds the Cupertino Icons font to your application.

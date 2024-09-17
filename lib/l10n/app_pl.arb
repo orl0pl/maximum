@@ -26,5 +26,11 @@
     "this_week": "W tym tygodniu",
     "in_future": "W przyszłości",
     "now": "Teraz",
-    "edit_task": "Edytuj zadanie"
+    "edit_task": "Edytuj zadanie",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "off": "Wyłączone",
+    "pick_repeat_dialog_each_x_days": "Co ileś dni",
+    "pick_repeat_dialog_weekdays": "W dni tygodnia",
+    "repeat": "Powtarzanie"
 }

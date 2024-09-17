@@ -4,6 +4,7 @@ import 'package:maximum/data/models/place.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:async';
+import 'models/tags.dart';
 import 'models/task_status.dart';
 
 class DatabaseHelper {
@@ -184,6 +185,17 @@ class DatabaseHelper {
     return maps.map((e) => Task.fromMap(e)).toList();
   }
 
+  Future<List<Task>> getTasksByTags(List<int> tagIds) async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'Task',
+      where:
+          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${List.generate(tagIds.length, (index) => '?').join(', ')})',
+      whereArgs: tagIds,
+    );
+    return maps.map((e) => Task.fromMap(e)).toList();
+  }
+
   Future<int> getMostRecentTaskStatus(int taskId) async {
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query(
@@ -226,6 +238,16 @@ class DatabaseHelper {
   Future<int> insertTaskStatus(TaskStatus taskStatus) async {
     Database db = await database;
     return await db.insert('TaskStatus', taskStatus.toMap());
+  }
+
+  Future<int> insertTaskTag(TaskTag taskTag) async {
+    Database db = await database;
+    return await db.insert('TaskTag', taskTag.toMap());
+  }
+
+  Future<int> addTagToTask(int taskId, int tagId) async {
+    Database db = await database;
+    return await db.insert('TaskTag_Task', {'taskId': taskId, 'tagId': tagId});
   }
 
   Future<int> updateTask(Task task) async {

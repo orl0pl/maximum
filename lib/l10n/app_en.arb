@@ -56,5 +56,11 @@
     "this_week": "This week",
     "in_future": "In future",
     "now": "Now",
-    "edit_task": "Edit task"
+    "edit_task": "Edit task",
+    "save": "Save",
+    "cancel": "Cancel",
+    "off": "Off",
+    "pick_repeat_dialog_each_x_days": "Every few days",
+    "pick_repeat_dialog_weekdays": "Weekdays",
+    "repeat": "Repeat"
 }

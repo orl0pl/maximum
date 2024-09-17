@@ -34,6 +34,17 @@ class RepeatData {
     }
   }
 
+  static String repeatTypeToString(RepeatType type) {
+    switch (type) {
+      case RepeatType.daily:
+        return "DAILY";
+      case RepeatType.dayOfWeek:
+        return "DAY_OF_WEEK";
+      default:
+        throw Exception("Unknown repeat type: $type");
+    }
+  }
+
   static RepeatData fromString(String str, String type) {
     return RepeatData(repeatType: repeatTypeFromString(type), repeatData: str);
   }
@@ -63,6 +74,61 @@ class RepeatData {
       saturday ?? false,
       sunday ?? false
     ];
+  }
+
+  set repeatInterval(int? interval) {
+    if (repeatType == RepeatType.daily) {
+      repeatData = interval.toString();
+    } else {}
+  }
+
+  set monday(bool? value) {
+    setWeekday(0, value);
+  }
+
+  set tuesday(bool? value) {
+    setWeekday(1, value);
+  }
+
+  set wednesday(bool? value) {
+    setWeekday(2, value);
+  }
+
+  set thursday(bool? value) {
+    setWeekday(3, value);
+  }
+
+  set friday(bool? value) {
+    setWeekday(4, value);
+  }
+
+  set saturday(bool? value) {
+    setWeekday(5, value);
+  }
+
+  set sunday(bool? value) {
+    setWeekday(6, value);
+  }
+
+  set weekdays(List<bool> weekdays) {
+    repeatData = "";
+    for (int i = 0; i < weekdays.length; i++) {
+      repeatData += weekdays[i] ? "1" : "0";
+    }
+  }
+
+  bool? getWeekday(int index) {
+    if (repeatType == RepeatType.dayOfWeek) {
+      return weekdays[index];
+    } else {
+      return null;
+    }
+  }
+
+  void setWeekday(int index, bool? value) {
+    if (repeatType == RepeatType.dayOfWeek && value != null) {
+      repeatData = repeatData.replaceRange(index, index + 1, value ? "1" : "0");
+    } else {}
   }
 }
 
@@ -320,5 +386,17 @@ class Task {
     } else {
       return false;
     }
+  }
+
+  Task replaceRepeat(RepeatData? newRepeat) {
+    if (newRepeat == null) {
+      repeatType = null;
+      repeatData = null;
+    } else {
+      repeatType = RepeatData.repeatTypeToString(newRepeat.repeatType);
+      repeatData = newRepeat.repeatData;
+    }
+
+    return this;
   }
 }
