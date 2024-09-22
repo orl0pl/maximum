@@ -7,9 +7,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
+import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
+import 'package:maximum/widgets/pick_repeat.dart';
+import 'package:maximum/widgets/tag_edit.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -22,7 +25,10 @@ enum EntryType { note, task }
 
 class _AddScreenState extends State<AddScreen> {
   String text = "";
+  List<Tag> _taskTags = [];
+  Set<int> selectedTaskTagsIds = {};
   EntryType entryType = EntryType.note;
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Note noteDraft = Note(
     text: "",
@@ -54,6 +60,15 @@ class _AddScreenState extends State<AddScreen> {
     if (mounted) {
       fetchAndSetLatLng();
     }
+
+    fetchTags();
+  }
+
+  void fetchTags() async {
+    List<Tag> tags = await _databaseHelper.taskTags;
+    setState(() {
+      _taskTags = tags;
+    });
   }
 
   @override
@@ -85,114 +100,192 @@ class _AddScreenState extends State<AddScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              entryType == EntryType.task
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          FilterChip(
-                            avatar: !taskDraft.isDateSet
-                                ? Icon(Icons.calendar_month)
-                                : null,
-                            label: taskDraft.isDateSet
-                                ? Text(formatDate(taskDraft.datetime!, l))
-                                : Text(l.pick_date),
-                            selected: taskDraft.isDateSet,
-                            onSelected: (bool value) async {
-                              if (value) {
-                                final selectedDate = await showDatePicker(
-                                  context: context,
-                                  firstDate: DateTime(1970),
-                                  lastDate: DateTime(2100),
-                                  initialDate:
-                                      taskDraft.datetime ?? DateTime.now(),
-                                );
-                                if (selectedDate != null && mounted) {
-                                  setState(() {
-                                    taskDraft.date = DateFormat('yyyyMMdd')
-                                        .format(selectedDate);
-                                  });
-                                }
-                              } else {
-                                setState(() {
-                                  taskDraft.date = '';
-                                  taskDraft.time = null;
-                                });
-                              }
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          taskDraft.isDateSet
-                              ? FilterChip(
-                                  label: taskDraft.time != null
-                                      ? Text(DateFormat.Hm().format(
-                                          taskDraft.datetime ?? DateTime.now()))
-                                      : Text(l.pick_time),
-                                  selected: taskDraft.isTimeSet,
-                                  onSelected: (bool value) async {
-                                    if (value) {
-                                      final selectedTime = await showTimePicker(
-                                          context: context,
-                                          initialTime: TimeOfDay.now());
-                                      if (selectedTime != null && mounted) {
-                                        setState(() {
-                                          taskDraft.time = DateFormat("HHmm")
-                                              .format(DateTime(
-                                                  2000,
-                                                  1,
-                                                  1,
-                                                  selectedTime.hour,
-                                                  selectedTime.minute));
-                                        });
-                                      }
-                                    } else {
-                                      if (mounted) {
-                                        setState(() {
-                                          taskDraft.time = null;
-                                        });
-                                      }
+              if (entryType == EntryType.task) ...[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                      children: _taskTags
+                              .map((tag) => Row(
+                                    children: [
+                                      InkWell(
+                                        onLongPress: () async {
+                                          Tag? newTag = await showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  AddOrEditTagDialog(tag: tag));
+                                          if (newTag != null) {
+                                            await _databaseHelper
+                                                .updateTaskTag(newTag);
+                                            fetchTags();
+                                          }
+                                        },
+                                        child: (FilterChip(
+                                            label: Row(
+                                              children: [
+                                                Container(
+                                                  width: 12,
+                                                  height: 12,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: HSLColor.fromAHSL(
+                                                            1,
+                                                            int.tryParse(tag
+                                                                        .color)
+                                                                    ?.toDouble() ??
+                                                                0,
+                                                            1,
+                                                            0.5)
+                                                        .toColor(),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(tag.name)
+                                              ],
+                                            ),
+                                            onSelected: (value) {
+                                              setState(() {
+                                                if (value) {
+                                                  selectedTaskTagsIds
+                                                      .add(tag.tagId ?? -1);
+                                                } else {
+                                                  selectedTaskTagsIds
+                                                      .remove(tag.tagId ?? -1);
+                                                }
+                                              });
+                                            },
+                                            selected: selectedTaskTagsIds
+                                                .contains(tag.tagId))),
+                                      ),
+                                      const SizedBox(width: 8),
+                                    ],
+                                  ))
+                              .toList() +
+                          [
+                            Row(
+                              children: [
+                                FilterChip(
+                                  label: Text(l.add_tag),
+                                  avatar: const Icon(Icons.add),
+                                  onSelected: (value) async {
+                                    Tag? newTag = await showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const AddOrEditTagDialog());
+                                    if (newTag != null) {
+                                      DatabaseHelper().insertTaskTag(newTag);
+                                      fetchTags();
                                     }
                                   },
-                                )
-                              : SizedBox(),
-                          SizedBox(width: taskDraft.isDateSet ? 8 : 0),
-                          FilterChip(
-                            label: taskDraft.datetime != null
-                                ? Text(l.deadline)
-                                : Text(l.asap),
-                            selected: taskDraft.isAsap == 1,
-                            onSelected: (value) {
+                                ),
+                              ],
+                            )
+                          ]),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      FilterChip(
+                        avatar: !taskDraft.isDateSet
+                            ? Icon(Icons.calendar_month)
+                            : null,
+                        label: taskDraft.isDateSet
+                            ? Text(formatDate(taskDraft.datetime!, l))
+                            : Text(l.pick_date),
+                        selected: taskDraft.isDateSet,
+                        onSelected: (bool value) async {
+                          if (value) {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(1970),
+                              lastDate: DateTime(2100),
+                              initialDate: taskDraft.datetime ?? DateTime.now(),
+                            );
+                            if (selectedDate != null && mounted) {
                               setState(() {
-                                taskDraft.isAsap = value ? 1 : 0;
+                                taskDraft.date =
+                                    DateFormat('yyyyMMdd').format(selectedDate);
                               });
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: Text(l.repeat),
-                            avatar: taskDraft.repeat != null
-                                ? Icon(Icons.repeat)
-                                : Icon(MdiIcons.repeatOff),
-                            showCheckmark: false,
-                            selected: taskDraft.repeat != null,
-                            onSelected: (value) async {
-                              RepeatData? newRepeat = await showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      PickRepeatDialog(taskDraft: taskDraft));
-                              if (mounted) {
-                                setState(() {
-                                  taskDraft =
-                                      taskDraft.replaceRepeat(newRepeat);
-                                });
-                              }
-                            },
-                          ),
-                        ],
+                            }
+                          } else {
+                            setState(() {
+                              taskDraft.date = '';
+                              taskDraft.time = null;
+                            });
+                          }
+                        },
                       ),
-                    )
-                  : Container(),
+                      SizedBox(width: 8),
+                      taskDraft.isDateSet
+                          ? FilterChip(
+                              label: taskDraft.time != null
+                                  ? Text(DateFormat.Hm().format(
+                                      taskDraft.datetime ?? DateTime.now()))
+                                  : Text(l.pick_time),
+                              selected: taskDraft.isTimeSet,
+                              onSelected: (bool value) async {
+                                if (value) {
+                                  final selectedTime = await showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now());
+                                  if (selectedTime != null && mounted) {
+                                    setState(() {
+                                      taskDraft.time = DateFormat("HHmm")
+                                          .format(DateTime(
+                                              2000,
+                                              1,
+                                              1,
+                                              selectedTime.hour,
+                                              selectedTime.minute));
+                                    });
+                                  }
+                                } else {
+                                  if (mounted) {
+                                    setState(() {
+                                      taskDraft.time = null;
+                                    });
+                                  }
+                                }
+                              },
+                            )
+                          : SizedBox(),
+                      SizedBox(width: taskDraft.isDateSet ? 8 : 0),
+                      FilterChip(
+                        label: taskDraft.datetime != null
+                            ? Text(l.deadline)
+                            : Text(l.asap),
+                        selected: taskDraft.isAsap == 1,
+                        onSelected: (value) {
+                          setState(() {
+                            taskDraft.isAsap = value ? 1 : 0;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      FilterChip(
+                        label: Text(l.repeat),
+                        avatar: taskDraft.repeat != null
+                            ? Icon(Icons.repeat)
+                            : Icon(MdiIcons.repeatOff),
+                        showCheckmark: false,
+                        selected: taskDraft.repeat != null,
+                        onSelected: (value) async {
+                          RepeatData? newRepeat = await showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  PickRepeatDialog(taskDraft: taskDraft));
+                          if (mounted) {
+                            setState(() {
+                              taskDraft = taskDraft.replaceRepeat(newRepeat);
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               Divider(
                 thickness: 1,
               ),
@@ -228,7 +321,10 @@ class _AddScreenState extends State<AddScreen> {
                 if (entryType == EntryType.note) {
                   dh.insertNote(noteDraft);
                 } else if (entryType == EntryType.task) {
-                  dh.insertTask(taskDraft);
+                  int newTaskId = await dh.insertTask(taskDraft);
+                  if (newTaskId != -1) {
+                    dh.updateTaskTags(newTaskId, selectedTaskTagsIds);
+                  }
                 }
                 if (mounted) {
                   // ignore: use_build_context_synchronously
@@ -238,150 +334,6 @@ class _AddScreenState extends State<AddScreen> {
               child: const Icon(Icons.check),
             )
           : null,
-    );
-  }
-}
-
-getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
-    AppLocalizations l) {
-  if (repeatType == "DAILY") {
-    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${l.pick_repeat_dialog_select_daily(repeatInterval)}";
-  } else if (repeatType == "WEEKLY") {
-    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
-      (e) {
-        return DateFormat.EEEE().dateSymbols.WEEKDAYS[int.parse(e)];
-      },
-    )}";
-  }
-  return "";
-}
-
-class PickRepeatDialog extends StatefulWidget {
-  const PickRepeatDialog({required this.taskDraft, super.key});
-
-  final Task taskDraft;
-
-  @override
-  PickRepeatDialogState createState() => PickRepeatDialogState();
-}
-
-class PickRepeatDialogState extends State<PickRepeatDialog> {
-  RepeatData? repeatData;
-
-  @override
-  void initState() {
-    super.initState();
-    repeatData = widget.taskDraft.repeat;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l.pick_repeat_dialog_title),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  FilterChip(
-                      label: Text(l.off),
-                      selected: repeatData == null,
-                      onSelected: (value) {
-                        setState(() {
-                          repeatData = null;
-                        });
-                      }),
-                  SizedBox(width: 8),
-                  FilterChip(
-                      label: Text(l.pick_repeat_dialog_each_x_days),
-                      selected: repeatData?.repeatType == RepeatType.daily,
-                      onSelected: (value) {
-                        setState(() {
-                          repeatData = RepeatData(
-                              repeatType: RepeatType.daily, repeatData: "1");
-                        });
-                      }),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text(l.pick_repeat_dialog_weekdays),
-                    selected: repeatData?.repeatType == RepeatType.dayOfWeek,
-                    onSelected: (value) {
-                      setState(() {
-                        repeatData = RepeatData(
-                            repeatType: RepeatType.dayOfWeek,
-                            repeatData: "0000000");
-                      });
-                    },
-                  )
-                ],
-              ),
-            ),
-            if (repeatData != null) ...[
-              Divider(),
-              if (repeatData!.repeatType == RepeatType.daily) ...[
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: repeatData!.repeatInterval.toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      final int? interval = int.tryParse(value);
-                      if (interval != null && interval > 0) {
-                        repeatData!.repeatInterval = interval;
-                      }
-                    });
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    final int? interval = int.tryParse(value ?? "");
-                    if (interval == null || interval <= 0) {
-                      return "l.pick_repeat_dialog_error_interval";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text(l.pick_repeat_dialog_select_daily(
-                          repeatData?.repeatInterval ?? 1))),
-                )
-              ],
-              if (repeatData!.repeatType == RepeatType.dayOfWeek) ...[
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                      children: List.generate(7, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: FilterChip(
-                        label:
-                            Text(DateFormat.EEEE().dateSymbols.WEEKDAYS[index]),
-                        selected: repeatData!.weekdays[index],
-                        onSelected: (bool selected) {
-                          setState(() {
-                            repeatData!.setWeekday(index, selected);
-                          });
-                        },
-                      ),
-                    );
-                  }, growable: false)),
-                )
-              ]
-            ],
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(repeatData);
-          },
-          child: Text(l.save),
-        ),
-      ],
     );
   }
 }

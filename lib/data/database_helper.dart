@@ -185,13 +185,21 @@ class DatabaseHelper {
     return maps.map((e) => Task.fromMap(e)).toList();
   }
 
+  Future<List<Tag>> get taskTags async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'TaskTag',
+    );
+    return maps.map((e) => Tag.fromMap(e)).toList();
+  }
+
   Future<List<Task>> getTasksByTags(List<int> tagIds) async {
     Database db = await database;
+    if (tagIds.isEmpty) return tasks;
     List<Map<String, dynamic>> maps = await db.query(
       'Task',
       where:
-          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${List.generate(tagIds.length, (index) => '?').join(', ')})',
-      whereArgs: tagIds,
+          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${tagIds.join(',')}))',
     );
     return maps.map((e) => Task.fromMap(e)).toList();
   }
@@ -240,7 +248,7 @@ class DatabaseHelper {
     return await db.insert('TaskStatus', taskStatus.toMap());
   }
 
-  Future<int> insertTaskTag(TaskTag taskTag) async {
+  Future<int> insertTaskTag(Tag taskTag) async {
     Database db = await database;
     return await db.insert('TaskTag', taskTag.toMap());
   }
@@ -258,5 +266,44 @@ class DatabaseHelper {
       where: 'taskId = ?',
       whereArgs: [task.taskId],
     );
+  }
+
+  Future<bool> deleteTask(int taskId) async {
+    Database db = await database;
+    int numRows =
+        await db.delete('Task', where: 'taskId = ?', whereArgs: [taskId]);
+    return numRows > 0;
+  }
+
+  Future<int> updateTaskTag(Tag newTag) async {
+    Database db = await database;
+    return db.update(
+      'TaskTag',
+      newTag.toMap(),
+      where: 'tagId = ?',
+      whereArgs: [newTag.tagId],
+    );
+  }
+
+  Future<List<Tag>> getTagsForTask(int taskId) async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT TT.tagId, T.name, T.color '
+        'FROM TaskTag_Task TT '
+        'INNER JOIN TaskTag T ON TT.tagId = T.tagId '
+        'WHERE TT.taskId = ?',
+        [taskId]);
+    return maps.map((e) => Tag.fromMap(e)).toList();
+  }
+
+  void updateTaskTags(int taskId, Set<int> taskTagsIds) async {
+    Database db = await database;
+    db.transaction((txn) async {
+      await txn
+          .delete('TaskTag_Task', where: 'taskId = ?', whereArgs: [taskId]);
+      for (int id in taskTagsIds) {
+        await txn.insert('TaskTag_Task', {'taskId': taskId, 'tagId': id});
+      }
+    });
   }
 }

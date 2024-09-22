@@ -62,5 +62,9 @@
     "off": "Off",
     "pick_repeat_dialog_each_x_days": "Every few days",
     "pick_repeat_dialog_weekdays": "Weekdays",
-    "repeat": "Repeat"
+    "repeat": "Repeat",
+    "color": "Color",
+    "tag_name": "Name",
+    "add_tag": "Add tag",
+    "edit_tag": "Edit tag"
 }

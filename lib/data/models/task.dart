@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/task_status.dart';
 
 enum TaskTimeType {
   unset,
@@ -295,6 +296,63 @@ class Task {
     }
   }
 
+  DateTime? nextRepetitionAfter(DateTime setDate) {
+    if (repeat == null) {
+      return null;
+    }
+
+    if (repeat?.repeatType == RepeatType.daily) {
+      DateTime tempDate =
+          datetime!.add(Duration(days: repeat?.repeatInterval ?? 0));
+      while (tempDate.isBefore(setDate)) {
+        tempDate = tempDate.add(Duration(days: repeat?.repeatInterval ?? 0));
+      }
+      return tempDate;
+    }
+
+    if (repeat?.repeatType == RepeatType.dayOfWeek) {
+      DateTime tempDate = datetime!;
+      while (repeat?.weekdays[tempDate.weekday - 1] != true) {
+        tempDate = tempDate.add(const Duration(days: 1));
+      }
+      while (tempDate.isBefore(setDate)) {
+        tempDate = tempDate.add(const Duration(days: 7));
+      }
+      return tempDate;
+    }
+
+    return null;
+  }
+
+  DateTime? lastRepetitionBefore(DateTime setDate) {
+    if (repeat == null) {
+      return null;
+    }
+
+    if (repeat?.repeatType == RepeatType.daily) {
+      DateTime tempDate =
+          datetime!.subtract(Duration(days: repeat?.repeatInterval ?? 0));
+      while (tempDate.isAfter(setDate)) {
+        tempDate =
+            tempDate.subtract(Duration(days: repeat?.repeatInterval ?? 0));
+      }
+      return tempDate;
+    }
+
+    if (repeat?.repeatType == RepeatType.dayOfWeek) {
+      DateTime tempDate = datetime!;
+      while (repeat?.weekdays[tempDate.weekday - 1] != true) {
+        tempDate = tempDate.subtract(const Duration(days: 1));
+      }
+      while (tempDate.isAfter(setDate)) {
+        tempDate = tempDate.subtract(const Duration(days: 7));
+      }
+      return tempDate;
+    }
+
+    return null;
+  }
+
   bool get isToday {
     if (date == null) {
       return false;
@@ -326,25 +384,42 @@ class Task {
     return !isDue && !isToday && !isTomorrow && !isInNextSevenDays;
   }
 
-  Future<int> getRecentProgress() async {
-    final value = await DatabaseHelper().getMostRecentTaskStatus(taskId ?? -1);
-    return value;
+  Future<int> getRecentProgressValue() async {
+    return await getProgressOnDatetime(DateTime.now());
   }
 
   Future<int> getProgressOnDatetime(DateTime date) async {
     final statuses = await DatabaseHelper().getTaskStatuses(taskId ?? -1);
-
     if (statuses.isEmpty) {
       return 0;
-    } else {
-      final lastStatusBeforeDate = statuses.firstWhere((status) =>
-          DateTime.fromMillisecondsSinceEpoch(status.datetime).isBefore(date));
-      return lastStatusBeforeDate.value;
     }
+
+    if (repeat != null) {
+      return statuses
+              .where((TaskStatus status) {
+                DateTime? repetitionBefore = lastRepetitionBefore(date);
+                if (repetitionBefore == null) {
+                  return false;
+                }
+                DateTime taskStatusDatetime =
+                    DateTime.fromMillisecondsSinceEpoch(status.datetime);
+                if (taskStatusDatetime.isAfter(repetitionBefore) &&
+                    repetitionBefore.isBefore(date)) {
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+              .firstOrNull
+              ?.value ??
+          0;
+    }
+
+    return statuses.last.value;
   }
 
   Future<bool> get completed async {
-    final value = await getRecentProgress();
+    final value = await getRecentProgressValue();
     return value >= targetValue;
   }
 
@@ -356,6 +431,8 @@ class Task {
 
   bool get isDue {
     if (datetime == null) {
+      return false;
+    } else if (repeat != null) {
       return false;
     } else if (taskTimeType == TaskTimeType.date) {
       if (datetime!.isBefore(DateTime.now()) &&

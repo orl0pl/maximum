@@ -32,5 +32,9 @@
     "off": "Wyłączone",
     "pick_repeat_dialog_each_x_days": "Co ileś dni",
     "pick_repeat_dialog_weekdays": "W dni tygodnia",
-    "repeat": "Powtarzanie"
+    "repeat": "Powtarzanie",
+    "color": "Kolor",
+    "tag_name": "Nazwa",
+    "add_tag": "Dodaj tag",
+    "edit_tag": "Edytuj tag"
 }

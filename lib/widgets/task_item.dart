@@ -4,7 +4,6 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
-import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/info_chip.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -21,7 +20,7 @@ String formatTaskRepeat(Task task, AppLocalizations l) {
         .split("")
         .map((e) => DateFormat.EEEE().dateSymbols.WEEKDAYS[int.parse(e)])
         .join(", ");
-    return l.pick_repeat_dialog_each_x_days + " " + days;
+    return "${l.pick_repeat_dialog_each_x_days} $days";
   }
 
   return "";
@@ -62,9 +61,9 @@ class TaskItem extends StatelessWidget {
           return ScaleTransition(scale: animation, child: child);
         },
         child: InkWell(
-          onTap: clickable
+          onLongPress: clickable
               ? () async {
-                  bool? edited =
+                  TaskEditResult? edited =
                       await Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
                       return EditTaskScreen(
@@ -72,12 +71,10 @@ class TaskItem extends StatelessWidget {
                       );
                     },
                   ));
-                  if (edited == true) refresh();
+                  if (edited == TaskEditResult.edited) refresh();
+                  if (edited == TaskEditResult.deleted) refresh();
                 }
-              : () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const TimelineScreen()));
-                },
+              : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -138,7 +135,8 @@ class TaskItem extends StatelessWidget {
       dh.insertTaskStatus(TaskStatus(
           taskId: task.taskId!,
           datetime: DateTime.now().millisecondsSinceEpoch,
-          value: await task.getRecentProgress() + (value == true ? 1 : 0)));
+          value:
+              await task.getRecentProgressValue() + (value == true ? 1 : 0)));
     }
     refresh();
   }

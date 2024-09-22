@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';
-import 'package:maximum/screens/add.dart';
 import 'package:maximum/utils/relative_date.dart';
+import 'package:maximum/widgets/pick_repeat.dart';
+import 'package:maximum/widgets/tag_edit.dart';
+
+enum TaskEditResult { edited, deleted }
 
 class EditTaskScreen extends StatefulWidget {
   const EditTaskScreen({super.key, required this.task});
@@ -21,9 +25,26 @@ class EditTaskScreen extends StatefulWidget {
 class _EditTaskScreenState extends State<EditTaskScreen> {
   late Task taskDraft = widget.task;
 
+  List<Tag> _taskTags = [];
+  Set<int> selectedTaskTagsIds = {};
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   @override
   void initState() {
     super.initState();
+    fetchTags();
+    _databaseHelper.getTagsForTask(taskDraft.taskId ?? -1).then((value) {
+      setState(() {
+        selectedTaskTagsIds = value.map((tag) => tag.tagId!).toSet();
+      });
+    });
+  }
+
+  void fetchTags() async {
+    List<Tag> tags = await _databaseHelper.taskTags;
+    setState(() {
+      _taskTags = tags;
+    });
   }
 
   @override
@@ -31,7 +52,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     AppLocalizations l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.edit_task)),
+      appBar: AppBar(title: Text(l.edit_task), actions: [
+        IconButton(
+          icon: Icon(Icons.delete_forever_outlined),
+          onPressed: () async {
+            bool succes = await DatabaseHelper().deleteTask(taskDraft.taskId!);
+            if (succes && context.mounted) {
+              Navigator.of(context).pop(TaskEditResult.deleted);
+            }
+          },
+        )
+      ]),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -50,8 +81,89 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           Spacer(),
           Text(taskDraft.toMap().toString()),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                    children: _taskTags
+                            .map((tag) => Row(
+                                  children: [
+                                    InkWell(
+                                      onLongPress: () async {
+                                        Tag? newTag = await showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                AddOrEditTagDialog(tag: tag));
+                                        if (newTag != null) {
+                                          await _databaseHelper
+                                              .updateTaskTag(newTag);
+                                          fetchTags();
+                                        }
+                                      },
+                                      child: (FilterChip(
+                                          label: Row(
+                                            children: [
+                                              Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: HSLColor.fromAHSL(
+                                                          1,
+                                                          int.tryParse(
+                                                                      tag.color)
+                                                                  ?.toDouble() ??
+                                                              0,
+                                                          1,
+                                                          0.5)
+                                                      .toColor(),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(tag.name)
+                                            ],
+                                          ),
+                                          onSelected: (value) {
+                                            setState(() {
+                                              if (value) {
+                                                selectedTaskTagsIds
+                                                    .add(tag.tagId ?? -1);
+                                              } else {
+                                                selectedTaskTagsIds
+                                                    .remove(tag.tagId ?? -1);
+                                              }
+                                            });
+                                          },
+                                          selected: selectedTaskTagsIds
+                                              .contains(tag.tagId))),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ))
+                            .toList() +
+                        [
+                          Row(
+                            children: [
+                              FilterChip(
+                                label: Text(l.add_tag),
+                                avatar: const Icon(Icons.add),
+                                onSelected: (value) async {
+                                  Tag? newTag = await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const AddOrEditTagDialog());
+                                  if (newTag != null) {
+                                    DatabaseHelper().insertTaskTag(newTag);
+                                    fetchTags();
+                                  }
+                                },
+                              ),
+                            ],
+                          )
+                        ]),
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -161,9 +273,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         onPressed: () async {
           DatabaseHelper dh = DatabaseHelper();
           dh.updateTask(taskDraft);
+          dh.updateTaskTags(taskDraft.taskId ?? -1, selectedTaskTagsIds);
           if (mounted) {
             // ignore: use_build_context_synchronously
-            Navigator.of(context).pop(true);
+            Navigator.of(context).pop(TaskEditResult.edited);
           }
         },
         child: const Icon(Icons.check),
