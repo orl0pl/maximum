@@ -7,8 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
+import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
+import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/pick_repeat.dart';
@@ -28,6 +30,7 @@ class _AddScreenState extends State<AddScreen> {
   List<Tag> _taskTags = [];
   Set<int> selectedTaskTagsIds = {};
   EntryType entryType = EntryType.note;
+  List<Place> places = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Note noteDraft = Note(
@@ -50,7 +53,6 @@ class _AddScreenState extends State<AddScreen> {
         noteDraft.lng = position.longitude;
       });
     }
-    // print(position);
   }
 
   @override
@@ -62,12 +64,20 @@ class _AddScreenState extends State<AddScreen> {
     }
 
     fetchTags();
+    fetchPlaces();
   }
 
   void fetchTags() async {
     List<Tag> tags = await _databaseHelper.taskTags;
     setState(() {
       _taskTags = tags;
+    });
+  }
+
+  void fetchPlaces() async {
+    List<Place> places = await _databaseHelper.getPlaces();
+    setState(() {
+      this.places = places;
     });
   }
 
@@ -101,6 +111,36 @@ class _AddScreenState extends State<AddScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (entryType == EntryType.task) ...[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: places
+                            .map((place) => Row(
+                                  children: [
+                                    FilterChip(
+                                        label: Text(place.name),
+                                        selected: place.id == taskDraft.placeId,
+                                        onSelected: (value) {})
+                                  ],
+                                ))
+                            .toList() +
+                        [
+                          Row(
+                            children: [
+                              FilterChip(
+                                  label: Text("l.add_place"),
+                                  avatar: Icon(MdiIcons.mapMarkerPlus),
+                                  onSelected: (value) {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const AddOrEditPlaceScreen()));
+                                  })
+                            ],
+                          )
+                        ],
+                  ),
+                ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(

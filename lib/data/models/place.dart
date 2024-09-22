@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 class Place {
   int? id;
   String name;
@@ -32,4 +34,6 @@ class Place {
       maxDistance: map['maxDistance'] ?? 50,
     );
   }
+
+  get latlng => LatLng(lat, lng);
 }
