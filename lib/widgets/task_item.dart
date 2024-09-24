@@ -61,6 +61,11 @@ class TaskItem extends StatelessWidget {
           return ScaleTransition(scale: animation, child: child);
         },
         child: InkWell(
+          onTap: clickable
+              ? () {
+                  print(task.toMap());
+                }
+              : null,
           onLongPress: clickable
               ? () async {
                   TaskEditResult? edited =

@@ -49,6 +49,7 @@ dependencies:
   dio_cache_interceptor: ^3.5.0
   dio_cache_interceptor_file_store: ^1.2.3
   maplibre_gl: ^0.20.0
+  flutter_map_location_marker: ^9.1.1
   flutter:
     sdk: flutter
   # The following adds the Cupertino Icons font to your application.

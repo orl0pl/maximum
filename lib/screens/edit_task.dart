@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';
+import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/pick_repeat.dart';
 import 'package:maximum/widgets/tag_edit.dart';
@@ -27,12 +29,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   List<Tag> _taskTags = [];
   Set<int> selectedTaskTagsIds = {};
+  List<Place> places = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
     super.initState();
     fetchTags();
+    fetchPlaces();
     _databaseHelper.getTagsForTask(taskDraft.taskId ?? -1).then((value) {
       setState(() {
         selectedTaskTagsIds = value.map((tag) => tag.tagId!).toSet();
@@ -44,6 +48,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     List<Tag> tags = await _databaseHelper.taskTags;
     setState(() {
       _taskTags = tags;
+    });
+  }
+
+  void fetchPlaces() async {
+    List<Place> places = await _databaseHelper.getPlaces();
+    setState(() {
+      this.places = places;
     });
   }
 
@@ -84,6 +95,46 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: places
+                          .map((place) => Row(
+                                children: [
+                                  FilterChip(
+                                      label: Text(place.name),
+                                      selected:
+                                          place.placeId == taskDraft.placeId,
+                                      onSelected: (value) {
+                                        setState(() {
+                                          if (!value) {
+                                            taskDraft.placeId = null;
+                                          } else {
+                                            taskDraft.placeId = place.placeId;
+                                          }
+                                        });
+                                      }),
+                                  SizedBox(width: 8),
+                                ],
+                              ))
+                          .toList() +
+                      [
+                        Row(
+                          children: [
+                            FilterChip(
+                                label: Text(l.add_place),
+                                avatar: Icon(MdiIcons.mapMarkerPlus),
+                                onSelected: (value) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddOrEditPlaceScreen()));
+                                  setState(() {});
+                                })
+                          ],
+                        )
+                      ],
+                ),
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(

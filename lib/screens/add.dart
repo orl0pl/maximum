@@ -119,8 +119,18 @@ class _AddScreenState extends State<AddScreen> {
                                   children: [
                                     FilterChip(
                                         label: Text(place.name),
-                                        selected: place.id == taskDraft.placeId,
-                                        onSelected: (value) {})
+                                        selected:
+                                            place.placeId == taskDraft.placeId,
+                                        onSelected: (value) {
+                                          setState(() {
+                                            if (!value) {
+                                              taskDraft.placeId = null;
+                                            } else {
+                                              taskDraft.placeId = place.placeId;
+                                            }
+                                          });
+                                        }),
+                                    SizedBox(width: 8),
                                   ],
                                 ))
                             .toList() +
@@ -128,13 +138,14 @@ class _AddScreenState extends State<AddScreen> {
                           Row(
                             children: [
                               FilterChip(
-                                  label: Text("l.add_place"),
+                                  label: Text(l.add_place),
                                   avatar: Icon(MdiIcons.mapMarkerPlus),
                                   onSelected: (value) {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const AddOrEditPlaceScreen()));
+                                    setState(() {});
                                   })
                             ],
                           )

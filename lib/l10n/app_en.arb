@@ -66,5 +66,16 @@
     "color": "Color",
     "tag_name": "Name",
     "add_tag": "Add tag",
-    "edit_tag": "Edit tag"
+    "edit_tag": "Edit tag",
+    "pick_repeat_dialog_error_interval": "Invalid interval",
+
+    "add_place": "Add place",
+    "max_distance": "Max distance",
+    "meters": "meters",
+    "place_name": "Place name",
+    "no_internet": "No internet",
+    "try_again": "Try again",
+    "invalid_place_name": "Invalid place name",
+    "invalid_radius": "Invalid radius",
+    "loading": "Loading..."
 }

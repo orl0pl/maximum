@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maximum/utils/alarm.dart';
 
 class Weather extends StatelessWidget {
   const Weather({
@@ -21,10 +22,32 @@ class Weather extends StatelessWidget {
   }
 }
 
-class Alarm extends StatelessWidget {
+class Alarm extends StatefulWidget {
   const Alarm({
     super.key,
   });
+
+  @override
+  State<Alarm> createState() => _AlarmState();
+}
+
+class _AlarmState extends State<Alarm> {
+  String nextAlarm = "l.loading";
+
+  @override
+  void initState() {
+    super.initState();
+
+    AlarmHelper.getNextAlarm().then((value) {
+      setState(() {
+        if (value != null) {
+          nextAlarm = value;
+        } else if (value == null) {
+          nextAlarm = "???";
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +56,7 @@ class Alarm extends StatelessWidget {
       children: [
         const Icon(Icons.alarm),
         const SizedBox(width: 4),
-        Text('7:00', style: textTheme.titleLarge)
+        Text(nextAlarm, style: textTheme.titleLarge)
       ],
     );
   }

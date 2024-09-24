@@ -36,5 +36,16 @@
     "color": "Kolor",
     "tag_name": "Nazwa",
     "add_tag": "Dodaj tag",
-    "edit_tag": "Edytuj tag"
+    "edit_tag": "Edytuj tag",
+    "pick_repeat_dialog_error_interval": "Nieprawidłowy interwał",
+
+    "add_place": "Dodaj miejsce",
+    "max_distance": "Maksymalny zasieg",
+    "meters": "{num, plural, =0{metrów} =1{metr} =2{metry} few{metry} many{metrów} other{metrów}}",
+    "place_name": "Nazwa miejsca",
+    "no_internet": "Brak internetu",
+    "try_again": "Spróbuj ponownie",
+    "invalid_place_name": "Nieprawidłowa nazwa miejsca",
+    "invalid_radius": "Nieprawidłowy zasieg",
+    "loading": "Ładowanie..."
 }

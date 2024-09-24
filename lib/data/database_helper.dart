@@ -268,6 +268,16 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> updatePlace(Place place) async {
+    Database db = await database;
+    return await db.update(
+      'Place',
+      place.toMap(),
+      where: 'placeId = ?',
+      whereArgs: [place.placeId],
+    );
+  }
+
   Future<bool> deleteTask(int taskId) async {
     Database db = await database;
     int numRows =

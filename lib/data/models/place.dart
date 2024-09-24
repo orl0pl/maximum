@@ -1,14 +1,14 @@
 import 'package:latlong2/latlong.dart';
 
 class Place {
-  int? id;
+  int? placeId;
   String name;
   double lat;
   double lng;
   int maxDistance;
 
   Place({
-    this.id,
+    this.placeId,
     required this.name,
     required this.lat,
     required this.lng,
@@ -17,7 +17,7 @@ class Place {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'placeId': placeId,
       'name': name,
       'lat': lat,
       'lng': lng,
@@ -27,7 +27,7 @@ class Place {
 
   static Place fromMap(Map<String, dynamic> map) {
     return Place(
-      id: map['id'],
+      placeId: map['placeId'],
       name: map['name'],
       lat: map['lat'],
       lng: map['lng'],
