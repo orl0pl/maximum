@@ -38,7 +38,6 @@ dependencies:
   package_info_plus: ^8.0.2
   android_package_manager: ^0.7.1
   external_app_launcher: ^4.0.0
-  collection: ^1.19.0
   app_launcher: ^1.0.1
   geolocator: ^13.0.1
   geocoding: ^3.0.0
