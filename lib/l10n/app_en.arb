@@ -77,5 +77,18 @@
     "try_again": "Try again",
     "invalid_place_name": "Invalid place name",
     "invalid_radius": "Invalid radius",
-    "loading": "Loading..."
+    "loading": "Loading...",
+
+    "task_details": "Task details",
+
+    "steps_count": "Steps count",
+    "pick_steps_count": "Pick steps count",
+
+    "steps": "{stepsNum} {stepsNum, plural, =0{steps} =1{step} =2{steps} few{steps} many{steps} other{steps}}",
+
+    "date": "Date",
+    "repeat_start_date": "Repeat start date",
+    "time": "Time",
+
+    "progress_title": "Progress"
 }

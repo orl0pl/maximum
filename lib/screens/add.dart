@@ -14,6 +14,7 @@ import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/pick_repeat.dart';
+import 'package:maximum/widgets/pick_steps_count.dart';
 import 'package:maximum/widgets/tag_edit.dart';
 
 class AddScreen extends StatefulWidget {
@@ -333,6 +334,26 @@ class _AddScreenState extends State<AddScreen> {
                           }
                         },
                       ),
+                      SizedBox(width: 8),
+                      FilterChip(
+                        label: taskDraft.targetValue == 1
+                            ? Text(l.steps_count)
+                            : Text(l.steps(taskDraft.targetValue)),
+                        avatar: Icon(MdiIcons.counter),
+                        showCheckmark: false,
+                        selected: taskDraft.targetValue != 1,
+                        onSelected: (value) async {
+                          int? newValue = await showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  PickTargetValueDialog(taskDraft: taskDraft));
+                          if (newValue != null && mounted) {
+                            setState(() {
+                              taskDraft.targetValue = newValue;
+                            });
+                          }
+                        },
+                      )
                     ],
                   ),
                 ),

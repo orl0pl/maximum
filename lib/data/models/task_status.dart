@@ -24,4 +24,6 @@ class TaskStatus {
       value: map['value'],
     );
   }
+
+  DateTime get dt => DateTime.fromMillisecondsSinceEpoch(datetime);
 }

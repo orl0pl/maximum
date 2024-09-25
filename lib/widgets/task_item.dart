@@ -4,6 +4,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
+import 'package:maximum/screens/task_info.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/info_chip.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -63,7 +64,11 @@ class TaskItem extends StatelessWidget {
         child: InkWell(
           onTap: clickable
               ? () {
-                  print(task.toMap());
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return TaskInfoScreen(taskId: task.taskId ?? -1);
+                    },
+                  ));
                 }
               : null,
           onLongPress: clickable
@@ -113,7 +118,6 @@ class TaskItem extends StatelessWidget {
                 children: [
                   InfoChip(
                       subtitle: getSubtitleText(l),
-                      textTheme: textTheme,
                       variant: task.isDue || task.asap || task.deadline
                           ? ChipVariant.primary
                           : task.datetime!.isBefore(

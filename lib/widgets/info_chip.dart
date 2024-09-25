@@ -6,16 +6,15 @@ class InfoChip extends StatelessWidget {
   const InfoChip({
     super.key,
     required this.subtitle,
-    required this.textTheme,
     required this.variant,
   });
 
   final String subtitle;
-  final TextTheme textTheme;
   final ChipVariant variant;
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(

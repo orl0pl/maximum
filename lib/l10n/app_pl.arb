@@ -47,5 +47,17 @@
     "try_again": "Spróbuj ponownie",
     "invalid_place_name": "Nieprawidłowa nazwa miejsca",
     "invalid_radius": "Nieprawidłowy zasieg",
-    "loading": "Ładowanie..."
+    "loading": "Ładowanie...",
+
+    "task_details": "Szczegóły zadania",
+
+    "steps_count": "Liczba kroków",
+    "pick_steps_count": "Wybierz liczbe kroków",
+    "steps": "{stepsNum} {stepsNum, plural, =0{kroków} =1{krok} =2{kroki} few{kroki} many{kroków} other{kroków}}",
+
+    "date": "Data",
+    "repeat_start_date": "Początek powtarzania",
+    "time": "Godzina",
+
+    "progress_title": "Postęp"
 }

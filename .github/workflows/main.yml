@@ -23,11 +23,11 @@ jobs:
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.2"
+          flutter-version: "3.24.1"
           channel: "stable"
 
       - name: Disable analytics
-        run:  flutter config --no-analytics
+        run: flutter config --no-analytics
 
       - name: Install Dependencies
         run: flutter pub get
