@@ -159,7 +159,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("l.loading"),
+          title: Text(l.loading),
         ),
         body: const SingleChildScrollView(),
       );

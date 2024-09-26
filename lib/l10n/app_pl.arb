@@ -59,5 +59,18 @@
     "repeat_start_date": "Początek powtarzania",
     "time": "Godzina",
 
-    "progress_title": "Postęp"
+    "progress_title": "Postęp",
+
+    "settings": "Ustawienia",
+    "manage_places": "Zarządzaj miejscami",
+    "manage_task_tags": "Zarządzaj tagami zadań",
+    "manage_note_tags": "Zarządzaj tagami notatek",
+    "about": "O aplikacji",
+    "license": "Licencja",
+    "debug": "Debugowanie",
+
+    "search_placeholder": "Wyszukaj aplikację i nie tylko...",
+
+    "no_tags": "Brak tagów",
+    "pinned_apps": "Przypięte aplikacje"
 }

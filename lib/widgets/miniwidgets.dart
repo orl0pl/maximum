@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maximum/utils/alarm.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Weather extends StatelessWidget {
   const Weather({
@@ -32,7 +33,7 @@ class Alarm extends StatefulWidget {
 }
 
 class _AlarmState extends State<Alarm> {
-  String nextAlarm = "l.loading";
+  String? nextAlarm;
 
   @override
   void initState() {
@@ -52,11 +53,12 @@ class _AlarmState extends State<Alarm> {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
+    nextAlarm ??= AppLocalizations.of(context)!.loading;
     return Row(
       children: [
         const Icon(Icons.alarm),
         const SizedBox(width: 4),
-        Text(nextAlarm, style: textTheme.titleLarge)
+        Text(nextAlarm ?? "", style: textTheme.titleLarge)
       ],
     );
   }

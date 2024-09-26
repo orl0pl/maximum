@@ -148,11 +148,11 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
   }
 
   submit() async {
-    print(placeDraft.toMap());
     DatabaseHelper dh = DatabaseHelper();
 
     if (widget.place == null) {
       int newId = await dh.insertPlace(placeDraft);
+      // ignore: use_build_context_synchronously
       if (context.mounted) Navigator.pop(context, newId);
     } else {
       dh.updatePlace(placeDraft);

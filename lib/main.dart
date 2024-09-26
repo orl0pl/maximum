@@ -2,13 +2,17 @@
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/add.dart';
+import 'package:maximum/screens/pinned_apps.dart';
+import 'package:maximum/screens/settings.dart';
 import 'package:maximum/widgets/apps.dart';
 import 'package:maximum/widgets/start.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -236,9 +240,35 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
+  List<AppInfo> pinnedApps = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPinnedApps();
+  }
+
+  void fetchPinnedApps() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
+    if (pinnedAppsPackageNames != null) {
+      List<AppInfo> apps = await InstalledApps.getInstalledApps(true, true);
+      setState(() {
+        pinnedApps = apps.where((app) {
+          return pinnedAppsPackageNames.contains(app.packageName);
+        }).toList();
+      });
+    } else {
+      setState(() {
+        pinnedApps = [];
+      });
+      prefs.setStringList('pinnedApps', []);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context)!;
     if (widget.activeScreen == ActiveScreen.start) {
       focus.unfocus();
     }
@@ -256,40 +286,22 @@ class _BottomState extends State<Bottom> {
             Flexible(
               flex: 80,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton.filledTonal(
-                    icon: const Icon(Icons.phone),
-                    onPressed: () {
-                      launchUrl(Uri.parse('tel:'));
-                    },
-                  ),
-                  IconButton.filledTonal(
-                    icon: const Icon(Icons.message),
-                    onPressed: () {
-                      launchUrl(Uri.parse('sms:'));
-                    },
-                  ),
-                  IconButton.filledTonal(
-                      icon: const Icon(Icons.camera_alt),
-                      onPressed: () {
-                        const intent = AndroidIntent(
-                          action: 'android.media.action.STILL_IMAGE_CAMERA',
-                        );
-
-                        intent.launchChooser("Select an app");
-                      }),
-                  IconButton.filledTonal(
-                      icon: const Icon(Icons.location_on),
-                      onPressed: () {
-                        const intent = AndroidIntent(
-                          action: 'android.intent.action.VIEW',
-                          package: 'com.google.android.apps.maps',
-                        );
-                        intent.launch();
-                      }),
-                ],
-              ),
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: pinnedApps.isEmpty
+                      ? [
+                          FilledButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PinnedAppsScreen(),
+                                ));
+                                fetchPinnedApps();
+                              },
+                              child: Text("l.set_pinned_apps"))
+                        ]
+                      : pinnedApps.map((app) {
+                          return PinnedApp(app: app);
+                        }).toList()),
             ),
             Flexible(
               flex: 25,
@@ -305,8 +317,10 @@ class _BottomState extends State<Bottom> {
             ),
           ],
         ),
+        const SizedBox(height: 4),
+        Divider(),
         SearchBar(
-            hintText: "Szukaj w aplikacjach i nie tylko",
+            hintText: l.search_placeholder,
             focusNode: focus,
             onChanged: (value) {
               widget.setInput(value);
@@ -322,9 +336,29 @@ class _BottomState extends State<Bottom> {
                 widget.appsKey.currentState?.openTopMatch();
               }
             },
-            leading: IconButton(
+            leading: PopupMenuButton(
+              position: PopupMenuPosition.over,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.settings),
+                        const SizedBox(width: 8),
+                        Text(l.settings)
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const SettingsScreen()));
+                      fetchPinnedApps();
+
+                      widget.setActiveScreen(ActiveScreen.start);
+                    },
+                  ),
+                ];
+              },
               icon: const Icon(Icons.menu),
-              onPressed: () {},
             ),
             trailing: [
               IconButton(
@@ -333,6 +367,35 @@ class _BottomState extends State<Bottom> {
               ),
             ]),
       ],
+    );
+  }
+}
+
+class PinnedApp extends StatelessWidget {
+  const PinnedApp({
+    super.key,
+    required this.app,
+  });
+
+  final AppInfo app;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        LaunchApp.openApp(androidPackageName: app.packageName);
+      },
+      child: Container(
+        child: Image.memory(
+          app.icon!,
+          width: 48,
+          errorBuilder: (context, error, stackTrace) {
+            print(error);
+            print(stackTrace);
+            return const Icon(Icons.error);
+          },
+        ),
+      ),
     );
   }
 }

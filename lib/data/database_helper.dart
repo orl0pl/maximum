@@ -193,6 +193,14 @@ class DatabaseHelper {
     return maps.map((e) => Tag.fromMap(e)).toList();
   }
 
+  Future<List<Tag>> get noteTags async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'NoteTag',
+    );
+    return maps.map((e) => Tag.fromMap(e)).toList();
+  }
+
   Future<List<Task>> getTasksByTags(List<int> tagIds) async {
     Database db = await database;
     if (tagIds.isEmpty) return tasks;
@@ -251,6 +259,11 @@ class DatabaseHelper {
   Future<int> insertTaskTag(Tag taskTag) async {
     Database db = await database;
     return await db.insert('TaskTag', taskTag.toMap());
+  }
+
+  Future<int> insertNoteTag(Tag noteTag) async {
+    Database db = await database;
+    return await db.insert('NoteTag', noteTag.toMap());
   }
 
   Future<int> addTagToTask(int taskId, int tagId) async {
