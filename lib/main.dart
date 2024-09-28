@@ -1,8 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:app_launcher/app_launcher.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:installed_apps/app_info.dart';
@@ -383,7 +383,7 @@ class PinnedApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        LaunchApp.openApp(androidPackageName: app.packageName);
+        AppLauncher.openApp(androidApplicationId: app.packageName);
       },
       child: Container(
         child: Image.memory(

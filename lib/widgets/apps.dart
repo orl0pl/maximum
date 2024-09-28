@@ -1,4 +1,4 @@
-import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:installed_apps/app_info.dart';
@@ -53,8 +53,8 @@ class AppsWidgetState extends State<AppsWidget> {
   void openTopMatch() {
     if (allMatches.isNotEmpty) {
       if (allMatches[0].type == ElementType.app) {
-        LaunchApp.openApp(
-          androidPackageName: allMatches[0].app!.packageName,
+        AppLauncher.openApp(
+          androidApplicationId: allMatches[0].app!.packageName,
         );
       }
     }
@@ -145,8 +145,8 @@ class AppsWidgetState extends State<AppsWidget> {
                                   : null,
                               title: Text(allMatches[index].app!.name),
                               onTap: () {
-                                LaunchApp.openApp(
-                                    androidPackageName:
+                                AppLauncher.openApp(
+                                    androidApplicationId:
                                         allMatches[index].app!.packageName);
                               },
                             );
