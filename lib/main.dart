@@ -240,7 +240,7 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
-  List<AppInfo> pinnedApps = [];
+  List<AppInfo>? pinnedApps;
 
   @override
   void initState() {
@@ -252,7 +252,7 @@ class _BottomState extends State<Bottom> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
     if (pinnedAppsPackageNames != null) {
-      List<AppInfo> apps = await InstalledApps.getInstalledApps(true, true);
+      List<AppInfo> apps = await InstalledApps.getInstalledApps(false, true);
       setState(() {
         pinnedApps = apps.where((app) {
           return pinnedAppsPackageNames.contains(app.packageName);
@@ -287,21 +287,24 @@ class _BottomState extends State<Bottom> {
               flex: 80,
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: pinnedApps.isEmpty
-                      ? [
-                          FilledButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PinnedAppsScreen(),
-                                ));
-                                fetchPinnedApps();
-                              },
-                              child: Text("l.set_pinned_apps"))
-                        ]
-                      : pinnedApps.map((app) {
-                          return PinnedApp(app: app);
-                        }).toList()),
+                  children: pinnedApps == null
+                      ? [Text(l.loading)]
+                      : pinnedApps!.isEmpty
+                          ? [
+                              FilledButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          const PinnedAppsScreen(),
+                                    ));
+                                    fetchPinnedApps();
+                                  },
+                                  child: Text("l.set_pinned_apps"))
+                            ]
+                          : pinnedApps!.map((app) {
+                              return PinnedApp(app: app);
+                            }).toList()),
             ),
             Flexible(
               flex: 25,

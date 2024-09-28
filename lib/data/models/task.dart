@@ -398,13 +398,19 @@ class Task {
       return statuses
               .where((TaskStatus status) {
                 DateTime? repetitionBefore = lastRepetitionBefore(date);
+                DateTime? repetitionAfter = nextRepetitionAfter(date);
                 if (repetitionBefore == null) {
+                  return false;
+                }
+
+                if (repetitionAfter == null) {
                   return false;
                 }
                 DateTime taskStatusDatetime =
                     DateTime.fromMillisecondsSinceEpoch(status.datetime);
                 if (taskStatusDatetime.isAfter(repetitionBefore) &&
-                    repetitionBefore.isBefore(date)) {
+                    repetitionBefore.isBefore(date) &&
+                    taskStatusDatetime.isBefore(repetitionAfter)) {
                   return true;
                 } else {
                   return false;

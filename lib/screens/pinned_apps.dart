@@ -38,7 +38,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   }
 
   void fetchAllApps() async {
-    List<AppInfo> apps = await InstalledApps.getInstalledApps(true, true);
+    List<AppInfo> apps = await InstalledApps.getInstalledApps(false, true);
     if (mounted) {
       setState(() {
         allApps = apps;
