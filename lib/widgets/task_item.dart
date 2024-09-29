@@ -84,7 +84,11 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
 
   @override
   dispose() {
-    _animationController.dispose(); // you need this
+    try {
+      _animationController.dispose();
+    } catch (e) {
+      print(e);
+    }
     super.dispose();
   }
 
@@ -134,7 +138,10 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
                           onChanged: checkCheckbox,
                         );
                       } else {
-                        return Container(); // or a loading indicator
+                        return Container(
+                          width: 48,
+                          height: 48,
+                        );
                       }
                     },
                   ),
@@ -190,12 +197,14 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
           widget.shouldSlide) {
         _animationController.forward().then((_) {
           widget.refresh();
-          _animationController.dispose();
+          _animationController.reset();
         });
       } else {
+        _animationController.reset();
         widget.refresh();
       }
     } else {
+      _animationController.reset();
       widget.refresh();
     }
   }

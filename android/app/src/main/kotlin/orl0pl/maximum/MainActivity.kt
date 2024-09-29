@@ -28,14 +28,12 @@ class MainActivity: FlutterActivity() {
     }
 }
 
-    private fun getNextAlarm(): String? {
+    private fun getNextAlarm(): Long? {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmInfo = alarmManager.nextAlarmClock
 
         return if (alarmInfo != null) {
-            val triggerTime = alarmInfo.triggerTime
-            val dateFormat = SimpleDateFormat("EEE HH:mm", Locale.getDefault())
-            dateFormat.format(Date(triggerTime))
+            alarmInfo.triggerTime
         } else {
             null
         }

@@ -29,7 +29,9 @@ enum EntryType { note, task }
 class _AddScreenState extends State<AddScreen> {
   String text = "";
   List<Tag> _taskTags = [];
+  List<Tag> _noteTags = [];
   Set<int> selectedTaskTagsIds = {};
+  Set<int> selectedNoteTagsIds = {};
   EntryType entryType = EntryType.note;
   List<Place> places = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -63,15 +65,22 @@ class _AddScreenState extends State<AddScreen> {
     if (mounted) {
       fetchAndSetLatLng();
     }
-
-    fetchTags();
+    fetchNoteTags();
+    fetchTaskTags();
     fetchPlaces();
   }
 
-  void fetchTags() async {
+  void fetchTaskTags() async {
     List<Tag> tags = await _databaseHelper.taskTags;
     setState(() {
       _taskTags = tags;
+    });
+  }
+
+  void fetchNoteTags() async {
+    List<Tag> tags = await _databaseHelper.noteTags;
+    setState(() {
+      _noteTags = tags;
     });
   }
 
@@ -111,6 +120,75 @@ class _AddScreenState extends State<AddScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (entryType == EntryType.note) ...[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                      children: _noteTags
+                              .map((tag) => Row(
+                                    children: [
+                                      (FilterChip(
+                                          label: Row(
+                                            children: [
+                                              Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: HSLColor.fromAHSL(
+                                                          1,
+                                                          int.tryParse(
+                                                                      tag.color)
+                                                                  ?.toDouble() ??
+                                                              0,
+                                                          1,
+                                                          0.5)
+                                                      .toColor(),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(tag.name)
+                                            ],
+                                          ),
+                                          onSelected: (value) {
+                                            setState(() {
+                                              if (value) {
+                                                selectedNoteTagsIds
+                                                    .add(tag.tagId ?? -1);
+                                              } else {
+                                                selectedNoteTagsIds
+                                                    .remove(tag.tagId ?? -1);
+                                              }
+                                            });
+                                          },
+                                          selected: selectedNoteTagsIds
+                                              .contains(tag.tagId))),
+                                      const SizedBox(width: 8),
+                                    ],
+                                  ))
+                              .toList() +
+                          [
+                            Row(
+                              children: [
+                                FilterChip(
+                                  label: Text(l.add_tag),
+                                  avatar: const Icon(Icons.add),
+                                  onSelected: (value) async {
+                                    Tag? newTag = await showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const AddOrEditTagDialog());
+                                    if (newTag != null) {
+                                      DatabaseHelper().insertNoteTag(newTag);
+                                      fetchNoteTags();
+                                    }
+                                  },
+                                ),
+                              ],
+                            )
+                          ]),
+                ),
+              ],
               if (entryType == EntryType.task) ...[
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -159,55 +237,42 @@ class _AddScreenState extends State<AddScreen> {
                       children: _taskTags
                               .map((tag) => Row(
                                     children: [
-                                      InkWell(
-                                        onLongPress: () async {
-                                          Tag? newTag = await showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  AddOrEditTagDialog(tag: tag));
-                                          if (newTag != null) {
-                                            await _databaseHelper
-                                                .updateTaskTag(newTag);
-                                            fetchTags();
-                                          }
-                                        },
-                                        child: (FilterChip(
-                                            label: Row(
-                                              children: [
-                                                Container(
-                                                  width: 12,
-                                                  height: 12,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: HSLColor.fromAHSL(
-                                                            1,
-                                                            int.tryParse(tag
-                                                                        .color)
-                                                                    ?.toDouble() ??
-                                                                0,
-                                                            1,
-                                                            0.5)
-                                                        .toColor(),
-                                                  ),
+                                      (FilterChip(
+                                          label: Row(
+                                            children: [
+                                              Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: HSLColor.fromAHSL(
+                                                          1,
+                                                          int.tryParse(
+                                                                      tag.color)
+                                                                  ?.toDouble() ??
+                                                              0,
+                                                          1,
+                                                          0.5)
+                                                      .toColor(),
                                                 ),
-                                                const SizedBox(width: 8),
-                                                Text(tag.name)
-                                              ],
-                                            ),
-                                            onSelected: (value) {
-                                              setState(() {
-                                                if (value) {
-                                                  selectedTaskTagsIds
-                                                      .add(tag.tagId ?? -1);
-                                                } else {
-                                                  selectedTaskTagsIds
-                                                      .remove(tag.tagId ?? -1);
-                                                }
-                                              });
-                                            },
-                                            selected: selectedTaskTagsIds
-                                                .contains(tag.tagId))),
-                                      ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(tag.name)
+                                            ],
+                                          ),
+                                          onSelected: (value) {
+                                            setState(() {
+                                              if (value) {
+                                                selectedTaskTagsIds
+                                                    .add(tag.tagId ?? -1);
+                                              } else {
+                                                selectedTaskTagsIds
+                                                    .remove(tag.tagId ?? -1);
+                                              }
+                                            });
+                                          },
+                                          selected: selectedTaskTagsIds
+                                              .contains(tag.tagId))),
                                       const SizedBox(width: 8),
                                     ],
                                   ))
@@ -225,7 +290,7 @@ class _AddScreenState extends State<AddScreen> {
                                             const AddOrEditTagDialog());
                                     if (newTag != null) {
                                       DatabaseHelper().insertTaskTag(newTag);
-                                      fetchTags();
+                                      fetchTaskTags();
                                     }
                                   },
                                 ),
@@ -391,7 +456,10 @@ class _AddScreenState extends State<AddScreen> {
               onPressed: () async {
                 DatabaseHelper dh = DatabaseHelper();
                 if (entryType == EntryType.note) {
-                  dh.insertNote(noteDraft);
+                  int newNoteId = await dh.insertNote(noteDraft);
+                  if (newNoteId != -1) {
+                    dh.updateNoteTags(newNoteId, selectedNoteTagsIds);
+                  }
                 } else if (entryType == EntryType.task) {
                   int newTaskId = await dh.insertTask(taskDraft);
                   if (newTaskId != -1) {

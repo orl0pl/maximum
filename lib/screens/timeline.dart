@@ -105,7 +105,7 @@ class TimelineScreenState extends State<TimelineScreen> {
         title: Text(l.timeline),
         actions: [
           IconButton.filledTonal(
-            icon: Icon(archiveMode ? Icons.archive : Icons.archive_outlined),
+            icon: Icon(archiveMode ? Icons.history : Icons.history),
             isSelected: archiveMode,
             onPressed: () {
               setState(() {

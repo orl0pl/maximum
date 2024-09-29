@@ -329,4 +329,15 @@ class DatabaseHelper {
       }
     });
   }
+
+  void updateNoteTags(int noteId, Set<int> noteTagsIds) async {
+    Database db = await database;
+    db.transaction((txn) async {
+      await txn
+          .delete('NoteTag_Note', where: 'noteId = ?', whereArgs: [noteId]);
+      for (int id in noteTagsIds) {
+        await txn.insert('NoteTag_Note', {'noteId': noteId, 'tagId': id});
+      }
+    });
+  }
 }

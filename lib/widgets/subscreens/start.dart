@@ -24,11 +24,10 @@ class _StartWidgetState extends State<StartWidget> {
   @override
   void initState() {
     super.initState();
+    fetchTasks();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    AppLocalizations? l = AppLocalizations.of(context);
+  void fetchTasks() {
     DatabaseHelper().tasks.then((tasks) async {
       List<Task> filteredTasks = (await Future.wait(tasks.map((task) async {
         bool completed = (await task.completed) && (task.showInStart);
@@ -43,6 +42,11 @@ class _StartWidgetState extends State<StartWidget> {
         });
       }
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AppLocalizations? l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -54,7 +58,8 @@ class _StartWidgetState extends State<StartWidget> {
           InkWell(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const TimelineScreen()));
+                  builder: (context) => const TimelineScreen(),
+                  maintainState: false));
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +76,7 @@ class _StartWidgetState extends State<StartWidget> {
                     return TaskItem(
                       task: task,
                       refresh: () {
-                        setState(() {});
+                        fetchTasks();
                       },
                     );
                   }).toList(),

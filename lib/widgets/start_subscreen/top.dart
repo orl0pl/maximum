@@ -3,8 +3,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:maximum/utils/intents.dart';
 import 'package:maximum/widgets/start_subscreen/alarm.dart';
-import 'miniwidgets.dart';
+import 'weather.dart';
 
 class Top extends StatefulWidget {
   const Top({
@@ -39,13 +40,19 @@ class _TopState extends State<Top> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              DateFormat('EEEE dd MMMM').format(DateTime.now()),
-              style: textTheme.titleLarge,
+            InkWell(
+              onTap: () => openCalendar.launch(),
+              child: Text(
+                DateFormat('EEEE dd MMMM').format(DateTime.now()),
+                style: textTheme.titleLarge,
+              ),
             ),
-            Text(
-              DateFormat('HH:mm:ss').format(DateTime.now()),
-              style: textTheme.displayLarge,
+            InkWell(
+              onTap: () => openAlarmClock.launch(),
+              child: Text(
+                DateFormat('HH:mm:ss').format(DateTime.now()),
+                style: textTheme.displayLarge,
+              ),
             ),
           ],
         ),

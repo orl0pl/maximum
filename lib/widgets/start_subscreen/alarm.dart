@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maximum/utils/alarm.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/utils/intents.dart';
 
 class Alarm extends StatefulWidget {
   const Alarm({
@@ -12,33 +14,51 @@ class Alarm extends StatefulWidget {
 }
 
 class _AlarmState extends State<Alarm> {
-  String? nextAlarm;
+  DateTime? nextAlarm;
 
   @override
   void initState() {
     super.initState();
 
-    AlarmHelper.getNextAlarm().then((value) {
+    AlarmHelper.getNextAlarmDateTime().then((value) {
       setState(() {
-        if (value != null) {
-          nextAlarm = value;
-        } else if (value == null) {
-          nextAlarm = "???";
-        }
+        nextAlarm = value;
       });
     });
+  }
+
+  bool get displayTimeOfNextAlarm {
+    if (nextAlarm == null) return false;
+    if (nextAlarm!.add(const Duration(days: 7)).isAfter(DateTime.now())) {
+      return true;
+    }
+
+    return false;
+  }
+
+  String getNextAlarmString(AppLocalizations l) {
+    if (nextAlarm == null) {
+      return l.loading;
+    } else if (displayTimeOfNextAlarm) {
+      return DateFormat("EEE, HH:mm").format(nextAlarm!);
+    } else {
+      return DateFormat.Md().format(nextAlarm!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    nextAlarm ??= AppLocalizations.of(context)!.loading;
-    return Row(
-      children: [
-        const Icon(Icons.alarm),
-        const SizedBox(width: 4),
-        Text(nextAlarm ?? "", style: textTheme.titleLarge)
-      ],
+    return InkWell(
+      onTap: () => openAlarmClock.launch(),
+      child: Row(
+        children: [
+          const Icon(Icons.alarm),
+          const SizedBox(width: 4),
+          Text(getNextAlarmString(AppLocalizations.of(context)!),
+              style: textTheme.titleLarge)
+        ],
+      ),
     );
   }
 }
