@@ -10,8 +10,8 @@ import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/relative_date.dart';
-import 'package:maximum/widgets/pick_repeat.dart';
-import 'package:maximum/widgets/tag_edit.dart';
+import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
+import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 
 enum TaskEditResult { edited, deleted }
 

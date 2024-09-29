@@ -4,7 +4,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add.dart';
-import 'package:maximum/widgets/tag_edit.dart';
+import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 import 'package:maximum/widgets/task_item.dart';
 
 class TimelineScreen extends StatefulWidget {
@@ -84,6 +84,15 @@ class TimelineScreenState extends State<TimelineScreen> {
 
   void refresh() {
     fetchTasks();
+  }
+
+  TaskItem commonTaskItem(Task task) {
+    return TaskItem(
+      task: task,
+      refresh: refresh,
+      clickable: true,
+      shouldSlide: archiveMode == false,
+    );
   }
 
   @override
@@ -219,25 +228,22 @@ class TimelineScreenState extends State<TimelineScreen> {
                     ],
                     if (todayTasksBeforeNow.isNotEmpty) ...[
                       for (Task task in todayTasksBeforeNow)
-                        TaskItem(task: task, refresh: refresh, clickable: true),
+                        commonTaskItem(task),
                     ],
                     NowText(theme: theme, l: l, textTheme: textTheme),
-                    for (Task task in todayTasksAfterNow)
-                      TaskItem(task: task, refresh: refresh, clickable: true),
+                    for (Task task in todayTasksAfterNow) commonTaskItem(task),
                     if (tomorrowTasks.isNotEmpty) ...[
                       Text(l.tommorow, style: textTheme.labelLarge),
-                      for (Task task in tomorrowTasks)
-                        TaskItem(task: task, refresh: refresh, clickable: true),
+                      for (Task task in tomorrowTasks) commonTaskItem(task),
                     ],
                     if (taskInNextSevenDays.isNotEmpty) ...[
                       Text(l.this_week, style: textTheme.labelLarge),
                       for (Task task in taskInNextSevenDays)
-                        TaskItem(task: task, refresh: refresh, clickable: true),
+                        commonTaskItem(task),
                     ],
                     if (futureTasks.isNotEmpty) ...[
                       Text(l.in_future, style: textTheme.labelLarge),
-                      for (Task task in futureTasks)
-                        TaskItem(task: task, refresh: refresh, clickable: true),
+                      for (Task task in futureTasks) commonTaskItem(task),
                     ]
                   ],
                 ),

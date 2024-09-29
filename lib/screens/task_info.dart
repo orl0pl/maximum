@@ -94,6 +94,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(task!.text, style: textTheme.headlineLarge),
+                  Text("#${task!.taskId}", style: textTheme.labelLarge),
                   const SizedBox(height: 16),
                   if (task!.isDateSet) ...[
                     Text(

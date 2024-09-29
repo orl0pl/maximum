@@ -54,7 +54,7 @@ class _ManagePlacesScreenState extends State<ManagePlacesScreen> {
                         return Text(
                             "${placemarks[0].country}${placemarks[0].subLocality}, ${placemarks[0].locality}, ${placemarks[0].street}");
                       } else {
-                        return Text("Loading...");
+                        return Text(l.loading);
                       }
                     },
                   ),

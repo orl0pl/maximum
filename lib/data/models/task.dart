@@ -331,7 +331,11 @@ class Task {
 
     if (repeat?.repeatType == RepeatType.daily) {
       DateTime tempDate =
-          datetime!.subtract(Duration(days: repeat?.repeatInterval ?? 0));
+          setDate; //.subtract(Duration(days: repeat?.repeatInterval ?? 0));
+      if (occursOn(setDate)) {
+        return setDate;
+      }
+
       while (tempDate.isAfter(setDate)) {
         tempDate =
             tempDate.subtract(Duration(days: repeat?.repeatInterval ?? 0));
@@ -421,7 +425,7 @@ class Task {
           0;
     }
 
-    return statuses.last.value;
+    return statuses.firstOrNull?.value ?? 0;
   }
 
   Future<bool> get completed async {

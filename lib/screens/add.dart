@@ -13,9 +13,9 @@ import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
-import 'package:maximum/widgets/pick_repeat.dart';
-import 'package:maximum/widgets/pick_steps_count.dart';
-import 'package:maximum/widgets/tag_edit.dart';
+import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
+import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
+import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});

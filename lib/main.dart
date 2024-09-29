@@ -1,6 +1,5 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:app_launcher/app_launcher.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +9,10 @@ import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/pinned_apps.dart';
 import 'package:maximum/screens/settings.dart';
-import 'package:maximum/widgets/apps.dart';
-import 'package:maximum/widgets/start.dart';
+import 'package:maximum/utils/apps_cache.dart';
+import 'package:maximum/widgets/subscreens/apps.dart';
+import 'package:maximum/widgets/subscreens/start.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
@@ -95,14 +94,17 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _fetchApps() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      List<AppInfo> apps = await InstalledApps.getInstalledApps(true, true);
+      List<AppInfo> apps = getAppsFromCache(prefs) ??
+          await InstalledApps.getInstalledApps(true, true);
       if (mounted) {
         setState(() {
           _apps = apps;
           _isLoading = false;
         });
       }
+      saveAppsToCache(prefs, apps);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -251,17 +253,27 @@ class _BottomState extends State<Bottom> {
   void fetchPinnedApps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
+    List<AppInfo>? appsFromCache = getAppsFromCache(prefs);
+
     if (pinnedAppsPackageNames != null) {
-      List<AppInfo> apps = await InstalledApps.getInstalledApps(false, true);
-      setState(() {
-        pinnedApps = apps.where((app) {
-          return pinnedAppsPackageNames.contains(app.packageName);
-        }).toList();
-      });
+      List<AppInfo> apps =
+          appsFromCache ?? await InstalledApps.getInstalledApps(false, true);
+
+      if (mounted) {
+        setState(() {
+          pinnedApps = apps.where((app) {
+            return pinnedAppsPackageNames.contains(app.packageName);
+          }).toList();
+        });
+      }
+
+      saveAppsToCache(prefs, apps);
     } else {
-      setState(() {
-        pinnedApps = [];
-      });
+      if (mounted) {
+        setState(() {
+          pinnedApps = [];
+        });
+      }
       prefs.setStringList('pinnedApps', []);
     }
   }
@@ -300,7 +312,7 @@ class _BottomState extends State<Bottom> {
                                     ));
                                     fetchPinnedApps();
                                   },
-                                  child: Text("l.set_pinned_apps"))
+                                  child: const Text("l.set_pinned_apps"))
                             ]
                           : pinnedApps!.map((app) {
                               return PinnedApp(app: app);
@@ -321,7 +333,7 @@ class _BottomState extends State<Bottom> {
           ],
         ),
         const SizedBox(height: 4),
-        Divider(),
+        const Divider(),
         SearchBar(
             hintText: l.search_placeholder,
             focusNode: focus,
@@ -388,16 +400,12 @@ class PinnedApp extends StatelessWidget {
       onTap: () {
         AppLauncher.openApp(androidApplicationId: app.packageName);
       },
-      child: Container(
-        child: Image.memory(
-          app.icon!,
-          width: 48,
-          errorBuilder: (context, error, stackTrace) {
-            print(error);
-            print(stackTrace);
-            return const Icon(Icons.error);
-          },
-        ),
+      child: Image.memory(
+        app.icon!,
+        width: 48,
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(Icons.error);
+        },
       ),
     );
   }

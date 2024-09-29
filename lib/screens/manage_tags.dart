@@ -3,7 +3,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/widgets/tag_edit.dart';
+import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 
 class ManageTagsScreen extends StatefulWidget {
   final EntryType typeOfTags;
@@ -88,7 +88,7 @@ class _ManageTagsScreenState extends State<ManageTagsScreen> {
                                 fetchTags();
                               }
                             },
-                            icon: Icon(Icons.edit)),
+                            icon: const Icon(Icons.edit)),
                       );
                     },
                     itemCount: tags!.length,
@@ -99,7 +99,7 @@ class _ManageTagsScreenState extends State<ManageTagsScreen> {
             var newTag = await showDialog(
                 context: context,
                 builder: (context) {
-                  return AddOrEditTagDialog();
+                  return const AddOrEditTagDialog();
                 });
             if (newTag != null) {
               if (widget.typeOfTags == EntryType.task) {

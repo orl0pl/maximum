@@ -27,62 +27,97 @@ String formatTaskRepeat(Task task, AppLocalizations l) {
   return "";
 }
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   final Task task;
 
   final Function refresh;
 
   final bool clickable;
 
+  final bool shouldSlide;
+
   const TaskItem(
       {super.key,
       required this.task,
       required this.refresh,
-      this.clickable = false});
+      this.clickable = false,
+      this.shouldSlide = true});
 
+  @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
+  late Animation<Offset> _slideOffset = Tween<Offset>(
+    begin: Offset.zero,
+    end: const Offset(1.0, 0.0),
+  ).animate(AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 500),
+  ));
+  late AnimationController _animationController;
   String getSubtitleText(AppLocalizations l) {
-    if (task.repeat != null) {
-      return formatTaskRepeat(task, l);
+    if (widget.task.repeat != null) {
+      return formatTaskRepeat(widget.task, l);
     }
-    if (task.isDateSet) {
-      return formatTaskDateAndTime(task, l);
+    if (widget.task.isDateSet) {
+      return formatTaskDateAndTime(widget.task, l);
     }
     return "";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _slideOffset = Tween<Offset>(
+      begin: const Offset(0, 0),
+      end: const Offset(1, 0),
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  dispose() {
+    _animationController.dispose(); // you need this
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
     AppLocalizations l = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        transitionBuilder: (child, animation) {
-          return ScaleTransition(scale: animation, child: child);
-        },
+    return SlideTransition(
+      position: _slideOffset,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: InkWell(
-          onTap: clickable
+          onTap: widget.clickable
               ? () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) {
-                      return TaskInfoScreen(taskId: task.taskId ?? -1);
+                      return TaskInfoScreen(taskId: widget.task.taskId ?? -1);
                     },
                   ));
                 }
               : null,
-          onLongPress: clickable
+          onLongPress: widget.clickable
               ? () async {
                   TaskEditResult? edited =
                       await Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
                       return EditTaskScreen(
-                        task: task,
+                        task: widget.task,
                       );
                     },
                   ));
-                  if (edited == TaskEditResult.edited) refresh();
-                  if (edited == TaskEditResult.deleted) refresh();
+                  if (edited == TaskEditResult.edited) widget.refresh();
+                  if (edited == TaskEditResult.deleted) widget.refresh();
                 }
               : null,
           child: Row(
@@ -91,7 +126,7 @@ class TaskItem extends StatelessWidget {
               Row(
                 children: [
                   FutureBuilder(
-                    future: task.completed,
+                    future: widget.task.completed,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Checkbox(
@@ -107,7 +142,7 @@ class TaskItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        task.text,
+                        widget.task.text,
                         style: textTheme.bodyLarge,
                       ),
                     ],
@@ -118,9 +153,11 @@ class TaskItem extends StatelessWidget {
                 children: [
                   InfoChip(
                       subtitle: getSubtitleText(l),
-                      variant: task.isDue || task.asap || task.deadline
+                      variant: widget.task.isDue ||
+                              widget.task.asap ||
+                              widget.task.deadline
                           ? ChipVariant.primary
-                          : task.datetime!.isBefore(
+                          : widget.task.datetime!.isBefore(
                                   DateTime.now().add(const Duration(days: 7)))
                               ? ChipVariant.secondary
                               : ChipVariant.outline),
@@ -135,18 +172,31 @@ class TaskItem extends StatelessWidget {
 
   Future<void> checkCheckbox(bool? value) async {
     DatabaseHelper dh = DatabaseHelper();
-    if (task.targetValue == 1 && task.taskId != null) {
+    int currentProgress = await widget.task.getRecentProgressValue();
+    if (widget.task.targetValue == 1 && widget.task.taskId != null) {
       dh.insertTaskStatus(TaskStatus(
-          taskId: task.taskId!,
+          taskId: widget.task.taskId!,
           datetime: DateTime.now().millisecondsSinceEpoch,
           value: value == true ? 1 : 0));
-    } else if (task.taskId != null) {
+    } else if (widget.task.taskId != null) {
       dh.insertTaskStatus(TaskStatus(
-          taskId: task.taskId!,
+          taskId: widget.task.taskId!,
           datetime: DateTime.now().millisecondsSinceEpoch,
-          value:
-              await task.getRecentProgressValue() + (value == true ? 1 : 0)));
+          value: currentProgress + (value == true ? 1 : 0)));
     }
-    refresh();
+
+    if (value == true) {
+      if (currentProgress == widget.task.targetValue - 1 &&
+          widget.shouldSlide) {
+        _animationController.forward().then((_) {
+          widget.refresh();
+          _animationController.dispose();
+        });
+      } else {
+        widget.refresh();
+      }
+    } else {
+      widget.refresh();
+    }
   }
 }
