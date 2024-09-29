@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
+import 'package:maximum/screens/notes.dart';
+import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/utils/apps_cache.dart';
 import 'package:maximum/widgets/main_screen/bottom.dart';
 import 'package:maximum/widgets/subscreens/apps.dart';
@@ -39,7 +41,7 @@ class _MyAppState extends State<MyApp> {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
       return MaterialApp(
-          title: 'Localizations Sample App',
+          title: 'Maximum Launcher',
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -61,8 +63,8 @@ class _MyAppState extends State<MyApp> {
             colorScheme: darkDynamic?.copyWith(
                   brightness: Brightness.dark,
                 ) ??
-                ColorScheme.fromSwatch(primarySwatch: Colors.amber)
-                    .copyWith(brightness: Brightness.dark),
+                ColorScheme.fromSwatch(
+                    primarySwatch: Colors.amber, brightness: Brightness.dark),
           ));
     });
   }
@@ -94,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       List<AppInfo> apps = getAppsFromCache(prefs) ??
-          await InstalledApps.getInstalledApps(true, true);
+          await InstalledApps.getInstalledApps(false, true);
       if (mounted) {
         setState(() {
           _apps = apps;
@@ -152,11 +154,10 @@ class _MainScreenState extends State<MainScreen> {
                       onHorizontalDragEnd: (details) {
                         if (details.velocity.pixelsPerSecond.dy.abs() < 1000) {
                           if (details.velocity.pixelsPerSecond.dx < -1000) {
-                            setActiveScreen(ActiveScreen.apps);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const NotesScreen()));
                           } else if (details.velocity.pixelsPerSecond.dx >
-                              1000) {
-                            setActiveScreen(ActiveScreen.start);
-                          }
+                              1000) {}
                         }
                         // print(
                         //     "horizontal x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
@@ -167,7 +168,13 @@ class _MainScreenState extends State<MainScreen> {
                             setActiveScreen(ActiveScreen.apps);
                           } else if (details.velocity.pixelsPerSecond.dy >
                               1000) {
-                            setActiveScreen(ActiveScreen.start);
+                            if (activeScreen == ActiveScreen.start) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      const TimelineScreen()));
+                            } else {
+                              setActiveScreen(ActiveScreen.start);
+                            }
                           }
                         }
                         // print(

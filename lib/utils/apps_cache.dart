@@ -6,40 +6,45 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 List<AppInfo>? getAppsFromCache(SharedPreferences prefs) {
   List<String>? appsFromCache = prefs.getStringList('apps');
-  try {
-    if (appsFromCache != null) {
-      Iterable<Map> parsedApps = appsFromCache.map((string) {
-        return Map<String, dynamic>.from(jsonDecode(string));
-      });
+  // try {
+  if (appsFromCache != null) {
+    Iterable<Map> parsedApps = appsFromCache.map((string) {
+      return Map<String, dynamic>.from(jsonDecode(string));
+    });
 
-      parsedApps = parsedApps.map((app) => {
-            'name': app['name'],
-            'icon': Uint8List.fromList(app['icon'].cast<int>()),
-            'packageName': app['packageName'],
-            'versionName': app['versionName'],
-            'versionCode': app['versionCode'],
-            'builtWith': app['builtWith'],
-            'installedTimestamp': app['installedTimestamp'],
-          });
-
-      return parsedApps.map((map) => AppInfo.create(map)).toList();
-    } else {
-      return null;
-    }
-  } catch (e) {
+    return parsedApps
+        .map((app) => {
+              'name': app['name']?.toLowerCase() ?? 'n/a',
+              'icon': Uint8List.fromList(app['icon']?.cast<int>() ?? <int>[]) ??
+                  Uint8List(0),
+              'package_name': app['package_name']?.toLowerCase() ?? 'n/a',
+              'version_name': app['versionName']?.toLowerCase() ?? 'n/a',
+              'version_code': app['versionCode']?.toInt() ?? 1,
+              'built_with': app['builtWith']?.toLowerCase() ?? "n/a",
+              'installed_timestamp': app['installedTimestamp']?.toInt() ?? 0,
+            })
+        .map((map) => AppInfo.create(map))
+        .toList();
+  } else {
     return null;
   }
+  // }
+  //  on Error catch (e) {
+  //   print("Failed to parse apps from cache: $e\n${e.stackTrace}");
+
+  //   return null;
+  // }
 }
 
 Map mapAppInfo(AppInfo appInfo) {
   return {
     'name': appInfo.name,
-    'icon': appInfo.icon,
-    'packageName': appInfo.packageName,
-    'versionName': appInfo.versionName,
-    'versionCode': appInfo.versionCode,
-    'builtWith': appInfo.builtWith.index,
-    'installedTimestamp': appInfo.installedTimestamp,
+    'icon': appInfo.icon!,
+    'package_name': appInfo?.packageName ?? 'N/A',
+    'version_name': appInfo.versionName,
+    'version_code': appInfo.versionCode,
+    'built_with': "N/A",
+    'installed_timestamp': appInfo.installedTimestamp,
   };
 }
 
@@ -49,4 +54,6 @@ void saveAppsToCache(SharedPreferences prefs, List<AppInfo> apps) {
   }).toList();
 
   prefs.setStringList('apps', encodedApps);
+
+  return;
 }
