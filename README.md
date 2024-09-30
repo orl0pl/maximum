@@ -1,4 +1,4 @@
-![app icon](android\app\src\main\res\mipmap-xhdpi\ic_launcher.png)
+![app icon](https://raw.githubusercontent.com/orl0pl/maximum/refs/heads/master/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
 
 # Maximum
 
