@@ -72,5 +72,13 @@
     "search_placeholder": "Wyszukaj aplikację i nie tylko...",
 
     "no_tags": "Brak tagów",
-    "pinned_apps": "Przypięte aplikacje"
+    "pinned_apps": "Przypięte aplikacje",
+    "no_alarm": "Brak alarmów",
+
+    "hour_and_location": "{hour} w {location}",
+    "ok": "Ok",
+    "edit_place": "Edytuj miejsce",
+    "task_not_found": "Nie znaleziono zadania",
+    "set_pinned_apps": "Przypnij aplikację",
+    "unknown_location": "Nieznana lokalizacja"
 }

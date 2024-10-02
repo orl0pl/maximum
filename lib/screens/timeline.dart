@@ -5,6 +5,7 @@ import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
+import 'package:maximum/widgets/tag_label.dart';
 import 'package:maximum/widgets/task_item.dart';
 
 class TimelineScreen extends StatefulWidget {
@@ -118,8 +119,11 @@ class TimelineScreenState extends State<TimelineScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const AddScreen()));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddScreen(
+                    returnToHome: false,
+                    entryType: EntryType.task,
+                  )));
         },
         child: const Icon(Icons.add),
       ),
@@ -146,28 +150,7 @@ class TimelineScreenState extends State<TimelineScreen> {
                                         }
                                       },
                                       child: (FilterChip(
-                                          label: Row(
-                                            children: [
-                                              Container(
-                                                width: 12,
-                                                height: 12,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: HSLColor.fromAHSL(
-                                                          1,
-                                                          int.tryParse(
-                                                                      tag.color)
-                                                                  ?.toDouble() ??
-                                                              0,
-                                                          1,
-                                                          0.5)
-                                                      .toColor(),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(tag.name)
-                                            ],
-                                          ),
+                                          label: TagLabel(tag: tag),
                                           onSelected: (value) {
                                             setState(() {
                                               if (value) {

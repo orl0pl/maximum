@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:maximum/data/models/place.dart';
+import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/note.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/widgets/tag_label.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -15,13 +19,24 @@ class NotesScreen extends StatefulWidget {
 class NotesScreenState extends State<NotesScreen> {
   List<Note>? notes;
   List<Place>? places;
-  Set<int> selectedPlacesIds = {}; // Uses or logic for filtering
-  bool useOrLogicForSelectedTags = false;
+  Set<int> selectedPlacesIds = {};
+  List<Tag>? tags;
   Set<int> selectedTagsIds = {};
 
   DatabaseHelper db = DatabaseHelper();
   void fetchNotes() async {
-    List<Note> notes = await db.notes;
+    late List<Note> notes;
+    if (selectedTagsIds.isEmpty) {
+      notes = await db.notes;
+    } else {
+      notes = await db.getNotesByTags(selectedTagsIds.toList());
+    }
+
+    if (selectedPlacesIds.isNotEmpty) {
+      notes = notes.where((note) {
+        return selectedPlacesIds.contains(note.placeId);
+      }).toList();
+    }
     setState(() {
       this.notes = notes;
     });
@@ -34,24 +49,47 @@ class NotesScreenState extends State<NotesScreen> {
     });
   }
 
+  void fetchTags() async {
+    List<Tag> tags = await db.noteTags;
+    setState(() {
+      this.tags = tags;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     fetchNotes();
     fetchPlaces();
+    fetchTags();
   }
 
-  List<Note>? filterNotes(List<Note>? notes) {
+  Map<DateTime, List<Note>> groupNotesByDate(List<Note>? notes) {
     if (notes == null) {
-      return null;
+      return {};
     }
-    return notes;
+
+    Map<DateTime, List<Note>> groupedNotes = {};
+
+    notes.forEach((note) {
+      DateTime date = DateTime.fromMillisecondsSinceEpoch(note.datetime)
+          .copyWith(
+              hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+      if (!groupedNotes.containsKey(date)) {
+        groupedNotes[date] = [];
+      }
+      groupedNotes[date]?.add(note);
+    });
+
+    return groupedNotes;
   }
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context)!;
+    Map<DateTime, List<Note>> groupedNotes = groupNotesByDate(notes);
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    notes = filterNotes(notes);
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
@@ -61,28 +99,109 @@ class NotesScreenState extends State<NotesScreen> {
         onPressed: () async {
           await Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) {
-            return const AddScreen();
+            return const AddScreen(
+                entryType: EntryType.note, returnToHome: false);
           }));
           fetchNotes();
         },
       ),
-      body: Column(children: [
-        Row(
-          children: [],
-        ),
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ...?tags?.map((tag) {
+                      return Row(
+                        children: [
+                          FilterChip(
+                              label: TagLabel(tag: tag),
+                              selected: selectedTagsIds.contains(tag.tagId),
+                              onSelected: (_) {
+                                setState(() {
+                                  if (selectedTagsIds.contains(tag.tagId)) {
+                                    selectedTagsIds.remove(tag.tagId);
+                                  } else {
+                                    selectedTagsIds.add(tag.tagId ?? -1);
+                                  }
+                                  fetchNotes();
+                                });
+                              }),
+                          const SizedBox(width: 8),
+                        ],
+                      );
+                    }).toList(),
+                    VerticalDivider(),
+                    const SizedBox(width: 8),
+                    ...?places?.map((place) {
+                      return Row(
+                        children: [
+                          FilterChip(
+                              label: Text(place.name),
+                              selected:
+                                  selectedPlacesIds.contains(place.placeId),
+                              onSelected: (_) {
+                                setState(() {
+                                  if (selectedPlacesIds
+                                      .contains(place.placeId)) {
+                                    selectedPlacesIds.remove(place.placeId);
+                                  } else {
+                                    selectedPlacesIds.add(place.placeId ?? -1);
+                                  }
+                                  fetchNotes();
+                                });
+                              }),
+                          const SizedBox(width: 8),
+                        ],
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            )),
+        Divider(),
         notes == null
             ? const Center(child: CircularProgressIndicator())
             : notes!.isEmpty
-                ? const Text('No notes')
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: notes!.length,
-                    itemBuilder: (context, index) {
-                      return NoteWidget(note: notes![index]);
-                    },
+                ? Center(child: const Text('l.no_notes'))
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: groupedNotes.length,
+                      itemBuilder: (context, index) {
+                        DateTime date = groupedNotes.keys.elementAt(index);
+                        List<Note> notesForDate = groupedNotes[date]!;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat.yMMMMEEEEd().format(date),
+                              style: textTheme.labelLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            ...notesForDate
+                                .map((note) => Column(
+                                      children: [
+                                        NoteWidget(
+                                          note: note,
+                                          refresh: () => fetchNotes(),
+                                        ),
+                                        const SizedBox(height: 8),
+                                      ],
+                                    ))
+                                .toList(),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      },
+                    ),
                   )
       ]),
-      backgroundColor: colorScheme.surfaceContainerLowest,
     );
   }
 }

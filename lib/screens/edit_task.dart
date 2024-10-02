@@ -12,6 +12,7 @@ import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
+import 'package:maximum/widgets/tag_label.dart';
 
 enum TaskEditResult { edited, deleted }
 
@@ -154,28 +155,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                         }
                                       },
                                       child: (FilterChip(
-                                          label: Row(
-                                            children: [
-                                              Container(
-                                                width: 12,
-                                                height: 12,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: HSLColor.fromAHSL(
-                                                          1,
-                                                          int.tryParse(
-                                                                      tag.color)
-                                                                  ?.toDouble() ??
-                                                              0,
-                                                          1,
-                                                          0.5)
-                                                      .toColor(),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(tag.name)
-                                            ],
-                                          ),
+                                          label: TagLabel(tag: tag),
                                           onSelected: (value) {
                                             setState(() {
                                               if (value) {

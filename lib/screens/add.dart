@@ -16,9 +16,13 @@ import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
+import 'package:maximum/widgets/tag_label.dart';
 
 class AddScreen extends StatefulWidget {
-  const AddScreen({super.key});
+  const AddScreen(
+      {super.key, this.entryType = EntryType.note, this.returnToHome = true});
+  final EntryType entryType;
+  final bool returnToHome;
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -128,28 +132,7 @@ class _AddScreenState extends State<AddScreen> {
                               .map((tag) => Row(
                                     children: [
                                       (FilterChip(
-                                          label: Row(
-                                            children: [
-                                              Container(
-                                                width: 12,
-                                                height: 12,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: HSLColor.fromAHSL(
-                                                          1,
-                                                          int.tryParse(
-                                                                      tag.color)
-                                                                  ?.toDouble() ??
-                                                              0,
-                                                          1,
-                                                          0.5)
-                                                      .toColor(),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(tag.name)
-                                            ],
-                                          ),
+                                          label: TagLabel(tag: tag),
                                           onSelected: (value) {
                                             setState(() {
                                               if (value) {
@@ -467,8 +450,11 @@ class _AddScreenState extends State<AddScreen> {
                   }
                 }
                 if (mounted) {
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  if (widget.returnToHome) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  } else {
+                    Navigator.of(context).pop();
+                  }
                 }
               },
               child: const Icon(Icons.check),

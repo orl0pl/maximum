@@ -31,7 +31,7 @@ ${packageInfo.packageName}
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("l.ok"),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         );

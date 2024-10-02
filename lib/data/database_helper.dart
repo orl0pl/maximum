@@ -173,6 +173,7 @@ class DatabaseHelper {
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query(
       'Note',
+      orderBy: 'datetime DESC',
     );
     return maps.map((e) => Note.fromMap(e)).toList();
   }
@@ -210,6 +211,17 @@ class DatabaseHelper {
           'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${tagIds.join(',')}))',
     );
     return maps.map((e) => Task.fromMap(e)).toList();
+  }
+
+  Future<List<Note>> getNotesByTags(List<int> tagIds) async {
+    Database db = await database;
+    if (tagIds.isEmpty) return notes;
+    List<Map<String, dynamic>> maps = await db.query(
+      'Note',
+      where:
+          'noteId IN (SELECT noteId FROM NoteTag_Note WHERE tagId IN (${tagIds.join(',')}))',
+    );
+    return maps.map((e) => Note.fromMap(e)).toList();
   }
 
   Future<int> getMostRecentTaskStatus(int taskId) async {
@@ -281,6 +293,16 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> updateNote(Note note) async {
+    Database db = await database;
+    return await db.update(
+      'Note',
+      note.toMap(),
+      where: 'noteId = ?',
+      whereArgs: [note.noteId],
+    );
+  }
+
   Future<int> updatePlace(Place place) async {
     Database db = await database;
     return await db.update(
@@ -298,7 +320,24 @@ class DatabaseHelper {
     return numRows > 0;
   }
 
+  Future<bool> deleteNote(int noteId) async {
+    Database db = await database;
+    int numRows =
+        await db.delete('Note', where: 'noteId = ?', whereArgs: [noteId]);
+    return numRows > 0;
+  }
+
   Future<int> updateTaskTag(Tag newTag) async {
+    Database db = await database;
+    return db.update(
+      'TaskTag',
+      newTag.toMap(),
+      where: 'tagId = ?',
+      whereArgs: [newTag.tagId],
+    );
+  }
+
+  Future<int> updateNoteTag(Tag newTag) async {
     Database db = await database;
     return db.update(
       'TaskTag',
@@ -328,6 +367,17 @@ class DatabaseHelper {
         await txn.insert('TaskTag_Task', {'taskId': taskId, 'tagId': id});
       }
     });
+  }
+
+  Future<List<Tag>> getTagsForNote(int noteId) async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT NT.tagId, T.name, T.color '
+        'FROM NoteTag_Note NT '
+        'INNER JOIN NoteTag T ON NT.tagId = T.tagId '
+        'WHERE NT.noteId = ?',
+        [noteId]);
+    return maps.map((e) => Tag.fromMap(e)).toList();
   }
 
   void updateNoteTags(int noteId, Set<int> noteTagsIds) async {

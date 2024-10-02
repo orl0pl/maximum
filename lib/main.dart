@@ -34,12 +34,63 @@ class _MyAppState extends State<MyApp> {
     findSystemLocale().then((locale) => {Intl.systemLocale = locale});
   }
 
+  (ColorScheme light, ColorScheme dark) _generateDynamicColourSchemes(
+      ColorScheme lightDynamic, ColorScheme darkDynamic) {
+    var lightBase = ColorScheme.fromSeed(seedColor: lightDynamic.primary);
+    var darkBase = ColorScheme.fromSeed(
+        seedColor: darkDynamic.primary, brightness: Brightness.dark);
+
+    var lightAdditionalColours = _extractAdditionalColours(lightBase);
+    var darkAdditionalColours = _extractAdditionalColours(darkBase);
+
+    var lightScheme =
+        _insertAdditionalColours(lightBase, lightAdditionalColours);
+    var darkScheme = _insertAdditionalColours(darkBase, darkAdditionalColours);
+
+    return (lightScheme.harmonized(), darkScheme.harmonized());
+  }
+
+  List<Color> _extractAdditionalColours(ColorScheme scheme) => [
+        scheme.surface,
+        scheme.surfaceDim,
+        scheme.surfaceBright,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainerLow,
+        scheme.surfaceContainer,
+        scheme.surfaceContainerHigh,
+        scheme.surfaceContainerHighest,
+      ];
+
+  ColorScheme _insertAdditionalColours(
+          ColorScheme scheme, List<Color> additionalColours) =>
+      scheme.copyWith(
+        surface: additionalColours[0],
+        surfaceDim: additionalColours[1],
+        surfaceBright: additionalColours[2],
+        surfaceContainerLowest: additionalColours[3],
+        surfaceContainerLow: additionalColours[4],
+        surfaceContainer: additionalColours[5],
+        surfaceContainerHigh: additionalColours[6],
+        surfaceContainerHighest: additionalColours[7],
+      );
+
   @override
   Widget build(BuildContext context) {
     WidgetsFlutterBinding.ensureInitialized();
 
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      ColorScheme lightScheme, darkScheme;
+
+      if (lightDynamic != null && darkDynamic != null) {
+        (lightScheme, darkScheme) =
+            _generateDynamicColourSchemes(lightDynamic, darkDynamic);
+      } else {
+        lightScheme = ColorScheme.fromSwatch(
+            primarySwatch: Colors.amber, brightness: Brightness.light);
+        darkScheme = ColorScheme.fromSwatch(
+            primarySwatch: Colors.amber, brightness: Brightness.dark);
+      }
       return MaterialApp(
           title: 'Maximum Launcher',
           localizationsDelegates: const [
@@ -55,16 +106,12 @@ class _MyAppState extends State<MyApp> {
           home: const MainScreen(),
           themeMode: ThemeMode.system,
           theme: ThemeData(
-            colorScheme: lightDynamic,
+            colorScheme: darkScheme,
             useMaterial3: true,
           ),
           darkTheme: ThemeData(
             useMaterial3: true,
-            colorScheme: darkDynamic?.copyWith(
-                  brightness: Brightness.dark,
-                ) ??
-                ColorScheme.fromSwatch(
-                    primarySwatch: Colors.amber, brightness: Brightness.dark),
+            colorScheme: darkScheme,
           ));
     });
   }
@@ -142,7 +189,6 @@ class _MainScreenState extends State<MainScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: colorScheme.surfaceContainerLowest,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,8 +200,10 @@ class _MainScreenState extends State<MainScreen> {
                       onHorizontalDragEnd: (details) {
                         if (details.velocity.pixelsPerSecond.dy.abs() < 1000) {
                           if (details.velocity.pixelsPerSecond.dx < -1000) {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const NotesScreen()));
+                            if (activeScreen == ActiveScreen.start) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const NotesScreen()));
+                            }
                           } else if (details.velocity.pixelsPerSecond.dx >
                               1000) {}
                         }

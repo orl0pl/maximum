@@ -103,5 +103,25 @@
     "search_placeholder": "Search apps and more...",
 
     "no_tags": "No tags",
-    "pinned_apps": "Pinned apps"
+    "pinned_apps": "Pinned apps",
+    "no_alarm": "No alarm",
+
+    "hour_and_location": "{hour} at {location}",
+    "@hour_and_location": {
+        "description": "Label for hour and location in note list",
+        "placeholders": {
+            "hour": {
+                "type": "String"
+            },
+            "location": {
+                "type": "String"
+            }
+        }
+    },
+
+    "ok": "Ok",
+    "edit_place": "Edit place",
+    "task_not_found": "Task not found",
+    "set_pinned_apps": "Set pinned apps",
+    "unknown_location": "Unknown location"
 }

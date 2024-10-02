@@ -20,7 +20,7 @@ List<AppInfo>? getAppsFromCache(SharedPreferences prefs) {
               'package_name': app['package_name']?.toLowerCase() ?? 'n/a',
               'version_name': app['versionName']?.toLowerCase() ?? 'n/a',
               'version_code': app['versionCode']?.toInt() ?? 1,
-              'built_with': app['builtWith']?.toLowerCase() ?? "n/a",
+              'built_with': app['builtWith'].toString().toLowerCase(),
               'installed_timestamp': app['installedTimestamp']?.toInt() ?? 0,
             })
         .map((map) => AppInfo.create(map))
@@ -40,7 +40,7 @@ Map mapAppInfo(AppInfo appInfo) {
   return {
     'name': appInfo.name,
     'icon': appInfo.icon!,
-    'package_name': appInfo?.packageName ?? 'N/A',
+    'package_name': appInfo.packageName,
     'version_name': appInfo.versionName,
     'version_code': appInfo.versionCode,
     'built_with': "N/A",

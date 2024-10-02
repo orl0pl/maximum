@@ -67,9 +67,7 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: widget.place == null
-            ? Text(l.add_place)
-            : const Text("l.edit_place"),
+        title: widget.place == null ? Text(l.add_place) : Text(l.edit_place),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,

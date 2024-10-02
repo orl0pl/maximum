@@ -50,7 +50,7 @@ class Note {
     return lat != null && lng != null;
   }
 
-  Future<Place?> getPlace() async {
+  Future<Place?> getPlace({bool saveToDbIfMissing = false}) async {
     DatabaseHelper db = DatabaseHelper();
     if (placeId != null) {
       return db.getPlace(placeId!);
@@ -67,6 +67,19 @@ class Note {
           closestDistance = distance;
           closestPlace = p;
         }
+      }
+
+      if (closestPlace != null && saveToDbIfMissing) {
+        Note newNote = Note(
+          title: title,
+          text: text,
+          datetime: datetime,
+          lat: lat,
+          lng: lng,
+          placeId: closestPlace.placeId,
+          noteId: noteId,
+        );
+        db.updateNote(newNote);
       }
       return closestPlace;
     }
@@ -90,5 +103,9 @@ class Note {
 
   String get titleOrText {
     return title ?? text;
+  }
+
+  get dt {
+    return DateTime.fromMillisecondsSinceEpoch(datetime);
   }
 }

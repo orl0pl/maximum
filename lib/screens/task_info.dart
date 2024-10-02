@@ -153,7 +153,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     } else if (TaskInfoScreenLoadingState.error_not_found == _state) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("l.task_not_found"),
+          title: Text(l.task_not_found),
         ),
         body: const SingleChildScrollView(),
       );

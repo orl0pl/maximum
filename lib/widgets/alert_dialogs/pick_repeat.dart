@@ -100,7 +100,7 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                   validator: (value) {
                     final int? interval = int.tryParse(value ?? "");
                     if (interval == null || interval <= 0) {
-                      return "l.pick_repeat_dialog_error_interval";
+                      return l.pick_repeat_dialog_error_interval;
                     }
                     return null;
                   },

@@ -15,6 +15,7 @@ class Alarm extends StatefulWidget {
 
 class _AlarmState extends State<Alarm> {
   DateTime? nextAlarm;
+  bool loading = true;
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _AlarmState extends State<Alarm> {
     AlarmHelper.getNextAlarmDateTime().then((value) {
       setState(() {
         nextAlarm = value;
+        loading = false;
       });
     });
   }
@@ -37,8 +39,10 @@ class _AlarmState extends State<Alarm> {
   }
 
   String getNextAlarmString(AppLocalizations l) {
-    if (nextAlarm == null) {
+    if (loading) {
       return l.loading;
+    } else if (!loading && nextAlarm == null) {
+      return l.no_alarm;
     } else if (displayTimeOfNextAlarm) {
       return DateFormat("EEE, HH:mm").format(nextAlarm!);
     } else {

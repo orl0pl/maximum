@@ -43,9 +43,7 @@ class _BottomState extends State<Bottom> {
   void fetchPinnedApps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
-    print("Got pinned apps: $pinnedAppsPackageNames");
     List<AppInfo>? appsFromCache = getAppsFromCache(prefs);
-    print("Got apps from cache: $appsFromCache");
 
     if (pinnedAppsPackageNames != null) {
       List<AppInfo> apps =
@@ -101,7 +99,7 @@ class _BottomState extends State<Bottom> {
                                     ));
                                     fetchPinnedApps();
                                   },
-                                  child: const Text("l.set_pinned_apps"))
+                                  child: Text(l.set_pinned_apps))
                             ]
                           : pinnedApps!.map((app) {
                               return PinnedApp(app: app);
