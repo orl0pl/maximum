@@ -71,7 +71,7 @@ class NotesScreenState extends State<NotesScreen> {
 
     Map<DateTime, List<Note>> groupedNotes = {};
 
-    notes.forEach((note) {
+    for (var note in notes) {
       DateTime date = DateTime.fromMillisecondsSinceEpoch(note.datetime)
           .copyWith(
               hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
@@ -79,7 +79,7 @@ class NotesScreenState extends State<NotesScreen> {
         groupedNotes[date] = [];
       }
       groupedNotes[date]?.add(note);
-    });
+    }
 
     return groupedNotes;
   }
@@ -92,7 +92,7 @@ class NotesScreenState extends State<NotesScreen> {
     TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: Text(l.notes),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -133,8 +133,8 @@ class NotesScreenState extends State<NotesScreen> {
                           const SizedBox(width: 8),
                         ],
                       );
-                    }).toList(),
-                    VerticalDivider(),
+                    }),
+                    const VerticalDivider(),
                     const SizedBox(width: 8),
                     ...?places?.map((place) {
                       return Row(
@@ -157,16 +157,16 @@ class NotesScreenState extends State<NotesScreen> {
                           const SizedBox(width: 8),
                         ],
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
             )),
-        Divider(),
+        const Divider(),
         notes == null
             ? const Center(child: CircularProgressIndicator())
             : notes!.isEmpty
-                ? Center(child: const Text('l.no_notes'))
+                ? Center(child: Text(l.no_notes))
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ListView.builder(
@@ -184,17 +184,15 @@ class NotesScreenState extends State<NotesScreen> {
                               style: textTheme.labelLarge,
                             ),
                             const SizedBox(height: 8),
-                            ...notesForDate
-                                .map((note) => Column(
-                                      children: [
-                                        NoteWidget(
-                                          note: note,
-                                          refresh: () => fetchNotes(),
-                                        ),
-                                        const SizedBox(height: 8),
-                                      ],
-                                    ))
-                                .toList(),
+                            ...notesForDate.map((note) => Column(
+                                  children: [
+                                    NoteWidget(
+                                      note: note,
+                                      refresh: () => fetchNotes(),
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                )),
                             const SizedBox(height: 16),
                           ],
                         );

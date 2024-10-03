@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
-import 'package:maximum/main.dart';
 import 'package:maximum/screens/add.dart';
+import 'package:maximum/screens/main.dart';
+import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/pinned_apps.dart';
 import 'package:maximum/screens/settings.dart';
 import 'package:maximum/utils/apps_cache.dart';
@@ -154,6 +156,21 @@ class _BottomState extends State<Bottom> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const SettingsScreen()));
                       fetchPinnedApps();
+
+                      widget.setActiveScreen(ActiveScreen.start);
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: Row(
+                      children: [
+                        const Icon(MdiIcons.noteMultipleOutline),
+                        const SizedBox(width: 8),
+                        Text(l.notes)
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const NotesScreen()));
 
                       widget.setActiveScreen(ActiveScreen.start);
                     },

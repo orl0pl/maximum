@@ -29,7 +29,7 @@ class _PickTargetValueDialogState extends State<PickTargetValueDialog> {
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context)!;
     return AlertDialog(
-      icon: Icon(MdiIcons.counter),
+      icon: const Icon(MdiIcons.counter),
       title: Text(l.pick_steps_count),
       content: TextFormField(
         initialValue: _targetValue.toString(),

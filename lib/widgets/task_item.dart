@@ -138,7 +138,7 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
                           onChanged: checkCheckbox,
                         );
                       } else {
-                        return Container(
+                        return SizedBox(
                           width: 48,
                           height: 48,
                         );

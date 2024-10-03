@@ -5,6 +5,7 @@ import 'package:installed_apps/app_info.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum ElementType { app, note }
 
@@ -62,6 +63,7 @@ class AppsWidgetState extends State<AppsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context)!;
     if (!notesLoaded) {
       DatabaseHelper().notes.then((notes) async {
         allnotes = notes;
@@ -114,8 +116,8 @@ class AppsWidgetState extends State<AppsWidget> {
             child: widget.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : allMatches.isEmpty
-                    ? const Center(
-                        child: Text("Nothing found!"),
+                    ? Center(
+                        child: Text(l.nothing_found),
                       )
                     : ListView.builder(
                         itemCount: allMatches.length,

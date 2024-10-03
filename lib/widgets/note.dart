@@ -54,7 +54,7 @@ class _NoteWidgetState extends State<NoteWidget> {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     print(colorScheme.surfaceContainer == colorScheme.surfaceContainerLowest);
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: colorScheme.surfaceContainer),

@@ -14,12 +14,12 @@ List<AppInfo>? getAppsFromCache(SharedPreferences prefs) {
 
     return parsedApps
         .map((app) => {
-              'name': app['name']?.toLowerCase() ?? 'n/a',
+              'name': app['name']?.toString() ?? 'n/a',
               'icon': Uint8List.fromList(app['icon']?.cast<int>() ?? <int>[]) ??
                   Uint8List(0),
-              'package_name': app['package_name']?.toLowerCase() ?? 'n/a',
-              'version_name': app['versionName']?.toLowerCase() ?? 'n/a',
-              'version_code': app['versionCode']?.toInt() ?? 1,
+              'package_name': app['package_name'] ?? 'n/a',
+              'version_name': app['versionName'] ?? 'n/a',
+              'version_code': app['versionCode'] ?? 1,
               'built_with': app['builtWith'].toString().toLowerCase(),
               'installed_timestamp': app['installedTimestamp']?.toInt() ?? 0,
             })

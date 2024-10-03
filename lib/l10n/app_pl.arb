@@ -80,5 +80,12 @@
     "edit_place": "Edytuj miejsce",
     "task_not_found": "Nie znaleziono zadania",
     "set_pinned_apps": "Przypnij aplikację",
-    "unknown_location": "Nieznana lokalizacja"
+    "unknown_location": "Nieznana lokalizacja",
+    "notes": "Notatki",
+    "no_notes": "Brak notatek",
+    "edit_note": "Edytuj notatkę",
+    "nothing_found": "Nic nie znaleziono",
+    "error": "Błąd",
+    "copied_to_clipboard": "Skopiowano do schowka",
+    "copy": "Skopiuj"
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/data/database_helper.dart';
-import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/note.dart';
-import 'package:intl/intl.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 import 'package:maximum/widgets/tag_label.dart';
 
@@ -49,9 +47,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     AppLocalizations l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text("l.edit_note"), actions: [
+      appBar: AppBar(title: Text(l.edit_note), actions: [
         IconButton(
-          icon: Icon(Icons.delete_forever_outlined),
+          icon: const Icon(Icons.delete_forever_outlined),
           onPressed: () async {
             bool succes = await DatabaseHelper().deleteNote(noteDraft.noteId!);
             if (succes && context.mounted) {
@@ -73,14 +71,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
               });
             },
             decoration: InputDecoration(
-                border: OutlineInputBorder(), labelText: l.content_to_add),
+                border: const OutlineInputBorder(),
+                labelText: l.content_to_add),
           ),
-          Spacer(),
+          const Spacer(),
           Text(noteDraft.toMap().toString()),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -140,7 +139,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                           )
                         ]),
               ),
-              SizedBox(height: 64),
+              const SizedBox(height: 64),
             ],
           )
         ]),

@@ -123,5 +123,12 @@
     "edit_place": "Edit place",
     "task_not_found": "Task not found",
     "set_pinned_apps": "Set pinned apps",
-    "unknown_location": "Unknown location"
+    "unknown_location": "Unknown location",
+    "notes": "Notes",
+    "no_notes": "No notes",
+    "edit_note": "Edit note",
+    "nothing_found": "Nic nie znaleziono",
+    "error": "Error",
+    "copied_to_clipboard": "Copied to clipboard",
+    "copy": "Copy"
 }

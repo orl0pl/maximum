@@ -117,8 +117,8 @@ ${packageInfo.packageName}
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text("Not implemented yet"),
+                const SnackBar(
+                  content: Text("Not implemented yet"),
                 ),
               );
             },
