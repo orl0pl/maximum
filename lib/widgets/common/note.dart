@@ -52,7 +52,6 @@ class _NoteWidgetState extends State<NoteWidget> {
     AppLocalizations l = AppLocalizations.of(context)!;
     TextTheme textTheme = Theme.of(context).textTheme;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    print(colorScheme.surfaceContainer == colorScheme.surfaceContainerLowest);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

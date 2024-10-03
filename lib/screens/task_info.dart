@@ -6,7 +6,7 @@ import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/widgets/info_chip.dart';
+import 'package:maximum/widgets/common/info_chip.dart';
 
 class TaskInfoScreen extends StatefulWidget {
   final int taskId;

@@ -12,7 +12,7 @@ import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
-import 'package:maximum/widgets/tag_label.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
 
 enum TaskEditResult { edited, deleted }
 
@@ -306,7 +306,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           dh.updateTask(taskDraft);
           dh.updateTaskTags(taskDraft.taskId ?? -1, selectedTaskTagsIds);
           if (mounted) {
-            // ignore: use_build_context_synchronously
             Navigator.of(context).pop(TaskEditResult.edited);
           }
         },

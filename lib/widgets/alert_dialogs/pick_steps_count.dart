@@ -7,10 +7,10 @@ class PickTargetValueDialog extends StatefulWidget {
   final Task taskDraft;
   const PickTargetValueDialog({super.key, required this.taskDraft});
   @override
-  _PickTargetValueDialogState createState() => _PickTargetValueDialogState();
+  PickTargetValueDialogState createState() => PickTargetValueDialogState();
 }
 
-class _PickTargetValueDialogState extends State<PickTargetValueDialog> {
+class PickTargetValueDialogState extends State<PickTargetValueDialog> {
   int? _targetValue;
   @override
   void initState() {

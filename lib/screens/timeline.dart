@@ -5,8 +5,8 @@ import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
-import 'package:maximum/widgets/tag_label.dart';
-import 'package:maximum/widgets/task_item.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
+import 'package:maximum/widgets/common/task_item.dart';
 
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({super.key});

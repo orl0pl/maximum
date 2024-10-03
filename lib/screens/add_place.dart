@@ -150,8 +150,7 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
 
     if (widget.place == null) {
       int newId = await dh.insertPlace(placeDraft);
-      // ignore: use_build_context_synchronously
-      if (context.mounted) Navigator.pop(context, newId);
+      if (mounted) Navigator.pop(context, newId);
     } else {
       dh.updatePlace(placeDraft);
     }
@@ -246,41 +245,6 @@ class _NormalMapState extends State<NormalMap> {
                 borderStrokeWidth: 2,
                 radius: widget.placeDraft.maxDistance.toDouble())
           ]),
-          // TODO: location marker
-          // CurrentLocationLayer(
-          //   positionStream: _positionStream,
-          // ),
-
-          // MarkerLayer(markers: [
-          //   Marker(
-          //       point: widget.placeDraft.latlng,
-          //       alignment: Alignment.center,
-          //       child: Row(
-          //         mainAxisSize: MainAxisSize.min,
-          //         mainAxisAlignment: MainAxisAlignment.start,
-          //         crossAxisAlignment: CrossAxisAlignment.center,
-          //         children: [
-          //           Container(
-          //               decoration: BoxDecoration(
-          //                 color: colorScheme.primary,
-          //                 borderRadius: BorderRadius.circular(24),
-          //               ),
-          //               child: Icon(Icons.location_on,
-          //                   size: 24, color: colorScheme.onPrimary)),
-          //           // Container(
-          //           //   padding: EdgeInsets.all(8),
-          //           //   decoration: BoxDecoration(
-          //           //     color: colorScheme.primaryContainer,
-          //           //     borderRadius: BorderRadius.circular(10),
-          //           //   ),
-          //           //   child: Text(
-          //           //     widget.placeDraft.name,
-          //           //     style: TextStyle(color: colorScheme.onPrimaryContainer),
-          //           //   ),
-          //           // ),
-          //         ],
-          //       )),
-          // ]),
           MarkerLayer(markers: [
             Marker(
                 point: widget.placeDraft.latlng,

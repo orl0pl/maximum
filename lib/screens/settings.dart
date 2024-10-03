@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/screens/add.dart';
-import 'package:maximum/screens/manage_places.dart';
-import 'package:maximum/screens/manage_tags.dart';
-import 'package:maximum/screens/pinned_apps.dart';
+import 'package:maximum/screens/settings/manage_places.dart';
+import 'package:maximum/screens/settings/manage_tags.dart';
+import 'package:maximum/screens/settings/pinned_apps.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -17,26 +17,28 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> showAboutDialog() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Maximum Launcher"),
-          content: Text("""
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Maximum Launcher"),
+            content: Text("""
 Maximum Launcher v${packageInfo.version}
 ${packageInfo.packageName}
               """),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(AppLocalizations.of(context)!.ok),
-            ),
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(AppLocalizations.of(context)!.ok),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override

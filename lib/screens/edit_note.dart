@@ -4,7 +4,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
-import 'package:maximum/widgets/tag_label.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
 
 enum NoteEditResult { edited, deleted }
 
@@ -150,7 +150,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           dh.updateNote(noteDraft);
           dh.updateNoteTags(noteDraft.noteId ?? -1, selectedNoteTagsIds);
           if (mounted) {
-            // ignore: use_build_context_synchronously
             Navigator.of(context).pop(NoteEditResult.edited);
           }
         },

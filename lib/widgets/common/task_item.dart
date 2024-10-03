@@ -85,7 +85,6 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
   @override
   dispose() {
     _animationController.dispose();
-
     super.dispose();
   }
 

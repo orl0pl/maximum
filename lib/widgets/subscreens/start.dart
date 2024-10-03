@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
-import 'package:maximum/widgets/task_item.dart';
+import 'package:maximum/widgets/common/task_item.dart';
 import 'package:maximum/widgets/start_subscreen/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

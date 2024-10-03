@@ -5,9 +5,9 @@ import 'package:maximum/data/models/note.dart';
 import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/screens/add.dart';
-import 'package:maximum/widgets/note.dart';
+import 'package:maximum/widgets/common/note.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/widgets/tag_label.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
@@ -88,7 +88,6 @@ class NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context)!;
     Map<DateTime, List<Note>> groupedNotes = groupNotesByDate(notes);
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
     TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(

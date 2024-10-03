@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                icon: Icon(MdiIcons.alertOctagon),
+                icon: const Icon(MdiIcons.alertOctagon),
                 actions: [
                   TextButton(
                       onPressed: () {
@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
           home: const MainScreen(),
           themeMode: ThemeMode.system,
           theme: ThemeData(
-            colorScheme: darkScheme,
+            colorScheme: lightScheme,
             useMaterial3: true,
           ),
           darkTheme: ThemeData(

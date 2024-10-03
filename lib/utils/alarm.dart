@@ -5,13 +5,8 @@ class AlarmHelper {
   static const MethodChannel _channel = MethodChannel('orl0pl.maximum/alarm');
 
   static Future<int?> getNextAlarmMilisecondsAfterEpoch() async {
-    try {
-      final int? nextAlarm = await _channel.invokeMethod('getNextAlarm');
-      return nextAlarm;
-    } on PlatformException catch (e) {
-      print("Failed to get next alarm: '${e.message}'.");
-      return null;
-    }
+    final int? nextAlarm = await _channel.invokeMethod('getNextAlarm');
+    return nextAlarm;
   }
 
   static Future<DateTime?> getNextAlarmDateTime() async {

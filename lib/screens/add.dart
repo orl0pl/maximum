@@ -16,7 +16,7 @@ import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
-import 'package:maximum/widgets/tag_label.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen(
@@ -449,7 +449,7 @@ class _AddScreenState extends State<AddScreen> {
                     dh.updateTaskTags(newTaskId, selectedTaskTagsIds);
                   }
                 }
-                if (mounted) {
+                if (context.mounted) {
                   if (widget.returnToHome) {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   } else {

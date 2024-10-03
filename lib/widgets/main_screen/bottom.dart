@@ -5,7 +5,7 @@ import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/main.dart';
 import 'package:maximum/screens/notes.dart';
-import 'package:maximum/screens/pinned_apps.dart';
+import 'package:maximum/screens/settings/pinned_apps.dart';
 import 'package:maximum/screens/settings.dart';
 import 'package:maximum/utils/apps_cache.dart';
 import 'package:maximum/widgets/main_screen/pinned_app.dart';
