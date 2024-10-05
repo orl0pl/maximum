@@ -1,5 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +14,60 @@ import 'package:intl/intl_standalone.dart';
 import 'package:maximum/screens/main.dart';
 
 Future<void> main() async {
-  runApp(const MyApp());
+  runZonedGuarded(() {
+    runApp(const MyApp());
+  }, (error, stackTrace) {
+    // ignore: avoid_print
+    print(error);
+    // ignore: avoid_print
+    print(stackTrace);
+    runApp(ErrorScreen(
+      error: error,
+      stackTrace: stackTrace,
+    ));
+  });
+}
+
+class ErrorScreen extends StatelessWidget {
+  const ErrorScreen({super.key, required this.error, required this.stackTrace});
+
+  final Object error;
+  final StackTrace stackTrace;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Column(
+            children: [
+              const Icon(MdiIcons.alertOctagon),
+              const Text('Fatal Error'),
+              SingleChildScrollView(
+                  child: Text(
+                'error: $error\n\nstackTrace: $stackTrace',
+              )),
+              FilledButton.icon(
+                onPressed: () {
+                  Clipboard.setData(
+                      ClipboardData(text: '$error\n\n$stackTrace'));
+                },
+                label: const Text("Copy"),
+                icon: const Icon(MdiIcons.contentCopy),
+              ),
+              FilledButton.icon(
+                onPressed: () {
+                  exit(0);
+                },
+                label: const Text("Exit"),
+                icon: const Icon(MdiIcons.close),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -70,32 +126,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations? l = AppLocalizations.of(context);
-    FlutterError.presentError = (details) {
-      FlutterError.dumpErrorToConsole(details, forceReport: true);
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                icon: const Icon(MdiIcons.alertOctagon),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Clipboard.setData(
-                            ClipboardData(text: details.toString()));
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(l?.copied_to_clipboard ??
-                                "Copied to clipboard")));
-                      },
-                      child: Text(l?.copy ?? "Copy")),
-                  TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l?.ok ?? "OK")),
-                ],
-                title: Text(l?.error ?? "Error"),
-                content: SingleChildScrollView(child: Text(details.toString())),
-              ));
-    };
-
     WidgetsFlutterBinding.ensureInitialized();
 
     return DynamicColorBuilder(

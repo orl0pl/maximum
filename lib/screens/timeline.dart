@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add.dart';
@@ -19,7 +21,9 @@ class TimelineScreenState extends State<TimelineScreen> {
   late DatabaseHelper _databaseHelper;
   List<Task> _tasks = [];
   List<Tag> _tags = [];
+  List<Place> _places = [];
   Set<int> selectedTagsIds = {};
+  Set<int> selectedPlacesIds = {};
   List<Task> get dueTasks =>
       _tasks.where((task) => task.isDue && !task.isToday).toList();
   List<Task> get todayTasksBeforeNow => _tasks
@@ -55,12 +59,14 @@ class TimelineScreenState extends State<TimelineScreen> {
     _databaseHelper = DatabaseHelper();
     fetchTasks();
     fetchTags();
+    fetchPlaces();
   }
 
   void fetchTasks() async {
     List<Task> tasks =
         await _databaseHelper.getTasksByTags(selectedTagsIds.toList());
-    tasks.sort((a, b) => a.datetime!.compareTo(b.datetime!));
+    tasks.sort((a, b) =>
+        a.isDateSet && b.isDateSet ? a.datetime!.compareTo(b.datetime!) : 0);
     if (!archiveMode) {
       tasks = (await Future.wait(tasks.map((task) async {
         bool completed = await task.completed;
@@ -80,6 +86,13 @@ class TimelineScreenState extends State<TimelineScreen> {
     List<Tag> tags = await _databaseHelper.taskTags;
     setState(() {
       _tags = tags;
+    });
+  }
+
+  void fetchPlaces() async {
+    List<Place> places = await _databaseHelper.getPlaces();
+    setState(() {
+      _places = places;
     });
   }
 
@@ -105,15 +118,21 @@ class TimelineScreenState extends State<TimelineScreen> {
       appBar: AppBar(
         title: Text(l.timeline),
         actions: [
-          IconButton.filledTonal(
-            icon: Icon(archiveMode ? Icons.history : Icons.history),
+          IconButton(
+            icon: Icon(archiveMode
+                ? MdiIcons.checkboxMarkedOutline
+                : MdiIcons.checkboxBlankOutline),
             isSelected: archiveMode,
             onPressed: () {
               setState(() {
                 archiveMode = !archiveMode;
-                refresh();
               });
+              refresh();
             },
+          ),
+          IconButton(
+            icon: const Icon(MdiIcons.refresh),
+            onPressed: refresh,
           ),
         ],
       ),
@@ -130,105 +149,101 @@ class TimelineScreenState extends State<TimelineScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                child: Row(
-                    children: _tags
-                            .map((tag) => Row(
-                                  children: [
-                                    InkWell(
-                                      onLongPress: () async {
-                                        Tag? newTag = await showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                AddOrEditTagDialog(tag: tag));
-                                        if (newTag != null) {
-                                          await _databaseHelper
-                                              .updateTaskTag(newTag);
-                                          fetchTags();
-                                        }
-                                      },
-                                      child: (FilterChip(
-                                          label: TagLabel(tag: tag),
-                                          onSelected: (value) {
-                                            setState(() {
-                                              if (value) {
-                                                selectedTagsIds
-                                                    .add(tag.tagId ?? -1);
-                                              } else {
-                                                selectedTagsIds
-                                                    .remove(tag.tagId ?? -1);
-                                              }
-                                            });
-                                            refresh();
-                                          },
-                                          selected: selectedTagsIds
-                                              .contains(tag.tagId))),
-                                    ),
-                                    const SizedBox(width: 8),
-                                  ],
-                                ))
-                            .toList() +
-                        [
-                          Row(
-                            children: [
-                              FilterChip(
-                                label: Text(l.add_tag),
-                                avatar: const Icon(Icons.add),
-                                onSelected: (value) async {
-                                  Tag? newTag = await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const AddOrEditTagDialog());
-                                  if (newTag != null) {
-                                    DatabaseHelper().insertTaskTag(newTag);
-                                    fetchTags();
-                                  }
-                                },
-                              ),
-                            ],
-                          )
-                        ])),
             SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (dueTasks.isNotEmpty) ...[
-                      Text(l.due_tasks, style: textTheme.labelLarge),
-                      for (Task task in dueTasks)
-                        TaskItem(
-                          task: task,
-                          refresh: refresh,
-                          clickable: true,
-                        ),
-                    ],
-                    if (todayTasksAfterNow.isNotEmpty ||
-                        todayTasksBeforeNow.isNotEmpty) ...[
-                      Text(l.today, style: textTheme.labelLarge),
-                    ],
-                    if (todayTasksBeforeNow.isNotEmpty) ...[
-                      for (Task task in todayTasksBeforeNow)
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: IntrinsicHeight(
+                    child: Row(children: [
+                      ..._tags.map((tag) => Row(
+                            children: [
+                              (FilterChip(
+                                  label: TagLabel(tag: tag),
+                                  onSelected: (value) {
+                                    setState(() {
+                                      if (value) {
+                                        selectedTagsIds.add(tag.tagId ?? -1);
+                                      } else {
+                                        selectedTagsIds.remove(tag.tagId ?? -1);
+                                      }
+                                    });
+                                    refresh();
+                                  },
+                                  selected:
+                                      selectedTagsIds.contains(tag.tagId))),
+                              const SizedBox(width: 8),
+                            ],
+                          )),
+                      VerticalDivider(),
+                      const SizedBox(width: 8),
+                      ..._places.map((place) => Row(
+                            children: [
+                              (FilterChip(
+                                  label: Text(place.name),
+                                  onSelected: (value) {
+                                    setState(() {
+                                      if (value) {
+                                        selectedPlacesIds
+                                            .add(place.placeId ?? -1);
+                                      } else {
+                                        selectedPlacesIds
+                                            .remove(place.placeId ?? -1);
+                                      }
+                                    });
+                                    refresh();
+                                  },
+                                  selected: selectedPlacesIds
+                                      .contains(place.placeId))),
+                              const SizedBox(width: 8),
+                            ],
+                          )),
+                    ]),
+                  )),
+            ),
+            // TODO: use a listview
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (dueTasks.isNotEmpty) ...[
+                        Text(l.due_tasks, style: textTheme.labelLarge),
+                        for (Task task in dueTasks)
+                          TaskItem(
+                            task: task,
+                            refresh: refresh,
+                            clickable: true,
+                          ),
+                      ],
+                      if (todayTasksAfterNow.isNotEmpty ||
+                          todayTasksBeforeNow.isNotEmpty) ...[
+                        Text(l.today, style: textTheme.labelLarge),
+                      ],
+                      if (todayTasksBeforeNow.isNotEmpty) ...[
+                        for (Task task in todayTasksBeforeNow)
+                          commonTaskItem(task),
+                      ],
+                      NowText(theme: theme, l: l, textTheme: textTheme),
+                      for (Task task in todayTasksAfterNow)
                         commonTaskItem(task),
+                      if (tomorrowTasks.isNotEmpty) ...[
+                        Text(l.tommorow, style: textTheme.labelLarge),
+                        for (Task task in tomorrowTasks) commonTaskItem(task),
+                      ],
+                      if (taskInNextSevenDays.isNotEmpty) ...[
+                        Text(l.this_week, style: textTheme.labelLarge),
+                        for (Task task in taskInNextSevenDays)
+                          commonTaskItem(task),
+                      ],
+                      if (futureTasks.isNotEmpty) ...[
+                        Text(l.in_future, style: textTheme.labelLarge),
+                        for (Task task in futureTasks) commonTaskItem(task),
+                      ]
                     ],
-                    NowText(theme: theme, l: l, textTheme: textTheme),
-                    for (Task task in todayTasksAfterNow) commonTaskItem(task),
-                    if (tomorrowTasks.isNotEmpty) ...[
-                      Text(l.tommorow, style: textTheme.labelLarge),
-                      for (Task task in tomorrowTasks) commonTaskItem(task),
-                    ],
-                    if (taskInNextSevenDays.isNotEmpty) ...[
-                      Text(l.this_week, style: textTheme.labelLarge),
-                      for (Task task in taskInNextSevenDays)
-                        commonTaskItem(task),
-                    ],
-                    if (futureTasks.isNotEmpty) ...[
-                      Text(l.in_future, style: textTheme.labelLarge),
-                      for (Task task in futureTasks) commonTaskItem(task),
-                    ]
-                  ],
+                  ),
                 ),
               ),
             ),

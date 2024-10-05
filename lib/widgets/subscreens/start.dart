@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/common/task_item.dart';
+import 'package:maximum/widgets/start_subscreen/important_event.dart';
 import 'package:maximum/widgets/start_subscreen/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -69,17 +71,25 @@ class _StartWidgetState extends State<StartWidget> {
                   style: widget.textTheme.titleSmall,
                 ),
                 const SizedBox(height: 8),
-                // ImportantEvent(textTheme: widget.textTheme),
-                // const SizedBox(height: 16),
-                Column(
-                  children: allTasks.map((Task task) {
-                    return TaskItem(
-                      task: task,
-                      refresh: () {
-                        fetchTasks();
-                      },
-                    );
-                  }).toList(),
+                ImportantEvent(textTheme: widget.textTheme),
+                const SizedBox(height: 16),
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...allTasks.take(6).map((Task task) {
+                        return TaskItem(
+                          task: task,
+                          refresh: () {
+                            fetchTasks();
+                          },
+                        );
+                      }),
+                      if (allTasks.length > 6) ...[
+                        Icon(MdiIcons.chevronDown,
+                            color: widget.textTheme.bodySmall!.color),
+                      ]
+                    ],
+                  ),
                 ),
               ],
             ),

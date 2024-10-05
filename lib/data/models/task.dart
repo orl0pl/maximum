@@ -253,6 +253,17 @@ class Task {
     }
   }
 
+  TimeOfDay? get timeOfDay {
+    if (time == null) {
+      return null;
+    } else {
+      return TimeOfDay(
+        hour: int.parse(time!.substring(0, 2)),
+        minute: int.parse(time!.substring(2, 4)),
+      );
+    }
+  }
+
   TaskTimeType get taskTimeType {
     if (date == null && time == null) {
       if (asap) {
@@ -333,12 +344,17 @@ class Task {
       DateTime tempDate =
           setDate; //.subtract(Duration(days: repeat?.repeatInterval ?? 0));
       if (occursOn(setDate)) {
-        return setDate;
+        return setDate.copyWith(
+            hour: timeOfDay?.hour ?? 0,
+            minute: timeOfDay?.minute ?? 0,
+            second: 0,
+            millisecond: 0,
+            microsecond: 0);
       }
 
       while (tempDate.isAfter(setDate)) {
         tempDate =
-            tempDate.subtract(Duration(days: repeat?.repeatInterval ?? 0));
+            tempDate; //.subtract(Duration(days: repeat?.repeatInterval ?? 0));
       }
       return tempDate;
     }
@@ -399,7 +415,7 @@ class Task {
     }
 
     if (repeat != null) {
-      return statuses
+      int value = statuses
               .where((TaskStatus status) {
                 DateTime? repetitionBefore = lastRepetitionBefore(date);
                 DateTime? repetitionAfter = nextRepetitionAfter(date);
@@ -423,6 +439,8 @@ class Task {
               .firstOrNull
               ?.value ??
           0;
+
+      return value;
     }
 
     return statuses.firstOrNull?.value ?? 0;

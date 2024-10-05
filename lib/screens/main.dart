@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/notes.dart';
@@ -8,6 +9,8 @@ import 'package:maximum/widgets/main_screen/bottom.dart';
 import 'package:maximum/widgets/subscreens/apps.dart';
 import 'package:maximum/widgets/subscreens/start.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -93,6 +96,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (details.velocity.pixelsPerSecond.dx < -1000) {
                             if (activeScreen == ActiveScreen.start) {
                               Navigator.of(context).push(MaterialPageRoute(
+                                  maintainState: false,
                                   builder: (context) => const NotesScreen()));
                             }
                           } else if (details.velocity.pixelsPerSecond.dx >
@@ -109,6 +113,7 @@ class _MainScreenState extends State<MainScreen> {
                               1000) {
                             if (activeScreen == ActiveScreen.start) {
                               Navigator.of(context).push(MaterialPageRoute(
+                                  maintainState: false,
                                   builder: (context) =>
                                       const TimelineScreen()));
                             } else {
