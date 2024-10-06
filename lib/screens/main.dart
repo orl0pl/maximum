@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/notes.dart';
@@ -9,8 +8,6 @@ import 'package:maximum/widgets/main_screen/bottom.dart';
 import 'package:maximum/widgets/subscreens/apps.dart';
 import 'package:maximum/widgets/subscreens/start.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

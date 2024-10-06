@@ -58,6 +58,7 @@ dependencies:
   vector_map_tiles: ^8.0.0
   latlong2: ^0.9.1
   path_provider: ^2.1.4
+  open_meteo: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -17,6 +17,7 @@ class TimelineScreen extends StatefulWidget {
 }
 
 class TimelineScreenState extends State<TimelineScreen> {
+  bool tasksLoaded = false;
   bool archiveMode = false;
   late DatabaseHelper _databaseHelper;
   List<Task> _tasks = [];
@@ -63,10 +64,21 @@ class TimelineScreenState extends State<TimelineScreen> {
   }
 
   void fetchTasks() async {
+    setState(() {
+      tasksLoaded = false;
+    });
     List<Task> tasks =
         await _databaseHelper.getTasksByTags(selectedTagsIds.toList());
     tasks.sort((a, b) =>
         a.isDateSet && b.isDateSet ? a.datetime!.compareTo(b.datetime!) : 0);
+    tasks = tasks
+        .where(
+          (task) =>
+              selectedPlacesIds.isEmpty ||
+              selectedPlacesIds.contains(task.placeId),
+        )
+        .toList();
+
     if (!archiveMode) {
       tasks = (await Future.wait(tasks.map((task) async {
         bool completed = await task.completed;
@@ -79,6 +91,7 @@ class TimelineScreenState extends State<TimelineScreen> {
 
     setState(() {
       _tasks = tasks;
+      tasksLoaded = true;
     });
   }
 
@@ -203,49 +216,53 @@ class TimelineScreenState extends State<TimelineScreen> {
             ),
             // TODO: use a listview
             Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (dueTasks.isNotEmpty) ...[
-                        Text(l.due_tasks, style: textTheme.labelLarge),
-                        for (Task task in dueTasks)
-                          TaskItem(
-                            task: task,
-                            refresh: refresh,
-                            clickable: true,
-                          ),
-                      ],
-                      if (todayTasksAfterNow.isNotEmpty ||
-                          todayTasksBeforeNow.isNotEmpty) ...[
-                        Text(l.today, style: textTheme.labelLarge),
-                      ],
-                      if (todayTasksBeforeNow.isNotEmpty) ...[
-                        for (Task task in todayTasksBeforeNow)
-                          commonTaskItem(task),
-                      ],
-                      NowText(theme: theme, l: l, textTheme: textTheme),
-                      for (Task task in todayTasksAfterNow)
-                        commonTaskItem(task),
-                      if (tomorrowTasks.isNotEmpty) ...[
-                        Text(l.tommorow, style: textTheme.labelLarge),
-                        for (Task task in tomorrowTasks) commonTaskItem(task),
-                      ],
-                      if (taskInNextSevenDays.isNotEmpty) ...[
-                        Text(l.this_week, style: textTheme.labelLarge),
-                        for (Task task in taskInNextSevenDays)
-                          commonTaskItem(task),
-                      ],
-                      if (futureTasks.isNotEmpty) ...[
-                        Text(l.in_future, style: textTheme.labelLarge),
-                        for (Task task in futureTasks) commonTaskItem(task),
-                      ]
-                    ],
-                  ),
-                ),
-              ),
+              child: tasksLoaded
+                  ? SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (dueTasks.isNotEmpty) ...[
+                              Text(l.due_tasks, style: textTheme.labelLarge),
+                              for (Task task in dueTasks)
+                                TaskItem(
+                                  task: task,
+                                  refresh: refresh,
+                                  clickable: true,
+                                ),
+                            ],
+                            if (todayTasksAfterNow.isNotEmpty ||
+                                todayTasksBeforeNow.isNotEmpty) ...[
+                              Text(l.today, style: textTheme.labelLarge),
+                            ],
+                            if (todayTasksBeforeNow.isNotEmpty) ...[
+                              for (Task task in todayTasksBeforeNow)
+                                commonTaskItem(task),
+                            ],
+                            NowText(theme: theme, l: l, textTheme: textTheme),
+                            for (Task task in todayTasksAfterNow)
+                              commonTaskItem(task),
+                            if (tomorrowTasks.isNotEmpty) ...[
+                              Text(l.tomorrow, style: textTheme.labelLarge),
+                              for (Task task in tomorrowTasks)
+                                commonTaskItem(task),
+                            ],
+                            if (taskInNextSevenDays.isNotEmpty) ...[
+                              Text(l.this_week, style: textTheme.labelLarge),
+                              for (Task task in taskInNextSevenDays)
+                                commonTaskItem(task),
+                            ],
+                            if (futureTasks.isNotEmpty) ...[
+                              Text(l.in_future, style: textTheme.labelLarge),
+                              for (Task task in futureTasks)
+                                commonTaskItem(task),
+                            ]
+                          ],
+                        ),
+                      ),
+                    )
+                  : const Center(child: CircularProgressIndicator()),
             ),
           ],
         ),

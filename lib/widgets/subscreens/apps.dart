@@ -1,3 +1,4 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
@@ -6,6 +7,14 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/widgets/common/note.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
+/* TODO: Use LauncherApps
+ * documentation: https://developer.android.com/reference/android/content/pm/LauncherApps
+ * get activity list method: https://developer.android.com/reference/android/content/pm/LauncherApps#getActivityList(java.lang.String,%20android.os.UserHandle)
+*/
 
 enum ElementType { app, note }
 
@@ -52,13 +61,28 @@ class AppsWidgetState extends State<AppsWidget> {
   List<Note> allnotes = [];
 
   void openTopMatch() {
-    if (allMatches.isNotEmpty) {
+    if (widget.inputValue.trim().endsWith('.g')) {
+      var intent =
+          AndroidIntent(action: 'android.intent.action.WEB_SEARCH', arguments: {
+        'query':
+            widget.inputValue.trim().substring(0, widget.inputValue.length - 2)
+      });
+
+      intent.launch();
+    } else if (allMatches.isNotEmpty) {
       if (allMatches[0].type == ElementType.app) {
         AppLauncher.openApp(
           androidApplicationId: allMatches[0].app!.packageName,
         );
       }
     }
+  }
+
+  bool get searchExternal {
+    if (widget.inputValue.trim().endsWith('.g')) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -103,11 +127,11 @@ class AppsWidgetState extends State<AppsWidget> {
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             child: widget.inputValue != ""
                 ? Text(
-                    "Best match:",
+                    l.best_match,
                     style: widget.textTheme.titleSmall,
                   )
                 : Text(
-                    "All apps",
+                    l.all_apps,
                     style: widget.textTheme.titleSmall,
                   ),
           ),
@@ -120,38 +144,12 @@ class AppsWidgetState extends State<AppsWidget> {
                         child: Text(l.nothing_found),
                       )
                     : ListView.builder(
+                        // shrinkWrap: true,
                         itemCount: allMatches.length,
                         itemBuilder: (context, index) {
                           if (allMatches[index].type == ElementType.app) {
-                            return ListTile(
-                              tileColor: index == 0 && widget.inputValue != ""
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                  : null,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              leading: allMatches[index].app!.icon != null
-                                  ? Image.memory(
-                                      allMatches[index].app!.icon!,
-                                      width: 40,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Icon(Icons.error);
-                                      },
-                                    )
-                                  : null,
-                              trailing: index == 0 && widget.inputValue != ""
-                                  ? const Icon(Icons.chevron_right)
-                                  : null,
-                              title: Text(allMatches[index].app!.name),
-                              onTap: () {
-                                AppLauncher.openApp(
-                                    androidApplicationId:
-                                        allMatches[index].app!.packageName);
-                              },
-                            );
+                            return AppListEntry(
+                                widget: widget, app: allMatches[index].app!);
                           } else if (allMatches[index].type ==
                               ElementType.note) {
                             return ListTile(
@@ -179,6 +177,45 @@ class AppsWidgetState extends State<AppsWidget> {
           )
         ],
       ),
+    );
+  }
+}
+
+class AppListEntry extends StatelessWidget {
+  const AppListEntry({
+    super.key,
+    required this.widget,
+    required this.app,
+    this.highlight = false,
+  });
+
+  final AppsWidget widget;
+  final AppInfo app;
+
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      tileColor:
+          highlight ? Theme.of(context).colorScheme.primaryContainer : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      leading: app.icon != null
+          ? Image.memory(
+              app.icon!,
+              width: 40,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.error);
+              },
+            )
+          : null,
+      trailing: highlight ? const Icon(Icons.chevron_right) : null,
+      title: Text(app.name),
+      onTap: () {
+        AppLauncher.openApp(androidApplicationId: app.packageName);
+      },
     );
   }
 }

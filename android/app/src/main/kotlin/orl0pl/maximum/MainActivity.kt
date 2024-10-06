@@ -11,14 +11,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "orl0pl.maximum/alarm"
+    private val alarmChannel = "orl0pl.maximum/alarm"
 
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     val binaryMessenger = flutterEngine?.dartExecutor?.binaryMessenger ?: return
 
-    MethodChannel(binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+    MethodChannel(binaryMessenger, alarmChannel).setMethodCallHandler { call, result ->
         if (call.method == "getNextAlarm") {
             val nextAlarm = getNextAlarm()
             result.success(nextAlarm)

@@ -5,13 +5,13 @@ import 'package:maximum/data/models/task.dart';
 
 String formatDate(DateTime date, AppLocalizations? l) {
   DateTime today = DateTime.now();
-  DateTime tommorow = today.add(const Duration(days: 1));
+  DateTime tomorrow = today.add(const Duration(days: 1));
   DateTime yesterday = today.subtract(const Duration(days: 1));
 
   if (DateUtils.isSameDay(date, today)) {
     return l?.today ?? 'today';
-  } else if (DateUtils.isSameDay(date, tommorow)) {
-    return 'tommorow';
+  } else if (DateUtils.isSameDay(date, tomorrow)) {
+    return 'tomorrow';
   } else if (DateUtils.isSameDay(date, yesterday)) {
     return 'yesterday';
   } else if (date.isAfter(DateUtils.dateOnly(DateTime.now())) &&
@@ -25,7 +25,7 @@ String formatDate(DateTime date, AppLocalizations? l) {
 
 String formatTaskDateAndTime(Task task, AppLocalizations? l) {
   DateTime today = DateTime.now();
-  DateTime tommorow = today.add(const Duration(days: 1));
+  DateTime tomorrow = today.add(const Duration(days: 1));
   DateTime yesterday = today.subtract(const Duration(days: 1));
   DateTime date = task.datetime ?? DateTime.now();
 
@@ -34,11 +34,11 @@ String formatTaskDateAndTime(Task task, AppLocalizations? l) {
       return DateFormat.jm().format(date);
     }
     return l?.today ?? 'today';
-  } else if (DateUtils.isSameDay(date, tommorow)) {
+  } else if (DateUtils.isSameDay(date, tomorrow)) {
     if (task.isTimeSet) {
-      return '${l?.tommorow ?? 'tommorow'} ${DateFormat.jm().format(date)}';
+      return '${l?.tomorrow ?? 'tomorrow'} ${DateFormat.jm().format(date)}';
     }
-    return l?.tommorow ?? 'tommorow';
+    return l?.tomorrow ?? 'tomorrow';
   } else if (DateUtils.isSameDay(date, yesterday)) {
     if (task.isTimeSet) {
       return '${'yesterday'} ${DateFormat.jm().format(date)}';

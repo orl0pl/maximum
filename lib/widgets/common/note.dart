@@ -72,6 +72,7 @@ class _NoteWidgetState extends State<NoteWidget> {
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               l.hour_and_location(DateFormat.Hm().format(widget.note.dt),

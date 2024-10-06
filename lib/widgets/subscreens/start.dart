@@ -51,51 +51,53 @@ class _StartWidgetState extends State<StartWidget> {
     AppLocalizations? l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Top(),
-          const SizedBox(height: 32),
-          InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const TimelineScreen(),
-                  maintainState: false));
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l?.timeline ?? '',
-                  style: widget.textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                ImportantEvent(textTheme: widget.textTheme),
-                const SizedBox(height: 16),
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ...allTasks.take(6).map((Task task) {
-                        return TaskItem(
-                          task: task,
-                          refresh: () {
-                            fetchTasks();
-                          },
-                        );
-                      }),
-                      if (allTasks.length > 6) ...[
-                        Icon(MdiIcons.chevronDown,
-                            color: widget.textTheme.bodySmall!.color),
-                      ]
-                    ],
+      child: OverflowBox(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Top(),
+            const SizedBox(height: 32),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const TimelineScreen(),
+                    maintainState: false));
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l?.timeline ?? '',
+                    style: widget.textTheme.titleSmall,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  ImportantEvent(textTheme: widget.textTheme),
+                  const SizedBox(height: 16),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ...allTasks.take(6).map((Task task) {
+                          return TaskItem(
+                            task: task,
+                            refresh: () {
+                              fetchTasks();
+                            },
+                          );
+                        }),
+                        if (allTasks.length > 6) ...[
+                          Icon(MdiIcons.chevronDown,
+                              color: widget.textTheme.bodySmall!.color),
+                        ]
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Spacer(),
-        ],
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }

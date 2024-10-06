@@ -5,6 +5,7 @@ import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/settings/manage_places.dart';
 import 'package:maximum/screens/settings/manage_tags.dart';
 import 'package:maximum/screens/settings/pinned_apps.dart';
+import 'package:maximum/screens/settings/preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -102,6 +103,16 @@ ${packageInfo.packageName}
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return const PinnedAppsScreen();
+                }));
+              }),
+          ListTile(
+              title: Text(l.preferences),
+              leading: const Icon(Icons.tune),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const PreferencesScreen();
                 }));
               }),
           const Divider(),

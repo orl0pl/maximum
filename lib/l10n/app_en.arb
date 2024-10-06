@@ -52,7 +52,7 @@
     "deadline": "Deadline",
 
     "due_tasks": "Due tasks",
-    "tommorow": "Tommorow",
+    "tomorrow": "Tommorow",
     "this_week": "This week",
     "in_future": "In future",
     "now": "Now",
@@ -130,5 +130,23 @@
     "nothing_found": "Nic nie znaleziono",
     "error": "Error",
     "copied_to_clipboard": "Copied to clipboard",
-    "copy": "Copy"
+    "copy": "Copy",
+    "best_match": "Best match:",
+    "all_apps": "All apps",
+    "preferences": "Preferences",
+    "temperature_unit": "Temperature unit",
+    "wind_speed_unit": "Wind speed unit",
+    "precipitation_unit": "Precipitation unit",
+    "rain_will_end": "Rain will end in {time}",
+    "snow_will_end": "Snow will end in {time}",
+    "rain_will_start": "Rain will start in {time}",
+    "snow_will_start": "Snow will start in {time}",
+    "shower_will_start": "Shower will start in {time}",
+    "thunderstorm_will_start": "Thunderstorm will start in {time}",
+    "high_uv_index_today": "High UV today",
+    "high_uv_index_tomorrow": "High UV tomorrow",
+    "rain_tomorrow": "Rain tomorrow",
+    "snow_tomorrow": "Snow tomorrow",
+    "lower_temperature_tomorrow": "Tomorrow {temperature} colder",
+    "higher_temperature_tomorrow": "Tommorow {temperature} warmer"
 }

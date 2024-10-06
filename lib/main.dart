@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,18 +15,22 @@ import 'package:intl/intl_standalone.dart';
 import 'package:maximum/screens/main.dart';
 
 Future<void> main() async {
-  runZonedGuarded(() {
+  if (kDebugMode) {
     runApp(const MyApp());
-  }, (error, stackTrace) {
-    // ignore: avoid_print
-    print(error);
-    // ignore: avoid_print
-    print(stackTrace);
-    runApp(ErrorScreen(
-      error: error,
-      stackTrace: stackTrace,
-    ));
-  });
+  } else {
+    runZonedGuarded(() {
+      runApp(const MyApp());
+    }, (error, stackTrace) {
+      // ignore: avoid_print
+      print(error);
+      // ignore: avoid_print
+      print(stackTrace);
+      runApp(ErrorScreen(
+        error: error,
+        stackTrace: stackTrace,
+      ));
+    });
+  }
 }
 
 class ErrorScreen extends StatelessWidget {
@@ -37,35 +42,86 @@ class ErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              const Icon(MdiIcons.alertOctagon),
-              const Text('Fatal Error'),
-              SingleChildScrollView(
-                  child: Text(
-                'error: $error\n\nstackTrace: $stackTrace',
-              )),
-              FilledButton.icon(
-                onPressed: () {
-                  Clipboard.setData(
-                      ClipboardData(text: '$error\n\n$stackTrace'));
-                },
-                label: const Text("Copy"),
-                icon: const Icon(MdiIcons.contentCopy),
+      theme: ThemeData.dark(useMaterial3: true),
+      home: Builder(builder: (context) {
+        return Scaffold(
+          body: SafeArea(
+            child: Expanded(
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(MdiIcons.alertOctagon,
+                        size: 64, color: Theme.of(context).colorScheme.error),
+                    Text(
+                      'Fatal Error',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SingleChildScrollView(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Error:",
+                                style: Theme.of(context).textTheme.labelLarge),
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.error)),
+                              child: Text(
+                                error.toString(),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Text("Stacktrace:",
+                                style: Theme.of(context).textTheme.labelLarge),
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.error)),
+                              child: Text(
+                                stackTrace.toString(),
+                              ),
+                            ),
+                          ],
+                        )),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: () {
+                            Clipboard.setData(
+                                ClipboardData(text: '$error\n\n$stackTrace'));
+                          },
+                          label: const Text("Copy"),
+                          icon: const Icon(MdiIcons.contentCopy),
+                        ),
+                        FilledButton.icon(
+                          onPressed: () {
+                            exit(0);
+                          },
+                          label: const Text("Exit"),
+                          icon: const Icon(MdiIcons.close),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 64),
+                  ],
+                ),
               ),
-              FilledButton.icon(
-                onPressed: () {
-                  exit(0);
-                },
-                label: const Text("Exit"),
-                icon: const Icon(MdiIcons.close),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

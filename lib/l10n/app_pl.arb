@@ -22,7 +22,7 @@
 
     "deadline": "Termin",
     "due_tasks": "Zaległe zadania",
-    "tommorow": "Jutro",
+    "tomorrow": "Jutro",
     "this_week": "W tym tygodniu",
     "in_future": "W przyszłości",
     "now": "Teraz",
@@ -87,5 +87,23 @@
     "nothing_found": "Nic nie znaleziono",
     "error": "Błąd",
     "copied_to_clipboard": "Skopiowano do schowka",
-    "copy": "Skopiuj"
+    "copy": "Skopiuj",
+    "best_match": "Najlepszy dopasowanie:",
+    "all_apps": "Wszystkie aplikacje",
+    "preferences": "Preferencje",
+    "temperature_unit": "Jednostka temperatury",
+    "wind_speed_unit": "Jednostka prędkości wiatru",
+    "precipitation_unit": "Jednostka opadów",
+    "rain_will_end": "Koniec deszczu za {time}",
+    "snow_will_end": "Koniec śniegu za {time}",
+    "rain_will_start": "Deszcz za {time}",
+    "snow_will_start": "Śnieg za {time}",
+    "shower_will_start": "Przelotne opady za {time}",
+    "thunderstorm_will_start": "Burza za {time}",
+    "high_uv_index_today": "Dzisiaj wysokie UV",
+    "high_uv_index_tomorrow": "Jutro wysokie UV",
+    "rain_tomorrow": "Deszcz jutro",
+    "snow_tomorrow": "Śnieg jutro",
+    "lower_temperature_tomorrow": "Jutro {temperature} zimniej",
+    "higher_temperature_tomorrow": "Jutro {temperature} cieplej"
 }
