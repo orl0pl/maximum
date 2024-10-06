@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/task_status.dart';
+
+const int defaultRankTune1 = 1000000;
+const int defaultRankTune2 = 100;
 
 enum TaskTimeType {
   unset,
@@ -9,128 +13,6 @@ enum TaskTimeType {
   dateAndTime,
   dateDeadline,
   dateAndTimeDeadline
-}
-
-enum RepeatType { daily, dayOfWeek }
-
-class RepeatData {
-  RepeatType repeatType;
-  String repeatData;
-
-  RepeatData({required this.repeatType, required this.repeatData});
-
-  @override
-  String toString() {
-    return repeatData;
-  }
-
-  static RepeatType repeatTypeFromString(String str) {
-    switch (str) {
-      case "DAILY":
-        return RepeatType.daily;
-      case "DAY_OF_WEEK":
-        return RepeatType.dayOfWeek;
-      default:
-        throw Exception("Unknown repeat type: $str");
-    }
-  }
-
-  static String repeatTypeToString(RepeatType type) {
-    switch (type) {
-      case RepeatType.daily:
-        return "DAILY";
-      case RepeatType.dayOfWeek:
-        return "DAY_OF_WEEK";
-      default:
-        throw Exception("Unknown repeat type: $type");
-    }
-  }
-
-  static RepeatData fromString(String str, String type) {
-    return RepeatData(repeatType: repeatTypeFromString(type), repeatData: str);
-  }
-
-  int? get repeatInterval {
-    if (repeatType == RepeatType.daily) {
-      return int.tryParse(repeatData);
-    }
-    return null;
-  }
-
-  bool? get monday => repeatData[0] == '1' ? true : false;
-  bool? get tuesday => repeatData[1] == '1' ? true : false;
-  bool? get wednesday => repeatData[2] == '1' ? true : false;
-  bool? get thursday => repeatData[3] == '1' ? true : false;
-  bool? get friday => repeatData[4] == '1' ? true : false;
-  bool? get saturday => repeatData[5] == '1' ? true : false;
-  bool? get sunday => repeatData[6] == '1' ? true : false;
-
-  List<bool> get weekdays {
-    return [
-      monday ?? false,
-      tuesday ?? false,
-      wednesday ?? false,
-      thursday ?? false,
-      friday ?? false,
-      saturday ?? false,
-      sunday ?? false
-    ];
-  }
-
-  set repeatInterval(int? interval) {
-    if (repeatType == RepeatType.daily) {
-      repeatData = interval.toString();
-    } else {}
-  }
-
-  set monday(bool? value) {
-    setWeekday(0, value);
-  }
-
-  set tuesday(bool? value) {
-    setWeekday(1, value);
-  }
-
-  set wednesday(bool? value) {
-    setWeekday(2, value);
-  }
-
-  set thursday(bool? value) {
-    setWeekday(3, value);
-  }
-
-  set friday(bool? value) {
-    setWeekday(4, value);
-  }
-
-  set saturday(bool? value) {
-    setWeekday(5, value);
-  }
-
-  set sunday(bool? value) {
-    setWeekday(6, value);
-  }
-
-  set weekdays(List<bool> weekdays) {
-    repeatData = "";
-    for (int i = 0; i < weekdays.length; i++) {
-      repeatData += weekdays[i] ? "1" : "0";
-    }
-  }
-
-  bool? getWeekday(int index) {
-    if (repeatType == RepeatType.dayOfWeek) {
-      return weekdays[index];
-    } else {
-      return null;
-    }
-  }
-
-  void setWeekday(int index, bool? value) {
-    if (repeatType == RepeatType.dayOfWeek && value != null) {
-      repeatData = repeatData.replaceRange(index, index + 1, value ? "1" : "0");
-    } else {}
-  }
 }
 
 class Task {
@@ -202,6 +84,70 @@ class Task {
       placeId: map['placeId'],
       active: map['active'],
     );
+  }
+
+  /// Calculates the base rank score for the task. The higher the score, the
+  /// higher the task should be ranked in the timeline.
+  ///
+  /// The score is based on the following rules:
+  ///
+  /// 1. If the task is ASAP, the score is [rankTimeToDeadlineMultiplier].
+  /// 2. If the task has a deadline or is due, the score is
+  ///    [rankTimeToDeadlineMultiplier] divided by the number of minutes until
+  ///    the deadline, rounded up to the nearest integer.
+  /// 3. If the task is today and has a time set, the score is
+  ///    [rankTodayTimeSetMultiplier] divided by the number of minutes until the
+  ///    time, rounded up to the nearest integer.
+  /// 4. If the task is today and does not have a time set, the score is
+  ///    [rankTodayTimeSetMultiplier] divided by 24, rounded down to the nearest
+  ///    integer.
+  /// 5. If the task is tomorrow and has a time set, the score is
+  ///    [rankTodayTimeSetMultiplier] divided by the number of minutes until the
+  ///    time, divided by 3, rounded up to the nearest integer.
+  /// 6. If the task is tomorrow and does not have a time set, the score is
+  ///    [rankTodayTimeSetMultiplier] divided by 24, divided by 3, rounded down to
+  ///    the nearest integer.
+  /// 7. Otherwise, the score is 1.
+  int getRankScoreBase(
+      int rankTimeToDeadlineMultiplier, int rankTodayTimeSetMultiplier) {
+    if (asap) {
+      return rankTimeToDeadlineMultiplier * 100000;
+    }
+    int diffrence = DateTime.now().difference(datetime!).inMinutes;
+    if (deadline || isDue) {
+      if (diffrence == 0) {
+        return rankTimeToDeadlineMultiplier;
+      }
+      return (rankTimeToDeadlineMultiplier * diffrence / 60).ceil();
+    }
+
+    if (isToday) {
+      if (isTimeSet) {
+        return (rankTodayTimeSetMultiplier / diffrence).ceil();
+      } else {
+        return (rankTodayTimeSetMultiplier / 24).floor();
+      }
+    } else if (isTomorrow) {
+      if (isTimeSet) {
+        return (rankTodayTimeSetMultiplier / (diffrence * 3)).ceil();
+      } else {
+        return (rankTodayTimeSetMultiplier / (24 * 3)).floor();
+      }
+    }
+
+    return 1;
+  }
+
+  int getRankScore(bool placeMatching, rankTimeToDeadlineMultiplier,
+      rankTodayTimeSetMultiplier) {
+    if (placeMatching) {
+      return getRankScoreBase(
+              rankTimeToDeadlineMultiplier, rankTodayTimeSetMultiplier) *
+          3;
+    } else {
+      return getRankScoreBase(
+          rankTimeToDeadlineMultiplier, rankTodayTimeSetMultiplier);
+    }
   }
 
   bool get asap {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
@@ -36,11 +37,14 @@ class TaskItem extends StatefulWidget {
 
   final bool shouldSlide;
 
+  final String? textUnderTaskText;
+
   const TaskItem(
       {super.key,
       required this.task,
       required this.refresh,
       this.clickable = false,
+      this.textUnderTaskText,
       this.shouldSlide = true});
 
   @override
@@ -149,6 +153,12 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
                         widget.task.text,
                         style: textTheme.bodyLarge,
                       ),
+                      if (widget.textUnderTaskText != null) ...[
+                        Text(
+                          widget.textUnderTaskText!,
+                          style: textTheme.bodySmall,
+                        )
+                      ],
                     ],
                   ),
                 ],

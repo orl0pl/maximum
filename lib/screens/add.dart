@@ -8,6 +8,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/models/place.dart';
+import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add_place.dart';

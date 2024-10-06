@@ -81,7 +81,7 @@ class _WeatherState extends State<Weather> {
     }
 
     try {
-      // TODO: wait for fixing https://github.com/neursh/open-meteo-dart/issues/15 and use minutely_15
+      // TODO: use experimental minutely_15
       final ApiResponse<WeatherApi> response = await api.request(
           latitude: latitude,
           longitude: longitude,

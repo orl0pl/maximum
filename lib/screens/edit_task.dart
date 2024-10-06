@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/place.dart';
+import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:intl/intl.dart';

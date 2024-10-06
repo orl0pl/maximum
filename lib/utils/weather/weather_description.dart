@@ -130,9 +130,9 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
   final num temperatureDifference =
       (todayMaxTemperature) - (tomorrowMaxTemperature);
 
-  higherTemperatureTomorrow = temperatureDifference > 1;
+  higherTemperatureTomorrow = temperatureDifference < -1;
 
-  lowerTemperatureTomorrow = temperatureDifference < -1;
+  lowerTemperatureTomorrow = temperatureDifference > 1;
 
   highUvIndexTomorrow = (response
           .dailyData[WeatherDaily.uv_index_max]!.values.entries
