@@ -48,7 +48,6 @@ class TaskItem extends StatefulWidget {
 }
 
 class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
-  Key _checkboxKey = UniqueKey();
   late Animation<Offset> _slideOffset = Tween<Offset>(
     begin: Offset.zero,
     end: const Offset(1.0, 0.0),
@@ -206,8 +205,6 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
       widget.refresh();
     }
 
-    setState(() {
-      _checkboxKey = UniqueKey();
-    });
+    setState(() {});
   }
 }

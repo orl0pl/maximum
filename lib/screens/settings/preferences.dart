@@ -67,7 +67,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       label: Text("°F"),
                     ),
                   ],
-                  selected: Set.from([temperatureUnit]),
+                  selected: {
+                    temperatureUnit
+                  },
                   multiSelectionEnabled: false,
                   onSelectionChanged: (value) {
                     setState(() {
@@ -93,7 +95,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     ),
                     ButtonSegment(value: "kmh", label: Text("km/h")),
                   ],
-                  selected: Set.from([windSpeedUnit]),
+                  selected: {
+                    windSpeedUnit
+                  },
                   multiSelectionEnabled: false,
                   onSelectionChanged: (value) {
                     setState(() {
@@ -114,7 +118,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       label: Text("in"),
                     ),
                   ],
-                  selected: Set.from([precipitationUnit]),
+                  selected: {
+                    precipitationUnit
+                  },
                   multiSelectionEnabled: false,
                   onSelectionChanged: (value) {
                     setState(() {

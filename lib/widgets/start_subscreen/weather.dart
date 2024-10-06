@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/weather/code_to_icon.dart';
@@ -65,6 +63,9 @@ class _WeatherState extends State<Weather> {
           ? PrecipitationUnit.mm
           : PrecipitationUnit.inch,
     );
+
+    if (!mounted) return;
+
     Position? currentPosition = await determinePositionWithSnackBar(
       context,
       mounted,

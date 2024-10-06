@@ -7,9 +7,6 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:maximum/widgets/common/note.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 /* TODO: Use LauncherApps
  * documentation: https://developer.android.com/reference/android/content/pm/LauncherApps

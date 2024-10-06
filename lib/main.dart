@@ -76,7 +76,7 @@ class ErrorScreen extends StatelessWidget {
                                 error.toString(),
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text("Stacktrace:",
                                 style: Theme.of(context).textTheme.labelLarge),
                             Container(
