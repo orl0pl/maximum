@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:quotesy/quotesy.dart';
+import 'package:maximum/utils/quotesy.dart';
 
 class Inspiration extends StatefulWidget {
   const Inspiration({
@@ -19,20 +19,14 @@ class _InspirationState extends State<Inspiration> {
   void loadDywlQuote() async {
     var quote = await Quotes.random();
     setState(() {
-      _quote = quote.text;
-      _author = quote.author;
+      _quote = "„${quote.text}”";
+      _author = "– ${quote.author}";
     });
   }
 
   void initState() {
     super.initState();
-    try {
-      loadDywlQuote();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+    loadDywlQuote();
   }
 
   @override
@@ -42,14 +36,14 @@ class _InspirationState extends State<Inspiration> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '„Tutaj może być postawiony cytat, powitanie, cel długoterminowy, które zmienia się co jakiś czas.”',
+          Text(
+            _quote,
             style: TextStyle(fontStyle: FontStyle.italic),
           ),
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              '– designer aplikacji',
+              _author,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ),

@@ -107,5 +107,6 @@
     "lower_temperature_tomorrow": "Jutro {temperature} zimniej",
     "higher_temperature_tomorrow": "Jutro {temperature} cieplej",
     "manage_quotes": "Zarządzaj cytatami",
-    "api_enabled": "API {name} włączone"
+    "api_enabled": "API {name} włączone",
+    "no_tasks": "Brak zadań"
 }

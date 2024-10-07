@@ -150,5 +150,6 @@
     "lower_temperature_tomorrow": "Tomorrow {temperature} colder",
     "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
     "manage_quotes": "Manage quotes",
-    "api_enabled": "{name} API enabled"
+    "api_enabled": "{name} API enabled",
+    "no_tasks": "No tasks"
 }

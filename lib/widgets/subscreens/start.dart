@@ -130,27 +130,37 @@ class _StartWidgetState extends State<StartWidget> {
                               }
                               tasksThatFit = 6;
                             }
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ...allTasks
-                                    .take(tasksThatFit < 0 ? 0 : tasksThatFit)
-                                    .map((Task task) {
-                                  return TaskItem(
-                                    task: task,
-                                    textUnderTaskText:
-                                        "Score: ${taskRanks[task.taskId]?.toString()}",
-                                    refresh: () {
-                                      fetchTasks();
-                                    },
+                            return allTasks.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      l?.no_tasks ?? '',
+                                      style: widget.textTheme.bodySmall,
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ...allTasks
+                                          .take(tasksThatFit < 0
+                                              ? 0
+                                              : tasksThatFit)
+                                          .map((Task task) {
+                                        return TaskItem(
+                                          task: task,
+                                          textUnderTaskText:
+                                              "Score: ${taskRanks[task.taskId]?.toString()}",
+                                          refresh: () {
+                                            fetchTasks();
+                                          },
+                                        );
+                                      }),
+                                      if (allTasks.length > tasksThatFit) ...[
+                                        Icon(MdiIcons.chevronDown,
+                                            color: widget
+                                                .textTheme.bodySmall!.color),
+                                      ]
+                                    ],
                                   );
-                                }),
-                                if (allTasks.length > tasksThatFit) ...[
-                                  Icon(MdiIcons.chevronDown,
-                                      color: widget.textTheme.bodySmall!.color),
-                                ]
-                              ],
-                            );
                           },
                         ),
                       ),
