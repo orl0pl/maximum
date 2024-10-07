@@ -148,5 +148,7 @@
     "rain_tomorrow": "Rain tomorrow",
     "snow_tomorrow": "Snow tomorrow",
     "lower_temperature_tomorrow": "Tomorrow {temperature} colder",
-    "higher_temperature_tomorrow": "Tommorow {temperature} warmer"
+    "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
+    "manage_quotes": "Manage quotes",
+    "api_enabled": "{name} API enabled"
 }

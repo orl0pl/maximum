@@ -148,7 +148,7 @@ class _WeatherState extends State<Weather> {
     TextTheme textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap: getWeather,
-      child: Column(children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
         Row(
           children: [
             isLoading

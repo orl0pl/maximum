@@ -43,7 +43,7 @@ class _TopState extends State<Top> {
             InkWell(
               onTap: () => openCalendar.launch(),
               child: Text(
-                DateFormat('EEEE dd MMMM').format(DateTime.now()),
+                DateFormat('EEE d MMMM').format(DateTime.now()),
                 style: textTheme.titleLarge,
               ),
             ),

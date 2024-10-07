@@ -638,6 +638,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
+  quotesy:
+    dependency: "direct main"
+    description:
+      name: quotesy
+      sha256: "1cb83a413b5cbd04fecdd060c3c4cadce5196ddea125ed24926cb2ecae57256d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.10"
   shared_preferences:
     dependency: "direct main"
     description:
