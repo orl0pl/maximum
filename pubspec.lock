@@ -252,6 +252,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.7447"
+  flutter_patch_package:
+    dependency: "direct main"
+    description:
+      name: flutter_patch_package
+      sha256: d24e953a5d223d53fded329e66c9037ddf3ea90f2ee85c730c4c846f287f4738
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.11"
   flutter_test:
     dependency: "direct dev"
     description: flutter

@@ -60,6 +60,7 @@ dependencies:
   path_provider: ^2.1.4
   open_meteo: ^2.0.1
   quotesy: ^1.0.10
+  flutter_patch_package: ^0.0.11
 
 dev_dependencies:
   flutter_test:
