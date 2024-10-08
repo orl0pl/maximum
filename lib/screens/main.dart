@@ -1,3 +1,4 @@
+import 'package:android_package_manager/android_package_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
@@ -33,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> _fetchApps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       List<AppInfo> apps = getAppsFromCache(prefs) ??
           await InstalledApps.getInstalledApps(false, true);

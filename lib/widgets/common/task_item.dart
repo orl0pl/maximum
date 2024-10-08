@@ -165,16 +165,17 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
               ),
               Row(
                 children: [
-                  InfoChip(
-                      subtitle: getSubtitleText(l),
-                      variant: widget.task.isDue ||
-                              widget.task.asap ||
-                              widget.task.deadline
-                          ? ChipVariant.primary
-                          : widget.task.datetime!.isBefore(
-                                  DateTime.now().add(const Duration(days: 7)))
-                              ? ChipVariant.secondary
-                              : ChipVariant.outline),
+                  if (widget.task.isDateSet || widget.task.asap)
+                    InfoChip(
+                        subtitle: getSubtitleText(l),
+                        variant: widget.task.isDue ||
+                                widget.task.asap ||
+                                widget.task.deadline
+                            ? ChipVariant.primary
+                            : widget.task.datetime!.isBefore(
+                                    DateTime.now().add(const Duration(days: 7)))
+                                ? ChipVariant.secondary
+                                : ChipVariant.outline),
                 ],
               )
             ],

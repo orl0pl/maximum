@@ -151,5 +151,7 @@
     "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
     "manage_quotes": "Manage quotes",
     "api_enabled": "{name} API enabled",
-    "no_tasks": "No tasks"
+    "no_tasks": "No tasks",
+    "restart_app_to_apply": "Restart app to apply changes",
+    "restart_app": "Restart app"
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:maximum/utils/quotesy.dart';
 
@@ -24,6 +23,7 @@ class _InspirationState extends State<Inspiration> {
     });
   }
 
+  @override
   void initState() {
     super.initState();
     loadDywlQuote();
@@ -38,13 +38,14 @@ class _InspirationState extends State<Inspiration> {
         children: [
           Text(
             _quote,
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: const TextStyle(fontStyle: FontStyle.italic),
           ),
           Align(
             alignment: Alignment.centerRight,
             child: Text(
               _author,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              style: TextStyle(
+                  fontSize: 12, color: Theme.of(context).colorScheme.tertiary),
             ),
           ),
         ],

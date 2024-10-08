@@ -113,6 +113,9 @@ class Task {
     if (asap) {
       return rankTimeToDeadlineMultiplier * 100000;
     }
+    if (!isDateSet) {
+      return 1;
+    }
     int diffrence = DateTime.now().difference(datetime!).inMinutes;
     if (deadline || isDue) {
       if (diffrence == 0) {
@@ -399,7 +402,7 @@ class Task {
 
   bool get showInStart => isDue || isToday;
 
-  bool get isDateSet => datetime != null;
+  bool get isDateSet => datetime != null && date?.length == 8;
 
   bool get isTimeSet => time != null;
 

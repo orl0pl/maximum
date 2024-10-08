@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:restart_app/restart_app.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -132,8 +133,24 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           ListTile(
             title: const Text("Force english"),
             trailing: Switch(
-              value: false,
-              onChanged: (value) {},
+              value: forceEnglish ?? false,
+              onChanged: (value) {
+                setState(() {
+                  forceEnglish = value;
+                });
+                savePreferences();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.restart_app_to_apply),
+                    action: SnackBarAction(
+                      label: l.restart_app,
+                      onPressed: () {
+                        Restart.restartApp();
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

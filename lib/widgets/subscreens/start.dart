@@ -26,28 +26,36 @@ class StartWidget extends StatefulWidget {
 class _StartWidgetState extends State<StartWidget> {
   List<Task> allTasks = [];
   Map<int, int> taskRanks = {};
-  late int rankTune1;
-  late int rankTune2;
+  int? rankTune1;
+  int? rankTune2;
+  bool? showDebugScores;
 
   @override
   void initState() {
     super.initState();
-    fetchRankingTuning();
+    fetchPrefs();
     fetchTasks();
   }
 
-  void fetchRankingTuning() async {
+  void fetchPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? rankTune1Memory = prefs.getInt('rankTune1');
     int? rankTune2Memory = prefs.getInt('rankTune2');
+    bool? showDebugScoresMemory = prefs.getBool('showDebugScores');
+    if (showDebugScoresMemory == null) {
+      prefs.setBool('showDebugScores', false);
+    }
+
     if (rankTune1Memory == null) {
       prefs.setInt('rankTune1', defaultRankTune1);
     }
     if (rankTune2Memory == null) {
       prefs.setInt('rankTune2', defaultRankTune2);
     }
-    rankTune1 = prefs.getInt('rankTune1') ?? defaultRankTune1;
-    rankTune2 = prefs.getInt('rankTune2') ?? defaultRankTune2;
+
+    showDebugScores = showDebugScoresMemory ?? false;
+    rankTune1 = rankTune1Memory ?? defaultRankTune1;
+    rankTune2 = rankTune2Memory ?? defaultRankTune2;
   }
 
   void fetchTasks() {
@@ -63,8 +71,8 @@ class _StartWidgetState extends State<StartWidget> {
       for (var task in filteredTasks) {
         taskRanks[task.taskId!] = task.getRankScore(
           false,
-          rankTune1,
-          rankTune2,
+          rankTune1 ?? defaultRankTune1,
+          rankTune2 ?? defaultRankTune2,
         );
       }
 
