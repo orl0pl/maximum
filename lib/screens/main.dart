@@ -99,8 +99,6 @@ class _MainScreenState extends State<MainScreen> {
                           } else if (details.velocity.pixelsPerSecond.dx >
                               1000) {}
                         }
-                        // print(
-                        //     "horizontal x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
                       onVerticalDragEnd: (details) {
                         if (details.velocity.pixelsPerSecond.dx.abs() < 1000) {
@@ -118,8 +116,6 @@ class _MainScreenState extends State<MainScreen> {
                             }
                           }
                         }
-                        // print(
-                        //     "vertical x: ${details.velocity.pixelsPerSecond.dx} y: ${details.velocity.pixelsPerSecond.dy}");
                       },
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),

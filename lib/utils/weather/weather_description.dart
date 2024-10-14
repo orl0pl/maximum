@@ -37,7 +37,6 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
   late bool lowerTemperatureTomorrow;
 
   // shown if above is false
-  // temperature at night or coming day
 
   // set values
 
@@ -60,6 +59,8 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
 
   final hourlyWeatherCodeEntries =
       response.hourlyData[WeatherHourly.weather_code]!.values.entries;
+
+  // after restarting the app from the settings, some values are null for no reason
 
   final minutelyRainEntries = response.minutely15Data[WeatherMinutely15.rain]
       ?.values.entries; // it gives null for no reason sometimes

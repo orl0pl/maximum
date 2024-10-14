@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
@@ -83,7 +85,6 @@ class _WeatherState extends State<Weather> {
     }
 
     try {
-      // TODO: use minutely_15
       final ApiResponse<WeatherApi> response = await api.request(
           latitude: latitude,
           longitude: longitude,
@@ -123,23 +124,33 @@ class _WeatherState extends State<Weather> {
           });
 
       if (!mounted) return;
-      setState(() {
-        description =
-            getDescription(AppLocalizations.of(context), response, prefs);
-        temperature =
-            response.currentData[WeatherCurrent.temperature_2m]?.value != null
-                ? formatTemperature(
-                    response.currentData[WeatherCurrent.temperature_2m]!.value,
-                    prefs.getString('temperatureUnit') ?? 'C')
-                : '??';
-        print(response.currentData[WeatherCurrent.is_day]);
-        icon = codeToIcon(
-            response.currentData[WeatherCurrent.weather_code]?.value.toInt() ??
-                0,
-            response.currentData[WeatherCurrent.is_day]?.value == 0);
+      try {
+        setState(() {
+          description =
+              getDescription(AppLocalizations.of(context), response, prefs);
+          temperature =
+              response.currentData[WeatherCurrent.temperature_2m]?.value != null
+                  ? formatTemperature(
+                      response
+                          .currentData[WeatherCurrent.temperature_2m]!.value,
+                      prefs.getString('temperatureUnit') ?? 'C')
+                  : '??';
+          icon = codeToIcon(
+              response.currentData[WeatherCurrent.weather_code]?.value
+                      .toInt() ??
+                  0,
+              response.currentData[WeatherCurrent.is_day]?.value == 0);
 
-        loadingState = WeatherLoadingState.done;
-      });
+          loadingState = WeatherLoadingState.done;
+        });
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+        Clipboard.setData(ClipboardData(
+            text:
+                "Error during weather request, send this to the developer: $e"));
+      }
     } on SocketException {
       setState(() {
         loadingState = WeatherLoadingState.noInternet;
