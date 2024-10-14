@@ -319,7 +319,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
     AppLocalizations? l) {
   if (repeatType == "DAILY") {
-    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${l?.pick_repeat_dialog_select_daily(repeatInterval)}";
+    return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${l?.days_num_plural(repeatInterval)}";
   } else if (repeatType == "WEEKLY") {
     return "${l?.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
       (e) {

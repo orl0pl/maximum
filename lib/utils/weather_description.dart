@@ -151,42 +151,42 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       0;
   if (isRainingNow) {
     if (whenRainWillEnd != null) {
-      return l
-          .rain_will_end(whenRainWillEnd.difference(DateTime.now()).inHours);
+      return l.rain_will_end(
+          l.hours_num(whenRainWillEnd.difference(DateTime.now()).inHours));
     }
   }
   if (isSnowingNow) {
     if (whenSnowWillEnd != null) {
-      return l
-          .snow_will_end(whenSnowWillEnd.difference(DateTime.now()).inHours);
+      return l.snow_will_end(
+          l.hours_num(whenSnowWillEnd.difference(DateTime.now()).inHours));
     }
   }
 
   if (willRainToday) {
     if (whenRainWillStart != null) {
       return l.rain_will_start(
-          whenRainWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenRainWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willSnowToday) {
     if (whenSnowWillStart != null) {
       return l.snow_will_start(
-          whenSnowWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenSnowWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willShowerToday) {
     if (whenShowerWillStart != null) {
       return l.shower_will_start(
-          whenShowerWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenShowerWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willThunderstormBeToday) {
     if (whenThunderstormWillStart != null) {
-      return l.thunderstorm_will_start(
-          whenThunderstormWillStart.difference(DateTime.now()).inHours);
+      return l.thunderstorm_will_start(l.hours_num(
+          whenThunderstormWillStart.difference(DateTime.now()).inHours));
     }
   }
 

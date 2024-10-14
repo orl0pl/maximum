@@ -7,7 +7,7 @@ import 'package:maximum/data/models/task.dart';
 getFormatedRepeat(String repeatType, int repeatInterval, String repeatDays,
     AppLocalizations l) {
   if (repeatType == "DAILY") {
-    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${l.pick_repeat_dialog_select_daily(repeatInterval)}";
+    return "${l.pick_repeat_dialog_each_text} $repeatInterval ${l.days_num_plural(repeatInterval)}";
   } else if (repeatType == "WEEKLY") {
     return "${l.pick_repeat_dialog_each_text} $repeatInterval ${repeatDays.split(',').map(
       (e) {
@@ -107,8 +107,8 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                   },
                   decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      label: Text(l.pick_repeat_dialog_select_daily(
-                          repeatData?.repeatInterval ?? 1))),
+                      label: Text(
+                          l.days_num_plural(repeatData?.repeatInterval ?? 1))),
                 )
               ],
               if (repeatData!.repeatType == RepeatType.dayOfWeek) ...[

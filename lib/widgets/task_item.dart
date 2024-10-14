@@ -15,7 +15,7 @@ String formatTaskRepeat(Task task, AppLocalizations l) {
     return "";
   }
   if (task.repeat!.repeatType == RepeatType.daily) {
-    return "${l.pick_repeat_dialog_each_text} ${task.repeat!.repeatData} ${l.pick_repeat_dialog_select_daily(task.repeat!.repeatInterval as num)}";
+    return "${l.pick_repeat_dialog_each_text} ${task.repeat!.repeatData} ${l.days_num_plural(task.repeat!.repeatInterval as num)}";
   }
   if (task.repeat!.repeatType == RepeatType.dayOfWeek) {
     String days = task.repeat!.repeatData

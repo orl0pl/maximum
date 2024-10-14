@@ -1,7 +1,30 @@
 {
     "@@locale": "en",
+    "@about": {},
+    "@api_enabled": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
     "@content_to_add": {
         "description": "Label for text field for content in add page"
+    },
+    "@days_num_plural": {
+        "placeholders": {
+            "daysNum": {
+                "format": "compact",
+                "type": "num"
+            }
+        }
+    },
+    "@higher_temperature_tomorrow": {
+        "placeholders": {
+            "temperature": {
+                "type": "String"
+            }
+        }
     },
     "@hour_and_location": {
         "description": "Label for hour and location in note list",
@@ -14,6 +37,13 @@
             }
         }
     },
+    "@hours_num": {
+        "placeholders": {
+            "hoursNum": {
+                "type": "int"
+            }
+        }
+    },
     "@location_permissions_denied": {
         "description": "Snackbar text for denied location permissions"
     },
@@ -23,22 +53,99 @@
     "@location_services_disabled": {
         "description": "Snackbar text for disabled location services"
     },
+    "@lower_temperature_tomorrow": {
+        "placeholders": {
+            "temperature": {
+                "type": "String"
+            }
+        }
+    },
+    "@months_num_plural": {
+        "placeholders": {
+            "monthsNum": {
+                "type": "num"
+            }
+        }
+    },
     "@note": {
         "description": "General name for note"
     },
-    "@pick_repeat_dialog_select_daily": {
+    "@rain_will_end": {
         "placeholders": {
-            "daysNum": {
-                "format": "compact",
-                "type": "num"
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@rain_will_start": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@search_apps": {},
+    "@selected_app": {
+        "placeholders": {
+            "appname": {
+                "type": "String"
+            }
+        }
+    },
+    "@shower_will_start": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@snow_will_end": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@snow_will_start": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "@steps": {
+        "placeholders": {
+            "stepsNum": {
+                "type": "int"
             }
         }
     },
     "@task": {
         "description": "General name for task"
     },
+    "@thunderstorm_will_start": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "@timeline": {
         "description": "Short title for timeline page and widget"
+    },
+    "@weeks_num_plural": {
+        "placeholders": {
+            "weeksNum": {
+                "type": "num"
+            }
+        }
+    },
+    "@years_num_plural": {
+        "placeholders": {
+            "yearsNum": {
+                "type": "num"
+            }
+        }
     },
     "about": "About",
     "add": "Add",
@@ -46,14 +153,7 @@
     "add_tag": "Add tag",
     "all_apps": "All apps",
     "api_enabled": "{name} API enabled",
-    "@api_enabled": {
-        "placeholders": {
-            "name": {
-                "type": "String"
-                
-            }
-        }
-    },
+    "app_not_selected": "App not selected",
     "asap": "ASAP",
     "best_match": "Best match:",
     "cancel": "Cancel",
@@ -62,6 +162,7 @@
     "copied_to_clipboard": "Copied to clipboard",
     "copy": "Copy",
     "date": "Date",
+    "days_num_plural": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
     "deadline": "Deadline",
     "debug": "Debug",
     "due_tasks": "Due tasks",
@@ -73,14 +174,8 @@
     "high_uv_index_today": "High UV today",
     "high_uv_index_tomorrow": "High UV tomorrow",
     "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
-    "@higher_temperature_tomorrow": {
-        "placeholders": {
-            "temperature": {
-                "type": "String"
-            }
-        }
-    },
     "hour_and_location": "{hour} at {location}",
+    "hours_num": "{hoursNum} {hoursNum, plural, =0{hours} =1{hour} =2{hours} few{hours} many{hours} other{hours}}",
     "in_future": "In future",
     "invalid_place_name": "Invalid place name",
     "invalid_radius": "Invalid radius",
@@ -96,11 +191,13 @@
     "manage_task_tags": "Manage task tags",
     "max_distance": "Max distance",
     "meters": "meters",
+    "months_num_plural": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
     "no_alarm": "No alarm",
     "no_internet": "No internet",
     "no_notes": "No notes",
     "no_tags": "No tags",
     "no_tasks": "No tasks",
+    "no_weather_app_set": "No weather app set",
     "note": "Note",
     "notes": "Notes",
     "nothing_found": "Nic nie znaleziono",
@@ -112,10 +209,6 @@
     "pick_repeat_dialog_each_text": "Every",
     "pick_repeat_dialog_each_x_days": "Every few days",
     "pick_repeat_dialog_error_interval": "Invalid interval",
-    "pick_repeat_dialog_select_daily": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
-    "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
-    "pick_repeat_dialog_select_weekly": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
-    "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
     "pick_repeat_dialog_title": "Repeat",
     "pick_repeat_dialog_weekdays": "Weekdays",
     "pick_steps_count": "Pick steps count",
@@ -133,11 +226,11 @@
     "restart_app": "Restart app",
     "restart_app_to_apply": "Restart app to apply changes",
     "save": "Save",
-    "search_placeholder": "Search apps and more...",
     "search_apps": "Search apps",
-    "@search_apps": {},
-
+    "search_placeholder": "Search apps and more...",
+    "selected_app": "App {appname} selected",
     "set_pinned_apps": "Set pinned apps",
+    "set_weather_app": "Set weather app",
     "settings": "Settings",
     "shower_will_start": "Shower will start in {time}",
     "snow_tomorrow": "Snow tomorrow",
@@ -159,24 +252,7 @@
     "tomorrow": "Tommorow",
     "try_again": "Try again",
     "unknown_location": "Unknown location",
+    "weeks_num_plural": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
     "wind_speed_unit": "Wind speed unit",
-    "set_weather_app": "Set weather app",
-    "no_weather_app_set": "No weather app set",
-    "app_not_selected": "App not selected",
-    "selected_app": "App {appname} selected",
-    "hours_num": "{hoursNum} {hoursNum, plural, =0{hours} =1{hour} =2{hours} few{hours} many{hours} other{hours}}",
-    "@hours_num": {
-        "placeholders": {
-            "hoursNum": {
-                "type": "int"
-            }
-        }
-    },
-    "@selected_app": {
-        "placeholders": {
-            "appname": {
-                "type": "String"
-            }
-        }
-    }
+    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}"
 }
