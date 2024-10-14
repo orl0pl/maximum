@@ -12,9 +12,8 @@ Future<Position?> determinePositionWithSnackBar(
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                AppLocalizations.of(context)?.location_services_disabled ??
-                    "")),
+            content:
+                Text(AppLocalizations.of(context).location_services_disabled)),
       );
     }
     return null;
@@ -28,8 +27,7 @@ Future<Position?> determinePositionWithSnackBar(
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  AppLocalizations.of(context)?.location_permissions_denied ??
-                      "")),
+                  AppLocalizations.of(context).location_permissions_denied)),
         );
       }
       return null;
@@ -41,8 +39,7 @@ Future<Position?> determinePositionWithSnackBar(
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(AppLocalizations.of(context)
-                    ?.location_permissions_denied_forever ??
-                "")),
+                .location_permissions_denied_forever)),
       );
     }
     return null;

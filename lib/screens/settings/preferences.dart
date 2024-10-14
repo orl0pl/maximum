@@ -48,7 +48,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l.preferences),

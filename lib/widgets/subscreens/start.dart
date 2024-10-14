@@ -5,7 +5,6 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/common/task_item.dart';
-import 'package:maximum/widgets/start_subscreen/important_event.dart';
 import 'package:maximum/widgets/start_subscreen/inspiration.dart';
 import 'package:maximum/widgets/start_subscreen/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -114,7 +113,7 @@ class _StartWidgetState extends State<StartWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l?.timeline ?? '',
+                        l.timeline,
                         style: widget.textTheme.titleSmall,
                       ),
                       const SizedBox(height: 8),
@@ -141,7 +140,7 @@ class _StartWidgetState extends State<StartWidget> {
                             return allTasks.isEmpty
                                 ? Center(
                                     child: Text(
-                                      l?.no_tasks ?? '',
+                                      l.no_tasks,
                                       style: widget.textTheme.bodySmall,
                                     ),
                                   )
@@ -176,8 +175,8 @@ class _StartWidgetState extends State<StartWidget> {
                   ),
                 ),
               ),
-              Spacer(),
-              Inspiration()
+              const Spacer(),
+              const Inspiration()
             ],
           ),
         ),

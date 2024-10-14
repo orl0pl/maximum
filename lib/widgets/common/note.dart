@@ -49,7 +49,7 @@ class _NoteWidgetState extends State<NoteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     TextTheme textTheme = Theme.of(context).textTheme;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Container(

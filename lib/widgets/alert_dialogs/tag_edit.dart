@@ -26,7 +26,7 @@ class AddOrEditTagDialogState extends State<AddOrEditTagDialog> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     ThemeData theme = Theme.of(context).copyWith();
     TextTheme textTheme = theme.textTheme;
     return AlertDialog(

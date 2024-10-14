@@ -59,7 +59,7 @@ class _AlarmState extends State<Alarm> {
         children: [
           const Icon(Icons.alarm),
           const SizedBox(width: 4),
-          Text(getNextAlarmString(AppLocalizations.of(context)!),
+          Text(getNextAlarmString(AppLocalizations.of(context)),
               style: textTheme.titleLarge)
         ],
       ),

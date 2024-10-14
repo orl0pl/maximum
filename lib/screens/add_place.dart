@@ -63,7 +63,7 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -188,7 +188,7 @@ class _NormalMapState extends State<NormalMap> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     var colorScheme = Theme.of(context).colorScheme;
     if (MapState.normal == _mapState) {
       return FlutterMap(

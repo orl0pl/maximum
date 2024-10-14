@@ -84,7 +84,7 @@ class AppsWidgetState extends State<AppsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     if (!notesLoaded) {
       DatabaseHelper().notes.then((notes) async {
         allnotes = notes;

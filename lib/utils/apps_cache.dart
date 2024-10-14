@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 List<AppInfo>? getAppsFromCache(SharedPreferences prefs) {
   return null; // prevent out of memory error
+  // ignore: dead_code
   List<String>? appsFromCache = prefs.getStringList('apps');
   try {
     if (appsFromCache != null) {

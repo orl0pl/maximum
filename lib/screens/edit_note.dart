@@ -44,7 +44,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.edit_note), actions: [

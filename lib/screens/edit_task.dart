@@ -62,7 +62,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.edit_task), actions: [

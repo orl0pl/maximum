@@ -123,7 +123,7 @@ class TimelineScreenState extends State<TimelineScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     ThemeData theme = Theme.of(context);
     TextTheme textTheme = theme.textTheme;
     return Scaffold(

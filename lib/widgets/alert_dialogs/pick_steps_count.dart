@@ -27,7 +27,7 @@ class PickTargetValueDialogState extends State<PickTargetValueDialog> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     return AlertDialog(
       icon: const Icon(MdiIcons.counter),
       title: Text(l.pick_steps_count),

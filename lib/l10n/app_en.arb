@@ -1,112 +1,8 @@
 {
     "@@locale": "en",
-    "timeline": "Timeline",
-    "add": "Add",
-    "@timeline": {
-        "description": "Short title for timeline page and widget"
-    },
-    "content_to_add": "Content to add",
     "@content_to_add": {
         "description": "Label for text field for content in add page"
     },
-    "note": "Note",
-    "@note": {
-        "description": "General name for note"
-    },
-    "task": "Task",
-    "@task": {
-        "description": "General name for task"
-    },
-    "location_services_disabled": "Location services are disabled",
-    "@location_services_disabled": {
-        "description": "Snackbar text for disabled location services"
-    },
-    "location_permissions_denied": "Location permissions are denied",
-    "@location_permissions_denied": {
-        "description": "Snackbar text for denied location permissions"
-    },
-    "location_permissions_denied_forever": "Location permissions are denied forever. Enable them in the app settings.",
-    "@location_permissions_denied_forever": {
-        "description": "Snackbar text for denied forever location permissions with how to enable them in the app settings"
-    },
-    "today": "Today",
-    "asap": "ASAP",
-    "pick_date": "Pick date",
-    "pick_time": "Pick time",
-    "someday": "Someday",
-    "pick_repeat_dialog_title": "Repeat",
-    "pick_repeat_dialog_each_text": "Every",
-    "pick_repeat_dialog_select_daily": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
-    "@pick_repeat_dialog_select_daily": {
-        "placeholders": {
-            "daysNum": {
-                "type": "num",
-                "format": "compact"
-            }
-        }
-    },
-    "pick_repeat_dialog_select_weekly": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
-    "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
-    "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
-
-    "deadline": "Deadline",
-
-    "due_tasks": "Due tasks",
-    "tomorrow": "Tommorow",
-    "this_week": "This week",
-    "in_future": "In future",
-    "now": "Now",
-    "edit_task": "Edit task",
-    "save": "Save",
-    "cancel": "Cancel",
-    "off": "Off",
-    "pick_repeat_dialog_each_x_days": "Every few days",
-    "pick_repeat_dialog_weekdays": "Weekdays",
-    "repeat": "Repeat",
-    "color": "Color",
-    "tag_name": "Name",
-    "add_tag": "Add tag",
-    "edit_tag": "Edit tag",
-    "pick_repeat_dialog_error_interval": "Invalid interval",
-
-    "add_place": "Add place",
-    "max_distance": "Max distance",
-    "meters": "meters",
-    "place_name": "Place name",
-    "no_internet": "No internet",
-    "try_again": "Try again",
-    "invalid_place_name": "Invalid place name",
-    "invalid_radius": "Invalid radius",
-    "loading": "Loading...",
-
-    "task_details": "Task details",
-
-    "steps_count": "Steps count",
-    "pick_steps_count": "Pick steps count",
-
-    "steps": "{stepsNum} {stepsNum, plural, =0{steps} =1{step} =2{steps} few{steps} many{steps} other{steps}}",
-
-    "date": "Date",
-    "repeat_start_date": "Repeat start date",
-    "time": "Time",
-
-    "progress_title": "Progress",
-
-    "settings": "Settings",
-    "manage_places": "Manage places",
-    "manage_task_tags": "Manage task tags",
-    "manage_note_tags": "Manage note tasks",
-    "about": "About",
-    "license": "License",
-    "debug": "Debug",
-
-    "search_placeholder": "Search apps and more...",
-
-    "no_tags": "No tags",
-    "pinned_apps": "Pinned apps",
-    "no_alarm": "No alarm",
-
-    "hour_and_location": "{hour} at {location}",
     "@hour_and_location": {
         "description": "Label for hour and location in note list",
         "placeholders": {
@@ -118,40 +14,146 @@
             }
         }
     },
-
-    "ok": "Ok",
-    "edit_place": "Edit place",
-    "task_not_found": "Task not found",
-    "set_pinned_apps": "Set pinned apps",
-    "unknown_location": "Unknown location",
-    "notes": "Notes",
-    "no_notes": "No notes",
-    "edit_note": "Edit note",
-    "nothing_found": "Nic nie znaleziono",
-    "error": "Error",
+    "@location_permissions_denied": {
+        "description": "Snackbar text for denied location permissions"
+    },
+    "@location_permissions_denied_forever": {
+        "description": "Snackbar text for denied forever location permissions with how to enable them in the app settings"
+    },
+    "@location_services_disabled": {
+        "description": "Snackbar text for disabled location services"
+    },
+    "@note": {
+        "description": "General name for note"
+    },
+    "@pick_repeat_dialog_select_daily": {
+        "placeholders": {
+            "daysNum": {
+                "format": "compact",
+                "type": "num"
+            }
+        }
+    },
+    "@task": {
+        "description": "General name for task"
+    },
+    "@timeline": {
+        "description": "Short title for timeline page and widget"
+    },
+    "about": "About",
+    "add": "Add",
+    "add_place": "Add place",
+    "add_tag": "Add tag",
+    "all_apps": "All apps",
+    "api_enabled": "{name} API enabled",
+    "@api_enabled": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+                
+            }
+        }
+    },
+    "asap": "ASAP",
+    "best_match": "Best match:",
+    "cancel": "Cancel",
+    "color": "Color",
+    "content_to_add": "Content to add",
     "copied_to_clipboard": "Copied to clipboard",
     "copy": "Copy",
-    "best_match": "Best match:",
-    "all_apps": "All apps",
-    "preferences": "Preferences",
-    "temperature_unit": "Temperature unit",
-    "wind_speed_unit": "Wind speed unit",
-    "precipitation_unit": "Precipitation unit",
-    "rain_will_end": "Rain will end in {time}",
-    "snow_will_end": "Snow will end in {time}",
-    "rain_will_start": "Rain will start in {time}",
-    "snow_will_start": "Snow will start in {time}",
-    "shower_will_start": "Shower will start in {time}",
-    "thunderstorm_will_start": "Thunderstorm will start in {time}",
+    "date": "Date",
+    "deadline": "Deadline",
+    "debug": "Debug",
+    "due_tasks": "Due tasks",
+    "edit_note": "Edit note",
+    "edit_place": "Edit place",
+    "edit_tag": "Edit tag",
+    "edit_task": "Edit task",
+    "error": "Error",
     "high_uv_index_today": "High UV today",
     "high_uv_index_tomorrow": "High UV tomorrow",
-    "rain_tomorrow": "Rain tomorrow",
-    "snow_tomorrow": "Snow tomorrow",
-    "lower_temperature_tomorrow": "Tomorrow {temperature} colder",
     "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
+    "@higher_temperature_tomorrow": {
+        "placeholders": {
+            "temperature": {
+                "type": "String"
+            }
+        }
+    },
+    "hour_and_location": "{hour} at {location}",
+    "in_future": "In future",
+    "invalid_place_name": "Invalid place name",
+    "invalid_radius": "Invalid radius",
+    "license": "License",
+    "loading": "Loading...",
+    "location_permissions_denied": "Location permissions are denied",
+    "location_permissions_denied_forever": "Location permissions are denied forever. Enable them in the app settings.",
+    "location_services_disabled": "Location services are disabled",
+    "lower_temperature_tomorrow": "Tomorrow {temperature} colder",
+    "manage_note_tags": "Manage note tasks",
+    "manage_places": "Manage places",
     "manage_quotes": "Manage quotes",
-    "api_enabled": "{name} API enabled",
+    "manage_task_tags": "Manage task tags",
+    "max_distance": "Max distance",
+    "meters": "meters",
+    "no_alarm": "No alarm",
+    "no_internet": "No internet",
+    "no_notes": "No notes",
+    "no_tags": "No tags",
     "no_tasks": "No tasks",
+    "note": "Note",
+    "notes": "Notes",
+    "nothing_found": "Nic nie znaleziono",
+    "now": "Now",
+    "off": "Off",
+    "ok": "Ok",
+    "pick_date": "Pick date",
+    "pick_repeat_dialog_each_text": "Every",
+    "pick_repeat_dialog_each_x_days": "Every few days",
+    "pick_repeat_dialog_error_interval": "Invalid interval",
+    "pick_repeat_dialog_select_daily": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
+    "pick_repeat_dialog_select_monthly": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
+    "pick_repeat_dialog_select_weekly": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
+    "pick_repeat_dialog_select_yearly": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
+    "pick_repeat_dialog_title": "Repeat",
+    "pick_repeat_dialog_weekdays": "Weekdays",
+    "pick_steps_count": "Pick steps count",
+    "pick_time": "Pick time",
+    "pinned_apps": "Pinned apps",
+    "place_name": "Place name",
+    "precipitation_unit": "Precipitation unit",
+    "preferences": "Preferences",
+    "progress_title": "Progress",
+    "rain_tomorrow": "Rain tomorrow",
+    "rain_will_end": "Rain will end in {time}",
+    "rain_will_start": "Rain will start in {time}",
+    "repeat": "Repeat",
+    "repeat_start_date": "Repeat start date",
+    "restart_app": "Restart app",
     "restart_app_to_apply": "Restart app to apply changes",
-    "restart_app": "Restart app"
+    "save": "Save",
+    "search_placeholder": "Search apps and more...",
+    "set_pinned_apps": "Set pinned apps",
+    "settings": "Settings",
+    "shower_will_start": "Shower will start in {time}",
+    "snow_tomorrow": "Snow tomorrow",
+    "snow_will_end": "Snow will end in {time}",
+    "snow_will_start": "Snow will start in {time}",
+    "someday": "Someday",
+    "steps": "{stepsNum} {stepsNum, plural, =0{steps} =1{step} =2{steps} few{steps} many{steps} other{steps}}",
+    "steps_count": "Steps count",
+    "tag_name": "Name",
+    "task": "Task",
+    "task_details": "Task details",
+    "task_not_found": "Task not found",
+    "temperature_unit": "Temperature unit",
+    "this_week": "This week",
+    "thunderstorm_will_start": "Thunderstorm will start in {time}",
+    "time": "Time",
+    "timeline": "Timeline",
+    "today": "Today",
+    "tomorrow": "Tommorow",
+    "try_again": "Try again",
+    "unknown_location": "Unknown location",
+    "wind_speed_unit": "Wind speed unit"
 }

@@ -44,7 +44,7 @@ ${packageInfo.packageName}
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text(AppLocalizations.of(context)!.ok),
+                child: Text(AppLocalizations.of(context).ok),
               ),
             ],
           );
@@ -55,7 +55,7 @@ ${packageInfo.packageName}
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l.settings),

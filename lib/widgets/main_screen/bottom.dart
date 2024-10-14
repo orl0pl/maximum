@@ -72,7 +72,7 @@ class _BottomState extends State<Bottom> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     if (widget.activeScreen == ActiveScreen.start) {
       focus.unfocus();
     }

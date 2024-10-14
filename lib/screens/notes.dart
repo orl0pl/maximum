@@ -86,7 +86,7 @@ class NotesScreenState extends State<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     Map<DateTime, List<Note>> groupedNotes = groupNotesByDate(notes);
     TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(

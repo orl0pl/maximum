@@ -1,4 +1,3 @@
-import 'package:android_package_manager/android_package_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';

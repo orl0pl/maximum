@@ -93,7 +93,7 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     return SlideTransition(
       position: _slideOffset,
       child: Padding(

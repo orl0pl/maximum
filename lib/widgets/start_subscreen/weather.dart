@@ -114,7 +114,7 @@ class _WeatherState extends State<Weather> {
 
       setState(() {
         description =
-            getDescription(AppLocalizations.of(context)!, response, prefs);
+            getDescription(AppLocalizations.of(context), response, prefs);
         temperature =
             response.currentData[WeatherCurrent.temperature_2m]?.value != null
                 ? formatTemperature(
@@ -144,7 +144,7 @@ class _WeatherState extends State<Weather> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     TextTheme textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap: getWeather,

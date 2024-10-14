@@ -38,7 +38,7 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context)!;
+    AppLocalizations l = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l.pick_repeat_dialog_title),
       content: SingleChildScrollView(
