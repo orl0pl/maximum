@@ -52,10 +52,9 @@ class _MyAppState extends State<MyApp> {
   void loadPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    forceEnglish = prefs.getBool('forceEnglish') ?? false;
-
-    findSystemLocale().then(
-        (locale) => {Intl.systemLocale = forceEnglish == true ? 'en' : locale});
+    setState(() {
+      forceEnglish = prefs.getBool('forceEnglish') ?? false;
+    });
   }
 
   (ColorScheme light, ColorScheme dark) _generateDynamicColourSchemes(
@@ -117,6 +116,7 @@ class _MyAppState extends State<MyApp> {
       }
       return MaterialApp(
           title: 'Maximum Launcher',
+          locale: forceEnglish == true ? const Locale('en') : null,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

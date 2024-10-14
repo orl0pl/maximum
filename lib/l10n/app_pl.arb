@@ -106,5 +106,6 @@
     "set_weather_app": "Ustaw aplikację pogodową",
     "no_weather_app_set": "Nie ustawiono aplikacji pogodowej",
     "app_not_selected": "Nie wybrano aplikacji",
-    "selected_app": "Wybrano aplikacje {appname}"
+    "selected_app": "Wybrano aplikacje {appname}",
+    "hours_num": "{hoursNum} {hoursNum, plural, =0{godzin} =1{godzina} =2{godziny} few{godziny} many{godzin} other{godzin}}"
 }

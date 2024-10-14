@@ -16,12 +16,14 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 // 95 	Thunderstorm: Slight or moderate
 // 96, 99 	Thunderstorm with slight and heavy hail
 
-IconData codeToIcon(int code) {
+IconData codeToIcon(int code, [bool isNight = false]) {
   switch (code) {
     case 0:
-      return MdiIcons.weatherSunny;
+      return isNight ? MdiIcons.weatherNight : MdiIcons.weatherSunny;
     case 1:
-      return MdiIcons.weatherPartlyCloudy;
+      return isNight
+          ? MdiIcons.weatherNightPartlyCloudy
+          : MdiIcons.weatherPartlyCloudy;
     case 2:
       return MdiIcons.weatherCloudy;
     case 3:

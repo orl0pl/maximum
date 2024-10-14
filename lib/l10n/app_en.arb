@@ -164,6 +164,14 @@
     "no_weather_app_set": "No weather app set",
     "app_not_selected": "App not selected",
     "selected_app": "App {appname} selected",
+    "hours_num": "{hoursNum} {hoursNum, plural, =0{hours} =1{hour} =2{hours} few{hours} many{hours} other{hours}}",
+    "@hours_num": {
+        "placeholders": {
+            "hoursNum": {
+                "type": "int"
+            }
+        }
+    },
     "@selected_app": {
         "placeholders": {
             "appname": {

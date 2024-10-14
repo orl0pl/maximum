@@ -1,7 +1,14 @@
+import 'dart:math';
+
 import 'package:maximum/utils/weather/temperature.dart';
 import 'package:open_meteo/open_meteo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+bool isInOneDay(MapEntry<DateTime, num> entry) {
+  return entry.key.isAfter(DateTime.now()) &&
+      entry.key.isBefore(DateTime.now().add(const Duration(days: 1)));
+}
 
 String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
     SharedPreferences prefs) {
@@ -54,29 +61,45 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
   final hourlyWeatherCodeEntries =
       response.hourlyData[WeatherHourly.weather_code]!.values.entries;
 
-  whenRainWillEnd = hourlyPrecipitationEntries
-      .take(24)
-      .where((entry) {
-        return entry.value < 50;
+  final minutelyRainEntries = response.minutely15Data[WeatherMinutely15.rain]
+      ?.values.entries; // it gives null for no reason sometimes
+
+  final minutelySnowfallEntries =
+      response.minutely15Data[WeatherMinutely15.snowfall]!.values.entries;
+
+  whenRainWillEnd = minutelyRainEntries
+      ?.where((entry) {
+        return entry.value == 0;
       })
       .firstOrNull
       ?.key;
 
-  whenSnowWillEnd = whenRainWillEnd; // probably
+  whenSnowWillEnd = minutelySnowfallEntries
+      .where((entry) {
+        return entry.value == 0;
+      })
+      .firstOrNull
+      ?.key;
 
-  willRainToday = hourlyRainEntries.take(24).where((entry) {
-    return entry.value > 0;
-  }).isNotEmpty;
+  willRainToday = minutelyRainEntries?.where((entry) {
+        return entry.value > 0;
+      }).isNotEmpty ??
+      hourlyPrecipitationEntries.where((entry) {
+        return entry.value > 0;
+      }).isNotEmpty;
 
-  willSnowToday = hourlySnowfallEntries.take(24).where((entry) {
-    return entry.value > 0;
-  }).isNotEmpty;
+  willSnowToday = minutelySnowfallEntries?.where((entry) {
+        return entry.value > 0;
+      }).isNotEmpty ??
+      willRainToday;
 
-  willShowerToday = hourlyShowersEntries.take(24).where((entry) {
-    return entry.value > 0;
-  }).isNotEmpty;
+  willShowerToday = minutelyRainEntries?.where((entry) {
+        return entry.value > 0;
+      }).isNotEmpty ??
+      willRainToday;
 
-  willThunderstormBeToday = hourlyWeatherCodeEntries.take(24).where((entry) {
+  willThunderstormBeToday =
+      hourlyWeatherCodeEntries.where(isInOneDay).where((entry) {
     return entry.value > 94; // 95, 96, 99 is thunderstorm
   }).isNotEmpty;
 
@@ -86,7 +109,6 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       5;
 
   whenRainWillStart = hourlyRainEntries
-      .take(24)
       .where((entry) {
         return entry.value > 0;
       })
@@ -94,7 +116,6 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       ?.key;
 
   whenSnowWillStart = hourlySnowfallEntries
-      .take(24)
       .where((entry) {
         return entry.value > 0;
       })
@@ -102,7 +123,6 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       ?.key;
 
   whenShowerWillStart = hourlyShowersEntries
-      .take(24)
       .where((entry) {
         return entry.value > 0;
       })
@@ -110,7 +130,6 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       ?.key;
 
   whenThunderstormWillStart = hourlyWeatherCodeEntries
-      .take(24)
       .where((entry) {
         return entry.value > 94; // 95, 96, 99 is thunderstorm
       })
@@ -151,42 +170,42 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
       0;
   if (isRainingNow) {
     if (whenRainWillEnd != null) {
-      return l
-          .rain_will_end(whenRainWillEnd.difference(DateTime.now()).inHours);
+      return l.rain_will_end(
+          l.hours_num(whenRainWillEnd.difference(DateTime.now()).inHours));
     }
   }
   if (isSnowingNow) {
     if (whenSnowWillEnd != null) {
-      return l
-          .snow_will_end(whenSnowWillEnd.difference(DateTime.now()).inHours);
+      return l.snow_will_end(
+          l.hours_num(whenSnowWillEnd.difference(DateTime.now()).inHours));
     }
   }
 
   if (willRainToday) {
     if (whenRainWillStart != null) {
       return l.rain_will_start(
-          whenRainWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenRainWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willSnowToday) {
     if (whenSnowWillStart != null) {
       return l.snow_will_start(
-          whenSnowWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenSnowWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willShowerToday) {
     if (whenShowerWillStart != null) {
       return l.shower_will_start(
-          whenShowerWillStart.difference(DateTime.now()).inHours);
+          l.hours_num(whenShowerWillStart.difference(DateTime.now()).inHours));
     }
   }
 
   if (willThunderstormBeToday) {
     if (whenThunderstormWillStart != null) {
-      return l.thunderstorm_will_start(
-          whenThunderstormWillStart.difference(DateTime.now()).inHours);
+      return l.thunderstorm_will_start(l.hours_num(
+          whenThunderstormWillStart.difference(DateTime.now()).inHours));
     }
   }
 

@@ -83,7 +83,7 @@ class _WeatherState extends State<Weather> {
     }
 
     try {
-      // TODO: use experimental minutely_15
+      // TODO: use minutely_15
       final ApiResponse<WeatherApi> response = await api.request(
           latitude: latitude,
           longitude: longitude,
@@ -93,6 +93,7 @@ class _WeatherState extends State<Weather> {
             WeatherCurrent.temperature_2m,
             WeatherCurrent.showers,
             WeatherCurrent.weather_code,
+            WeatherCurrent.is_day
           },
           forecastMinutely15: 96,
           daily: {
@@ -103,6 +104,13 @@ class _WeatherState extends State<Weather> {
             WeatherDaily.uv_index_max,
             WeatherDaily.rain_sum,
             WeatherDaily.snowfall_sum,
+          },
+          pastHours: 0,
+          forecastHours: 24,
+          minutely15: {
+            WeatherMinutely15.weather_code,
+            WeatherMinutely15.rain,
+            WeatherMinutely15.snowfall,
           },
           hourly: {
             WeatherHourly.temperature_2m,
@@ -124,9 +132,11 @@ class _WeatherState extends State<Weather> {
                     response.currentData[WeatherCurrent.temperature_2m]!.value,
                     prefs.getString('temperatureUnit') ?? 'C')
                 : '??';
+        print(response.currentData[WeatherCurrent.is_day]);
         icon = codeToIcon(
             response.currentData[WeatherCurrent.weather_code]?.value.toInt() ??
-                0);
+                0,
+            response.currentData[WeatherCurrent.is_day]?.value == 0);
 
         loadingState = WeatherLoadingState.done;
       });
@@ -143,7 +153,7 @@ class _WeatherState extends State<Weather> {
 
     if (weatherAppPackageName != null) {
       DeviceApps.openApp(weatherAppPackageName);
-    } else {
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).no_weather_app_set),
@@ -171,6 +181,10 @@ class _WeatherState extends State<Weather> {
     return loadingState == WeatherLoadingState.noLocation;
   }
 
+  bool get noInternet {
+    return loadingState == WeatherLoadingState.noInternet;
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -184,8 +198,10 @@ class _WeatherState extends State<Weather> {
             isLoading
                 ? const Icon(MdiIcons.helpCircleOutline)
                 : locationError
-                    ? const Icon(MdiIcons.alertCircleOutline)
-                    : Icon(icon),
+                    ? const Icon(MdiIcons.mapMarkerRemove)
+                    : noInternet
+                        ? const Icon(MdiIcons.earthRemove)
+                        : Icon(icon),
             const SizedBox(width: 4),
             Text(isLoading ? "???" : temperature, style: textTheme.titleLarge)
           ],
@@ -195,7 +211,9 @@ class _WeatherState extends State<Weather> {
                 ? l.loading
                 : locationError
                     ? l.unknown_location
-                    : description,
+                    : noInternet
+                        ? l.no_internet
+                        : description,
             style: textTheme.titleSmall),
       ]),
     );
