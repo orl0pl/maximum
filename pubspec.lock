@@ -105,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  device_apps:
+    dependency: "direct main"
+    description:
+      name: device_apps
+      sha256: e84dc74d55749993fd671148cc0bd53096e1be0c268fc364285511b1d8a4c19b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   dio:
     dependency: transitive
     description:
@@ -382,14 +390,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.0"
-  installed_apps:
-    dependency: "direct main"
-    description:
-      name: installed_apps
-      sha256: "34d001c74632fe4f10aa460a143d73050ea666f8f83d05a2bc84b2a0a91cf897"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.2"
   intl:
     dependency: "direct main"
     description:

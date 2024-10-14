@@ -1,13 +1,11 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/main.dart';
 import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/settings/pinned_apps.dart';
 import 'package:maximum/screens/settings.dart';
-import 'package:maximum/utils/apps_cache.dart';
 import 'package:maximum/widgets/main_screen/pinned_app.dart';
 import 'package:maximum/widgets/subscreens/apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +32,7 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
-  List<AppInfo>? pinnedApps;
+  List<ApplicationWithIcon>? pinnedApps;
 
   @override
   void initState() {
@@ -45,21 +43,21 @@ class _BottomState extends State<Bottom> {
   void fetchPinnedApps() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
-    List<AppInfo>? appsFromCache = getAppsFromCache(prefs);
 
     if (pinnedAppsPackageNames != null) {
-      List<AppInfo> apps =
-          appsFromCache ?? await InstalledApps.getInstalledApps(false, true);
+      List<ApplicationWithIcon> tempPinnedApps = [];
+
+      for (var packageName in pinnedAppsPackageNames) {
+        tempPinnedApps.add(
+          await DeviceApps.getApp(packageName, true) as ApplicationWithIcon,
+        );
+      }
 
       if (mounted) {
         setState(() {
-          pinnedApps = apps.where((app) {
-            return pinnedAppsPackageNames.contains(app.packageName);
-          }).toList();
+          pinnedApps = tempPinnedApps;
         });
       }
-
-      saveAppsToCache(prefs, await InstalledApps.getInstalledApps(false, true));
     } else {
       if (mounted) {
         setState(() {
@@ -154,6 +152,7 @@ class _BottomState extends State<Bottom> {
                     ),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
+                          maintainState: false,
                           builder: (context) => const SettingsScreen()));
                       fetchPinnedApps();
 

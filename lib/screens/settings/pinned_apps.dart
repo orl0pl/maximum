@@ -1,7 +1,6 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PinnedAppsScreen extends StatefulWidget {
@@ -13,7 +12,9 @@ class PinnedAppsScreen extends StatefulWidget {
 
 class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   List<String>? pinnedApps;
-  List<AppInfo>? allApps;
+  List<ApplicationWithIcon>? allApps;
+  List<ApplicationWithIcon> filteredApps = [];
+  String searchQuery = '';
 
   @override
   void initState() {
@@ -38,12 +39,38 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   }
 
   void fetchAllApps() async {
-    List<AppInfo> apps = await InstalledApps.getInstalledApps(false, true);
+    List<Application> apps = await DeviceApps.getInstalledApplications(
+        includeAppIcons: true,
+        onlyAppsWithLaunchIntent: true,
+        includeSystemApps: true);
+    apps.sort(
+        (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
     if (mounted) {
       setState(() {
-        allApps = apps;
+        allApps = apps.cast();
       });
     }
+    updateList(searchQuery);
+  }
+
+  void updateList(value) {
+    if (value.isEmpty) {
+      setState(() {
+        if (allApps != null) {
+          filteredApps = allApps!;
+        }
+      });
+    } else {
+      setState(() {
+        filteredApps = allApps!
+            .where((app) =>
+                app.appName.toLowerCase().contains(value.toLowerCase()))
+            .toList();
+      });
+    }
+    setState(() {
+      searchQuery = value;
+    });
   }
 
   @override
@@ -52,33 +79,44 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.pinned_apps),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(40),
+          child: Column(
+            children: [
+              TextField(
+                onChanged: updateList,
+              ),
+            ],
+          ),
+        ),
       ),
       body: allApps == null
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemBuilder: (itemBuilder, index) {
                 return ListTile(
-                  leading: Image.memory(allApps![index].icon!, width: 40),
+                  leading: Image.memory(filteredApps[index].icon, width: 40),
                   trailing: Checkbox(
-                      value: pinnedApps!.contains(allApps![index].packageName),
+                      value:
+                          pinnedApps!.contains(filteredApps[index].packageName),
                       onChanged: (value) async {
                         if (value == true) {
                           setState(() {
-                            pinnedApps!.add(allApps![index].packageName);
+                            pinnedApps!.add(filteredApps[index].packageName);
                           });
                         } else {
                           setState(() {
-                            pinnedApps!.remove(allApps![index].packageName);
+                            pinnedApps!.remove(filteredApps[index].packageName);
                           });
                         }
                         final SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         prefs.setStringList('pinnedApps', pinnedApps!);
                       }),
-                  title: Text(allApps![index].name),
+                  title: Text(filteredApps[index].appName),
                 );
               },
-              itemCount: allApps!.length),
+              itemCount: filteredApps.length),
     );
   }
 }

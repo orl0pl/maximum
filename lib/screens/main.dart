@@ -1,9 +1,7 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
-import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
 import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/timeline.dart';
-import 'package:maximum/utils/apps_cache.dart';
 import 'package:maximum/widgets/main_screen/bottom.dart';
 import 'package:maximum/widgets/subscreens/apps.dart';
 import 'package:maximum/widgets/subscreens/start.dart';
@@ -22,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   GlobalKey<AppsWidgetState> appsKey = GlobalKey<AppsWidgetState>();
   ActiveScreen activeScreen = ActiveScreen.start;
   String text = "";
-  List<AppInfo> _apps = [];
+  List<Application> _apps = [];
   bool _isLoading = true;
 
   @override
@@ -35,15 +33,16 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      List<AppInfo> apps = getAppsFromCache(prefs) ??
-          await InstalledApps.getInstalledApps(false, true);
+      List<Application> apps = await DeviceApps.getInstalledApplications(
+          includeAppIcons: true,
+          onlyAppsWithLaunchIntent: true,
+          includeSystemApps: true);
       if (mounted) {
         setState(() {
           _apps = apps;
           _isLoading = false;
         });
       }
-      saveAppsToCache(prefs, apps);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -145,7 +144,7 @@ class _MainScreenState extends State<MainScreen> {
                                 key: appsKey,
                                 textTheme: textTheme,
                                 inputValue: text,
-                                apps: _apps,
+                                apps: _apps.cast(),
                                 isLoading: _isLoading,
                               ),
                       ))),

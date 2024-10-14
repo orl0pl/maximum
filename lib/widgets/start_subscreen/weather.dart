@@ -112,6 +112,7 @@ class _WeatherState extends State<Weather> {
             WeatherHourly.uv_index,
           });
 
+      if (!mounted) return;
       setState(() {
         description =
             getDescription(AppLocalizations.of(context), response, prefs);

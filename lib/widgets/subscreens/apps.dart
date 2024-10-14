@@ -1,28 +1,23 @@
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:app_launcher/app_launcher.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
-import 'package:installed_apps/app_info.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-/* TODO: Use LauncherApps
- * documentation: https://developer.android.com/reference/android/content/pm/LauncherApps
- * get activity list method: https://developer.android.com/reference/android/content/pm/LauncherApps#getActivityList(java.lang.String,%20android.os.UserHandle)
-*/
-
 enum ElementType { app, note }
 
 class Element {
   final ElementType type;
-  final AppInfo? app;
+  final ApplicationWithIcon? app;
   final Note? note;
 
   Element({required this.type, this.app, this.note});
 
-  static Element fromApp(AppInfo app) {
+  static Element fromApp(ApplicationWithIcon app) {
     return Element(type: ElementType.app, app: app);
   }
 
@@ -43,7 +38,7 @@ class AppsWidget extends StatefulWidget {
 
   final String inputValue;
 
-  final List<AppInfo> apps;
+  final List<ApplicationWithIcon> apps;
 
   final bool isLoading;
 
@@ -104,7 +99,7 @@ class AppsWidgetState extends State<AppsWidget> {
                   if (obj.type == ElementType.note) {
                     return obj.note!.text.toLowerCase();
                   } else {
-                    return obj.app!.name.toLowerCase();
+                    return obj.app!.appName;
                   }
                 },
                 weight: 1)
@@ -187,7 +182,7 @@ class AppListEntry extends StatelessWidget {
   });
 
   final AppsWidget widget;
-  final AppInfo app;
+  final ApplicationWithIcon app;
 
   final bool highlight;
 
@@ -199,17 +194,15 @@ class AppListEntry extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      leading: app.icon != null
-          ? Image.memory(
-              app.icon!,
-              width: 40,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.error);
-              },
-            )
-          : null,
+      leading: Image.memory(
+        app.icon,
+        width: 40,
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(Icons.error);
+        },
+      ),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
-      title: Text(app.name),
+      title: Text(app.appName),
       onTap: () {
         AppLauncher.openApp(androidApplicationId: app.packageName);
       },

@@ -1,6 +1,6 @@
 import 'package:app_launcher/app_launcher.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
-import 'package:installed_apps/app_info.dart';
 
 class PinnedApp extends StatelessWidget {
   const PinnedApp({
@@ -8,16 +8,16 @@ class PinnedApp extends StatelessWidget {
     required this.app,
   });
 
-  final AppInfo app;
+  final ApplicationWithIcon app;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        AppLauncher.openApp(androidApplicationId: app.packageName);
+        app.openApp();
       },
       child: Image.memory(
-        app.icon!,
+        app.icon,
         width: 48,
         errorBuilder: (context, error, stackTrace) {
           return const Icon(Icons.error);
