@@ -1,4 +1,3 @@
-import 'package:app_launcher/app_launcher.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 

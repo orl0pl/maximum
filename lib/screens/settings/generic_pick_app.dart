@@ -3,15 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PinnedAppsScreen extends StatefulWidget {
-  const PinnedAppsScreen({super.key});
-
-  @override
-  State<PinnedAppsScreen> createState() => _PinnedAppsScreenState();
+Future<String?> launchAppPicker(
+    BuildContext context, String? initialApp, String? title) {
+  if (context.mounted) {
+    return Navigator.of(context).push<String?>(
+      MaterialPageRoute(
+          builder: (context) =>
+              GenericPickAppScreen(initialApp: initialApp, title: title),
+          maintainState: false),
+    );
+  } else {
+    return Future(() => null);
+  }
 }
 
-class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
-  List<String>? pinnedApps;
+class GenericPickAppScreen extends StatefulWidget {
+  const GenericPickAppScreen({super.key, this.initialApp, this.title});
+  final String? title;
+
+  final String? initialApp;
+
+  @override
+  State<GenericPickAppScreen> createState() => _GenericPickAppScreenState();
+}
+
+class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
+  String? pickedApp;
   List<ApplicationWithIcon>? allApps;
   List<ApplicationWithIcon> filteredApps = [];
   String searchQuery = '';
@@ -19,22 +36,9 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchPinnedApps();
     fetchAllApps();
-  }
-
-  void fetchPinnedApps() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? savedPinnedApps = prefs.getStringList('pinnedApps');
-    if (savedPinnedApps != null && mounted) {
-      setState(() {
-        pinnedApps = savedPinnedApps;
-      });
-    } else if (mounted) {
-      setState(() {
-        pinnedApps = [];
-      });
-      prefs.setStringList('pinnedApps', []);
+    if (widget.initialApp != null) {
+      pickedApp = widget.initialApp;
     }
   }
 
@@ -79,8 +83,18 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
+      floatingActionButton: pickedApp == null
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).pop(pickedApp);
+              },
+              icon: const Icon(Icons.save),
+              label: Text(l.save),
+            ),
       appBar: AppBar(
-        title: Text(l.pinned_apps),
+        title: widget.title == null ? Text(l.pick_app) : Text(widget.title!),
+        centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(40),
           child: Padding(
@@ -105,22 +119,18 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
               itemBuilder: (itemBuilder, index) {
                 return ListTile(
                   leading: Image.memory(filteredApps[index].icon, width: 40),
-                  trailing: Checkbox(
-                      value:
-                          pinnedApps!.contains(filteredApps[index].packageName),
-                      onChanged: (value) async {
-                        if (value == true) {
-                          setState(() {
-                            pinnedApps!.add(filteredApps[index].packageName);
-                          });
-                        } else {
-                          setState(() {
-                            pinnedApps!.remove(filteredApps[index].packageName);
-                          });
-                        }
-                        final SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        prefs.setStringList('pinnedApps', pinnedApps!);
+                  onTap: () {
+                    setState(() {
+                      pickedApp = filteredApps[index].packageName;
+                    });
+                  },
+                  trailing: Radio(
+                      value: filteredApps[index].packageName,
+                      groupValue: pickedApp,
+                      onChanged: (value) {
+                        setState(() {
+                          pickedApp = value;
+                        });
                       }),
                   title: Text(filteredApps[index].appName),
                 );

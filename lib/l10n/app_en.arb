@@ -107,6 +107,7 @@
     "now": "Now",
     "off": "Off",
     "ok": "Ok",
+    "pick_app": "Pick app",
     "pick_date": "Pick date",
     "pick_repeat_dialog_each_text": "Every",
     "pick_repeat_dialog_each_x_days": "Every few days",
@@ -133,6 +134,9 @@
     "restart_app_to_apply": "Restart app to apply changes",
     "save": "Save",
     "search_placeholder": "Search apps and more...",
+    "search_apps": "Search apps",
+    "@search_apps": {},
+
     "set_pinned_apps": "Set pinned apps",
     "settings": "Settings",
     "shower_will_start": "Shower will start in {time}",
@@ -155,5 +159,16 @@
     "tomorrow": "Tommorow",
     "try_again": "Try again",
     "unknown_location": "Unknown location",
-    "wind_speed_unit": "Wind speed unit"
+    "wind_speed_unit": "Wind speed unit",
+    "set_weather_app": "Set weather app",
+    "no_weather_app_set": "No weather app set",
+    "app_not_selected": "App not selected",
+    "selected_app": "App {appname} selected",
+    "@selected_app": {
+        "placeholders": {
+            "appname": {
+                "type": "String"
+            }
+        }
+    }
 }

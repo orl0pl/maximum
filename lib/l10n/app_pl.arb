@@ -52,6 +52,7 @@
     "now": "Teraz",
     "off": "Wyłączone",
     "ok": "Ok",
+    "pick_app": "Wybierz aplikację",
     "pick_date": "Wybierz date",
     "pick_repeat_dialog_each_text": "Co",
     "pick_repeat_dialog_each_x_days": "Co ileś dni",
@@ -78,6 +79,7 @@
     "restart_app_to_apply": "Zrestartuj aplikacje aby zastosować zmiany",
     "save": "Zapisz",
     "search_placeholder": "Wyszukaj aplikację i nie tylko...",
+    "search_apps": "Szukaj aplikacji",
     "set_pinned_apps": "Przypnij aplikację",
     "settings": "Ustawienia",
     "shower_will_start": "Przelotne opady za {time}",
@@ -100,5 +102,9 @@
     "tomorrow": "Jutro",
     "try_again": "Spróbuj ponownie",
     "unknown_location": "Nieznana lokalizacja",
-    "wind_speed_unit": "Jednostka prędkości wiatru"
+    "wind_speed_unit": "Jednostka prędkości wiatru",
+    "set_weather_app": "Ustaw aplikację pogodową",
+    "no_weather_app_set": "Nie ustawiono aplikacji pogodowej",
+    "app_not_selected": "Nie wybrano aplikacji",
+    "selected_app": "Wybrano aplikacje {appname}"
 }

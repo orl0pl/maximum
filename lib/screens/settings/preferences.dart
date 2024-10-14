@@ -1,5 +1,7 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/screens/settings/generic_pick_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restart_app/restart_app.dart';
 
@@ -16,6 +18,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   String? temperatureUnit;
   String? windSpeedUnit;
   String? precipitationUnit;
+  String? weatherAppName;
 
   @override
   void initState() {
@@ -46,6 +49,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return;
   }
 
+  void fetchweatherAppName() async {
+    prefs = await SharedPreferences.getInstance();
+    var packageName = prefs?.getString('weatherApp');
+    var app = await DeviceApps.getApp(packageName!);
+    setState(() {
+      weatherAppName = app?.appName;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -55,6 +67,22 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: Text(l.set_weather_app),
+            subtitle: Text(weatherAppName == null
+                ? l.app_not_selected
+                : l.selected_app(weatherAppName!)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              var app = await launchAppPicker(context, null, l.set_weather_app);
+              if (app != null) {
+                prefs = await SharedPreferences.getInstance();
+                prefs?.setString('weatherApp', app);
+                fetchweatherAppName();
+              }
+            },
+          ),
+          Divider(),
           ListTile(
               title: Text(l.temperature_unit),
               trailing: SegmentedButton(

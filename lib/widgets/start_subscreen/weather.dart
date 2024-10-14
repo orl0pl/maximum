@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:maximum/screens/settings/generic_pick_app.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/weather/code_to_icon.dart';
 import 'package:maximum/utils/weather/temperature.dart';
@@ -135,6 +137,32 @@ class _WeatherState extends State<Weather> {
     }
   }
 
+  void openWeatherApp() async {
+    var prefs = await SharedPreferences.getInstance();
+    String? weatherAppPackageName = prefs.getString('weatherApp');
+
+    if (weatherAppPackageName != null) {
+      DeviceApps.openApp(weatherAppPackageName);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).no_weather_app_set),
+          action: SnackBarAction(
+            label: AppLocalizations.of(context).set_weather_app,
+            onPressed: () async {
+              var app = await launchAppPicker(context, weatherAppPackageName,
+                  AppLocalizations.of(context).set_weather_app);
+
+              if (app != null) {
+                prefs.setString('weatherApp', app);
+              }
+            },
+          ),
+        ),
+      );
+    }
+  }
+
   bool get isLoading {
     return loadingState == WeatherLoadingState.loading;
   }
@@ -148,7 +176,8 @@ class _WeatherState extends State<Weather> {
     AppLocalizations l = AppLocalizations.of(context);
     TextTheme textTheme = Theme.of(context).textTheme;
     return InkWell(
-      onTap: getWeather,
+      onLongPress: getWeather,
+      onTap: openWeatherApp,
       child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
         Row(
           children: [
