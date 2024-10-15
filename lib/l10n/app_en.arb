@@ -1,6 +1,10 @@
 {
     "@@locale": "en",
     "@about": {},
+    "@add": {},
+    "@add_place": {},
+    "@add_tag": {},
+    "@all_apps": {},
     "@api_enabled": {
         "placeholders": {
             "name": {
@@ -8,9 +12,17 @@
             }
         }
     },
+    "@app_not_selected": {},
+    "@asap": {},
+    "@best_match": {},
+    "@cancel": {},
+    "@color": {},
     "@content_to_add": {
         "description": "Label for text field for content in add page"
     },
+    "@copied_to_clipboard": {},
+    "@copy": {},
+    "@date": {},
     "@days_num_plural": {
         "placeholders": {
             "daysNum": {
@@ -19,6 +31,16 @@
             }
         }
     },
+    "@deadline": {},
+    "@debug": {},
+    "@due_tasks": {},
+    "@edit_note": {},
+    "@edit_place": {},
+    "@edit_tag": {},
+    "@edit_task": {},
+    "@error": {},
+    "@high_uv_index_today": {},
+    "@high_uv_index_tomorrow": {},
     "@higher_temperature_tomorrow": {
         "placeholders": {
             "temperature": {
@@ -44,6 +66,11 @@
             }
         }
     },
+    "@in_future": {},
+    "@invalid_place_name": {},
+    "@invalid_radius": {},
+    "@license": {},
+    "@loading": {},
     "@location_permissions_denied": {
         "description": "Snackbar text for denied location permissions"
     },
@@ -60,6 +87,20 @@
             }
         }
     },
+    "@manage_note_tags": {},
+    "@manage_places": {},
+    "@manage_quotes": {},
+    "@manage_task_tags": {},
+    "@max_distance": {},
+    "@meters": {
+        "description": "meters",
+        "placeholders": {
+            "num": {
+                "example": "1",
+                "type": "int"
+            }
+        }
+    },
     "@months_num_plural": {
         "placeholders": {
             "monthsNum": {
@@ -67,9 +108,35 @@
             }
         }
     },
+    "@no_alarm": {},
+    "@no_internet": {},
+    "@no_notes": {},
+    "@no_tags": {},
+    "@no_tasks": {},
+    "@no_weather_app_set": {},
     "@note": {
         "description": "General name for note"
     },
+    "@notes": {},
+    "@nothing_found": {},
+    "@now": {},
+    "@off": {},
+    "@ok": {},
+    "@pick_app": {},
+    "@pick_date": {},
+    "@pick_repeat_dialog_each_text": {},
+    "@pick_repeat_dialog_each_x_days": {},
+    "@pick_repeat_dialog_error_interval": {},
+    "@pick_repeat_dialog_title": {},
+    "@pick_repeat_dialog_weekdays": {},
+    "@pick_steps_count": {},
+    "@pick_time": {},
+    "@pinned_apps": {},
+    "@place_name": {},
+    "@precipitation_unit": {},
+    "@preferences": {},
+    "@progress_title": {},
+    "@rain_tomorrow": {},
     "@rain_will_end": {
         "placeholders": {
             "time": {
@@ -84,7 +151,13 @@
             }
         }
     },
+    "@repeat": {},
+    "@repeat_start_date": {},
+    "@restart_app": {},
+    "@restart_app_to_apply": {},
+    "@save": {},
     "@search_apps": {},
+    "@search_placeholder": {},
     "@selected_app": {
         "placeholders": {
             "appname": {
@@ -92,6 +165,9 @@
             }
         }
     },
+    "@set_pinned_apps": {},
+    "@set_weather_app": {},
+    "@settings": {},
     "@shower_will_start": {
         "placeholders": {
             "time": {
@@ -99,6 +175,7 @@
             }
         }
     },
+    "@snow_tomorrow": {},
     "@snow_will_end": {
         "placeholders": {
             "time": {
@@ -113,6 +190,7 @@
             }
         }
     },
+    "@someday": {},
     "@steps": {
         "placeholders": {
             "stepsNum": {
@@ -120,9 +198,15 @@
             }
         }
     },
+    "@steps_count": {},
+    "@tag_name": {},
     "@task": {
         "description": "General name for task"
     },
+    "@task_details": {},
+    "@task_not_found": {},
+    "@temperature_unit": {},
+    "@this_week": {},
     "@thunderstorm_will_start": {
         "placeholders": {
             "time": {
@@ -130,9 +214,14 @@
             }
         }
     },
+    "@time": {},
     "@timeline": {
         "description": "Short title for timeline page and widget"
     },
+    "@today": {},
+    "@tomorrow": {},
+    "@try_again": {},
+    "@unknown_location": {},
     "@weeks_num_plural": {
         "placeholders": {
             "weeksNum": {
@@ -140,6 +229,7 @@
             }
         }
     },
+    "@wind_speed_unit": {},
     "@years_num_plural": {
         "placeholders": {
             "yearsNum": {
@@ -190,7 +280,7 @@
     "manage_quotes": "Manage quotes",
     "manage_task_tags": "Manage task tags",
     "max_distance": "Max distance",
-    "meters": "meters",
+    "meters": "{num, plural, other{meters} zero{meters} one{meter} two{meters} few{meters} many{meters}}",
     "months_num_plural": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
     "no_alarm": "No alarm",
     "no_internet": "No internet",
