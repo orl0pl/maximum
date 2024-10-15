@@ -9,6 +9,16 @@ import 'package:maximum/screens/add.dart';
 import 'package:maximum/widgets/common/tag_label.dart';
 import 'package:maximum/widgets/common/task_item.dart';
 
+enum TimeLineListViewEntryType { task, label, nowIndicator }
+
+class TimelineListViewEntry {
+  final int? taskIndex;
+  final String? label;
+  final TimeLineListViewEntryType type;
+
+  TimelineListViewEntry(this.type, {this.taskIndex, this.label});
+}
+
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({super.key});
   @override
@@ -24,6 +34,7 @@ class TimelineScreenState extends State<TimelineScreen> {
   List<Place> _places = [];
   Set<int> selectedTagsIds = {};
   Set<int> selectedPlacesIds = {};
+  List<TimelineListViewEntry> listViewEntries = [];
   List<Task> get dueTasks =>
       _tasks.where((task) => task.isDue && !task.isToday).toList();
   List<Task> get todayTasksBeforeNow => _tasks
@@ -92,6 +103,8 @@ class TimelineScreenState extends State<TimelineScreen> {
       _tasks = tasks;
       tasksLoaded = true;
     });
+
+    fetchListViewEntries();
   }
 
   void fetchTags() async {
@@ -110,6 +123,72 @@ class TimelineScreenState extends State<TimelineScreen> {
 
   void refresh() {
     fetchTasks();
+    fetchListViewEntries();
+  }
+
+  void fetchListViewEntries() {
+    List<TimelineListViewEntry> tempListViewEntries = [];
+
+    if (dueTasks.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).due_tasks));
+      tempListViewEntries.addAll(dueTasks.map((task) => TimelineListViewEntry(
+          TimeLineListViewEntryType.task,
+          taskIndex: _tasks.indexOf(task))));
+    }
+
+    if (todayTasksBeforeNow.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).today));
+      tempListViewEntries.addAll(todayTasksBeforeNow.map((task) =>
+          TimelineListViewEntry(TimeLineListViewEntryType.task,
+              taskIndex: _tasks.indexOf(task))));
+    }
+
+    tempListViewEntries
+        .add(TimelineListViewEntry(TimeLineListViewEntryType.nowIndicator));
+
+    if (todayTasksAfterNow.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).tomorrow));
+      tempListViewEntries.addAll(todayTasksAfterNow.map((task) =>
+          TimelineListViewEntry(TimeLineListViewEntryType.task,
+              taskIndex: _tasks.indexOf(task))));
+    }
+
+    if (tomorrowTasks.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).tomorrow));
+      tempListViewEntries.addAll(tomorrowTasks.map((task) =>
+          TimelineListViewEntry(TimeLineListViewEntryType.task,
+              taskIndex: _tasks.indexOf(task))));
+    }
+
+    if (taskInNextSevenDays.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).this_week));
+      tempListViewEntries.addAll(taskInNextSevenDays.map((task) =>
+          TimelineListViewEntry(TimeLineListViewEntryType.task,
+              taskIndex: _tasks.indexOf(task))));
+    }
+
+    if (futureTasks.isNotEmpty) {
+      tempListViewEntries.add(TimelineListViewEntry(
+          TimeLineListViewEntryType.label,
+          label: AppLocalizations.of(context).in_future));
+      tempListViewEntries.addAll(futureTasks.map((task) =>
+          TimelineListViewEntry(TimeLineListViewEntryType.task,
+              taskIndex: _tasks.indexOf(task))));
+    }
+
+    setState(() {
+      listViewEntries = tempListViewEntries;
+    });
   }
 
   TaskItem commonTaskItem(Task task) {
@@ -214,53 +293,31 @@ class TimelineScreenState extends State<TimelineScreen> {
                     ]),
                   )),
             ),
-            // TODO: use a listview
             Expanded(
               child: tasksLoaded
-                  ? SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (dueTasks.isNotEmpty) ...[
-                              Text(l.due_tasks, style: textTheme.labelLarge),
-                              for (Task task in dueTasks)
-                                TaskItem(
-                                  task: task,
-                                  refresh: refresh,
-                                  clickable: true,
-                                ),
-                            ],
-                            if (todayTasksAfterNow.isNotEmpty ||
-                                todayTasksBeforeNow.isNotEmpty) ...[
-                              Text(l.today, style: textTheme.labelLarge),
-                            ],
-                            if (todayTasksBeforeNow.isNotEmpty) ...[
-                              for (Task task in todayTasksBeforeNow)
-                                commonTaskItem(task),
-                            ],
-                            NowText(theme: theme, l: l, textTheme: textTheme),
-                            for (Task task in todayTasksAfterNow)
-                              commonTaskItem(task),
-                            if (tomorrowTasks.isNotEmpty) ...[
-                              Text(l.tomorrow, style: textTheme.labelLarge),
-                              for (Task task in tomorrowTasks)
-                                commonTaskItem(task),
-                            ],
-                            if (taskInNextSevenDays.isNotEmpty) ...[
-                              Text(l.this_week, style: textTheme.labelLarge),
-                              for (Task task in taskInNextSevenDays)
-                                commonTaskItem(task),
-                            ],
-                            if (futureTasks.isNotEmpty) ...[
-                              Text(l.in_future, style: textTheme.labelLarge),
-                              for (Task task in futureTasks)
-                                commonTaskItem(task),
-                            ]
-                          ],
-                        ),
-                      ),
+                  ? ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: listViewEntries.length,
+                      itemBuilder: (context, index) {
+                        var item = listViewEntries[index];
+
+                        if (item.type == TimeLineListViewEntryType.label) {
+                          return Text(
+                              item.label != null ? item.label! : "Report issue",
+                              style: textTheme.labelLarge);
+                        }
+                        if (item.type ==
+                            TimeLineListViewEntryType.nowIndicator) {
+                          return NowText(
+                              theme: theme, l: l, textTheme: textTheme);
+                        }
+                        if (item.type == TimeLineListViewEntryType.task) {
+                          return item.taskIndex != null
+                              ? commonTaskItem(_tasks[item.taskIndex!])
+                              : Text("Null index (report issue)");
+                        }
+                        return const SizedBox();
+                      },
                     )
                   : const Center(child: CircularProgressIndicator()),
             ),
@@ -290,12 +347,14 @@ class NowText extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 12,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
               color: theme.colorScheme.tertiary,
             ),
-            width: 12,
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+            child: Text(l.now,
+                style: textTheme.labelSmall
+                    ?.copyWith(color: theme.colorScheme.onTertiary)),
           ),
           Expanded(
             child: Container(

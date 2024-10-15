@@ -1,3 +1,4 @@
+@Deprecated('Do not use. This will be implemented when #1 is done.')
 class NoteAttachment {
   int? attachmentId;
   int noteId;
