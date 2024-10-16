@@ -1,23 +1,27 @@
+import 'dart:typed_data';
+
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_package_manager/android_package_manager.dart';
 import 'package:app_launcher/app_launcher.dart';
-import 'package:device_apps/device_apps.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 enum ElementType { app, note }
 
 class Element {
   final ElementType type;
-  final ApplicationWithIcon? app;
+  final ApplicationInfo? app;
   final Note? note;
 
   Element({required this.type, this.app, this.note});
 
-  static Element fromApp(ApplicationWithIcon app) {
+  static Element fromApp(ApplicationInfo app) {
     return Element(type: ElementType.app, app: app);
   }
 
@@ -38,7 +42,7 @@ class AppsWidget extends StatefulWidget {
 
   final String inputValue;
 
-  final List<ApplicationWithIcon> apps;
+  final List<ApplicationInfo> apps;
 
   final bool isLoading;
 
@@ -64,7 +68,7 @@ class AppsWidgetState extends State<AppsWidget> {
     } else if (allMatches.isNotEmpty) {
       if (allMatches[0].type == ElementType.app) {
         AppLauncher.openApp(
-          androidApplicationId: allMatches[0].app!.packageName,
+          androidApplicationId: allMatches[0].app!.packageName!,
         );
       }
     }
@@ -99,7 +103,7 @@ class AppsWidgetState extends State<AppsWidget> {
                   if (obj.type == ElementType.note) {
                     return obj.note!.text.toLowerCase();
                   } else {
-                    return obj.app!.appName;
+                    return obj.app!.name!;
                   }
                 },
                 weight: 1)
@@ -182,7 +186,7 @@ class AppListEntry extends StatelessWidget {
   });
 
   final AppsWidget widget;
-  final ApplicationWithIcon app;
+  final ApplicationInfo app;
 
   final bool highlight;
 
@@ -194,17 +198,39 @@ class AppListEntry extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      leading: Image.memory(
-        app.icon,
-        width: 40,
-        errorBuilder: (context, error, stackTrace) {
-          return const Icon(Icons.error);
+      leading: FutureBuilder<Uint8List?>(
+        future: app.getAppIcon(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Image.memory(
+              snapshot.data!,
+              width: 40,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.error);
+              },
+            );
+          } else {
+            return CircularProgressIndicator(); // or some other loading indicator
+          }
         },
       ),
+      subtitle: Text("${app.flags}"),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
-      title: Text(app.appName),
+      title: FutureBuilder<String?>(
+        future: app.getAppLabel(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Text(snapshot.data!);
+          } else {
+            return Skeletonizer(
+                enabled: !snapshot.hasData,
+                child: Text(
+                    "${app.packageName}")); // or some other loading indicator
+          }
+        },
+      ),
       onTap: () {
-        AppLauncher.openApp(androidApplicationId: app.packageName);
+        AndroidPackageManager().openApp(app.packageName!);
       },
     );
   }

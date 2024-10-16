@@ -1,4 +1,7 @@
-import 'package:device_apps/device_apps.dart';
+import 'dart:typed_data';
+
+import 'package:android_package_manager/android_package_manager.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,8 +32,8 @@ class GenericPickAppScreen extends StatefulWidget {
 
 class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
   String? pickedApp;
-  List<ApplicationWithIcon>? allApps;
-  List<ApplicationWithIcon> filteredApps = [];
+  List<ApplicationInfo>? allApps;
+  List<ApplicationInfo> filteredApps = [];
   String searchQuery = '';
 
   @override
@@ -43,15 +46,12 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
   }
 
   void fetchAllApps() async {
-    List<Application> apps = await DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        onlyAppsWithLaunchIntent: true,
-        includeSystemApps: true);
-    apps.sort(
-        (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
+    List<ApplicationInfo> apps =
+        (await AndroidPackageManager().getInstalledApplications())!;
+    apps.sort((a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
     if (mounted) {
       setState(() {
-        allApps = apps.cast();
+        allApps = apps;
       });
     }
     updateList(searchQuery);
@@ -67,8 +67,8 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
     } else if (mounted && allApps != null) {
       setState(() {
         filteredApps = allApps!
-            .where((app) =>
-                app.appName.toLowerCase().contains(value.toLowerCase()))
+            .where(
+                (app) => app.name!.toLowerCase().contains(value.toLowerCase()))
             .toList();
       });
     }
@@ -118,7 +118,16 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
           : ListView.builder(
               itemBuilder: (itemBuilder, index) {
                 return ListTile(
-                  leading: Image.memory(filteredApps[index].icon, width: 40),
+                  leading: FutureBuilder<Uint8List?>(
+                    future: filteredApps[index].getAppIcon(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Image.memory(snapshot.data!, width: 40);
+                      } else {
+                        return CircularProgressIndicator(); // or some other loading indicator
+                      }
+                    },
+                  ),
                   onTap: () {
                     setState(() {
                       pickedApp = filteredApps[index].packageName;
@@ -132,7 +141,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                           pickedApp = value;
                         });
                       }),
-                  title: Text(filteredApps[index].appName),
+                  title: Text(filteredApps[index].splitNames!.join(",")),
                 );
               },
               itemCount: filteredApps.length),

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:device_apps/device_apps.dart';
+import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -163,7 +163,7 @@ class _WeatherState extends State<Weather> {
     String? weatherAppPackageName = prefs.getString('weatherApp');
 
     if (weatherAppPackageName != null) {
-      DeviceApps.openApp(weatherAppPackageName);
+      AppLauncher.openApp(androidApplicationId: weatherAppPackageName!);
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

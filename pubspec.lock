@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  appcheck:
+    dependency: "direct main"
+    description:
+      name: appcheck
+      sha256: "0fcbe15b6bba67027c6f94bd177b9b319e019b51e0b49e9cd80486448c4a1909"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
   archive:
     dependency: transitive
     description:
@@ -105,14 +113,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  device_apps:
-    dependency: "direct main"
-    description:
-      name: device_apps
-      sha256: e84dc74d55749993fd671148cc0bd53096e1be0c268fc364285511b1d8a4c19b
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   dio:
     dependency: transitive
     description:
@@ -718,6 +718,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  skeletonizer:
+    dependency: "direct main"
+    description:
+      name: skeletonizer
+      sha256: "3b202e4fa9c49b017d368fb0e570d4952bcd19972b67b2face071bdd68abbfae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.2"
   sky_engine:
     dependency: transitive
     description: flutter

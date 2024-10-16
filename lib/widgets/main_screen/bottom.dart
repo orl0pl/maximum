@@ -1,4 +1,6 @@
-import 'package:device_apps/device_apps.dart';
+import 'dart:typed_data';
+
+import 'package:android_package_manager/android_package_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/screens/add.dart';
@@ -32,7 +34,7 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
-  List<ApplicationWithIcon>? pinnedApps;
+  Map<String, Uint8List>? pinnedApps;
 
   @override
   void initState() {
@@ -45,12 +47,11 @@ class _BottomState extends State<Bottom> {
     List<String>? pinnedAppsPackageNames = prefs.getStringList('pinnedApps');
 
     if (pinnedAppsPackageNames != null) {
-      List<ApplicationWithIcon> tempPinnedApps = [];
+      Map<String, Uint8List> tempPinnedApps = {};
 
       for (var packageName in pinnedAppsPackageNames) {
-        tempPinnedApps.add(
-          await DeviceApps.getApp(packageName, true) as ApplicationWithIcon,
-        );
+        tempPinnedApps[packageName] = (await AndroidPackageManager()
+            .getApplicationIcon(packageName: packageName))!;
       }
 
       if (mounted) {
@@ -61,7 +62,7 @@ class _BottomState extends State<Bottom> {
     } else {
       if (mounted) {
         setState(() {
-          pinnedApps = [];
+          pinnedApps = {};
         });
       }
       prefs.setStringList('pinnedApps', []);
@@ -101,8 +102,11 @@ class _BottomState extends State<Bottom> {
                                   },
                                   child: Text(l.set_pinned_apps))
                             ]
-                          : pinnedApps!.map((app) {
-                              return PinnedApp(app: app);
+                          : pinnedApps!.entries.map((e) {
+                              return PinnedApp(
+                                icon: e.value,
+                                packageName: e.key,
+                              );
                             }).toList()),
             ),
             Flexible(

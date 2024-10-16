@@ -1,4 +1,5 @@
-import 'package:device_apps/device_apps.dart';
+import 'package:android_package_manager/android_package_manager.dart';
+
 import 'package:flutter/material.dart';
 import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/timeline.dart';
@@ -20,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
   GlobalKey<AppsWidgetState> appsKey = GlobalKey<AppsWidgetState>();
   ActiveScreen activeScreen = ActiveScreen.start;
   String text = "";
-  List<Application> _apps = [];
+  List<ApplicationInfo> _apps = [];
   bool _isLoading = true;
 
   @override
@@ -33,13 +34,20 @@ class _MainScreenState extends State<MainScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      List<Application> apps = await DeviceApps.getInstalledApplications(
-          includeAppIcons: true,
-          onlyAppsWithLaunchIntent: true,
-          includeSystemApps: true);
+      var packageManager = AndroidPackageManager();
+      List<ApplicationInfo>? apps =
+          await packageManager.getInstalledApplications(
+              flags: ApplicationInfoFlags(
+                  {PMFlag.getMetaData, PMFlag.matchDefaultOnly}));
       if (mounted) {
         setState(() {
-          _apps = apps;
+          _apps = apps!
+              .where((app) =>
+                  app.flags != null &&
+                  app.name != null &&
+                  app.icon != null &&
+                  app.packageName != null)
+              .toList()!;
           _isLoading = false;
         });
       }
@@ -140,11 +148,15 @@ class _MainScreenState extends State<MainScreen> {
                                 key: appsKey,
                                 textTheme: textTheme,
                                 inputValue: text,
-                                apps: _apps.cast(),
+                                apps: _apps,
                                 isLoading: _isLoading,
                               ),
                       ))),
-              const SizedBox(height: 16),
+              InkWell(
+                  child: const SizedBox(height: 160),
+                  onTap: () {
+                    _fetchApps();
+                  }),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Bottom(

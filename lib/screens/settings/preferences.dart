@@ -1,4 +1,4 @@
-import 'package:device_apps/device_apps.dart';
+import 'package:android_package_manager/android_package_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/screens/settings/generic_pick_app.dart';
@@ -52,9 +52,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   void fetchweatherAppName() async {
     prefs = await SharedPreferences.getInstance();
     var packageName = prefs?.getString('weatherApp');
-    var app = await DeviceApps.getApp(packageName!);
+    var app = await AndroidPackageManager()
+        .getApplicationLabel(packageName: packageName!);
     setState(() {
-      weatherAppName = app?.appName;
+      weatherAppName = app;
     });
   }
 

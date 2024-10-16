@@ -34,7 +34,6 @@ dependencies:
   android_intent_plus: ^5.1.0
   shared_preferences: ^2.3.2
   dynamic_color: ^1.4.0
-  device_apps: ^2.2.0
   transparent_image: ^2.0.1
   package_info_plus: ^8.0.2
   android_package_manager: ^0.7.1
@@ -62,6 +61,8 @@ dependencies:
   open_meteo: ^2.0.1
   quotesy: ^1.0.10
   flutter_patch_package: ^0.0.11
+  appcheck: ^1.5.2
+  skeletonizer: ^1.4.2
 
 dev_dependencies:
   flutter_test:
