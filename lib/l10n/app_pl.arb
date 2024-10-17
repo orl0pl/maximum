@@ -7,6 +7,7 @@
     "all_apps": "Wszystkie aplikacje",
     "api_enabled": "API {name} włączone",
     "app_not_selected": "Nie wybrano aplikacji",
+    "apparent_temperature": "Odczuwalnie {temp}",
     "asap": "Jak najwczesniej",
     "best_match": "Najlepszy dopasowanie:",
     "cancel": "Anuluj",

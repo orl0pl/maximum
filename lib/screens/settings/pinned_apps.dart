@@ -51,7 +51,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
                 app.name != null && app.icon != null && app.packageName != null)
             .toList();
 
-    apps = await Future.wait(apps!.map((app) async {
+    apps = await Future.wait(apps.map((app) async {
       return (await AppLauncher.hasApp(
                   androidApplicationId: app.packageName!)) ==
               true

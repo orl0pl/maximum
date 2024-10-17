@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:maximum/utils/weather/temperature.dart';
 import 'package:open_meteo/open_meteo.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -234,5 +232,7 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
     return l.high_uv_index_tomorrow;
   }
 
-  return "n/a";
+  return l.apparent_temperature(formatTemperature(
+      response.currentData[WeatherCurrent.apparent_temperature]!.value,
+      prefs.getString('temperatureUnit') ?? "C"));
 }

@@ -230,7 +230,6 @@ class AppListEntry extends StatelessWidget {
         },
       ),
       onTap: () async {
-        print(await AppLauncher.hasApp(androidApplicationId: app.packageName!));
         AndroidPackageManager().openApp(app.packageName!);
       },
     );

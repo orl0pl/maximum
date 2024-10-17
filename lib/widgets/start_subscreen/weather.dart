@@ -92,6 +92,7 @@ class _WeatherState extends State<Weather> {
             WeatherCurrent.rain,
             WeatherCurrent.snowfall,
             WeatherCurrent.temperature_2m,
+            WeatherCurrent.apparent_temperature,
             WeatherCurrent.showers,
             WeatherCurrent.weather_code,
             WeatherCurrent.is_day

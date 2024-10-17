@@ -13,6 +13,13 @@
         }
     },
     "@app_not_selected": {},
+    "@apparent_temperature": {
+        "placeholders": {
+            "temp": {
+                "type": "String"
+            }
+        }
+    },
     "@asap": {},
     "@best_match": {},
     "@cancel": {},
@@ -244,6 +251,7 @@
     "all_apps": "All apps",
     "api_enabled": "{name} API enabled",
     "app_not_selected": "App not selected",
+    "apparent_temperature": "Feels like {temp}",
     "asap": "ASAP",
     "best_match": "Best match:",
     "cancel": "Cancel",
