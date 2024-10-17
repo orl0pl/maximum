@@ -24,6 +24,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   void initState() {
     super.initState();
     fetchPreferences();
+    fetchweatherAppName();
   }
 
   void fetchPreferences() async {

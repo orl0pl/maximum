@@ -1,4 +1,5 @@
 import 'package:android_package_manager/android_package_manager.dart';
+import 'package:app_launcher/app_launcher.dart';
 
 import 'package:flutter/material.dart';
 import 'package:maximum/screens/notes.dart';
@@ -40,14 +41,23 @@ class _MainScreenState extends State<MainScreen> {
               flags: ApplicationInfoFlags(
                   {PMFlag.getMetaData, PMFlag.matchDefaultOnly}));
       if (mounted) {
+        apps = apps!
+            .where((app) =>
+                app.name != null && app.icon != null && app.packageName != null)
+            .toList();
+        List<ApplicationInfo> filteredApps =
+            await Future.wait(apps!.map((app) async {
+          return (await AppLauncher.hasApp(
+                      androidApplicationId: app.packageName!)) ==
+                  true
+              ? app
+              : null;
+        })).then((values) => values
+                .where((element) => element != null)
+                .toList()
+                .cast<ApplicationInfo>());
         setState(() {
-          _apps = apps!
-              .where((app) =>
-                  app.flags != null &&
-                  app.name != null &&
-                  app.icon != null &&
-                  app.packageName != null)
-              .toList()!;
+          _apps = filteredApps;
           _isLoading = false;
         });
       }
@@ -153,7 +163,7 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                       ))),
               InkWell(
-                  child: const SizedBox(height: 160),
+                  child: const SizedBox(height: 16),
                   onTap: () {
                     _fetchApps();
                   }),

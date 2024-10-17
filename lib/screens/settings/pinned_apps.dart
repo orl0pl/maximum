@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:android_package_manager/android_package_manager.dart';
+import 'package:app_launcher/app_launcher.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PinnedAppsScreen extends StatefulWidget {
   const PinnedAppsScreen({super.key});
@@ -16,6 +18,7 @@ class PinnedAppsScreen extends StatefulWidget {
 class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
   List<String>? pinnedApps;
   List<ApplicationInfo>? allApps;
+  Map<String, String>? appLabels;
   List<ApplicationInfo> filteredApps = [];
   String searchQuery = '';
 
@@ -43,8 +46,35 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
 
   void fetchAllApps() async {
     List<ApplicationInfo> apps =
-        (await AndroidPackageManager().getInstalledApplications())!;
-    apps.sort((a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
+        (await AndroidPackageManager().getInstalledApplications())!
+            .where((app) =>
+                app.name != null && app.icon != null && app.packageName != null)
+            .toList();
+
+    apps = await Future.wait(apps!.map((app) async {
+      return (await AppLauncher.hasApp(
+                  androidApplicationId: app.packageName!)) ==
+              true
+          ? app
+          : null;
+    })).then((values) => values
+        .where((element) => element != null)
+        .toList()
+        .cast<ApplicationInfo>());
+
+    // Get the labels before sorting
+    List<String> labels =
+        await Future.wait(apps.map((app) async => (await app.getAppLabel())!));
+
+    appLabels = Map.fromIterables(apps.map((app) => app.packageName!), labels);
+
+    // Sort the apps based on their labels
+    apps.sort((a, b) {
+      String labelA = appLabels![a.packageName!]!;
+      String labelB = appLabels![a.packageName!]!;
+      return labelA.toLowerCase().compareTo(labelB.toLowerCase());
+    });
+
     if (mounted) {
       setState(() {
         allApps = apps;
@@ -53,7 +83,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
     updateList(searchQuery);
   }
 
-  void updateList(value) {
+  void updateList(value) async {
     if (value.isEmpty && mounted) {
       setState(() {
         if (allApps != null) {
@@ -63,8 +93,9 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
     } else if (mounted && allApps != null) {
       setState(() {
         filteredApps = allApps!
-            .where(
-                (app) => app.name!.toLowerCase().contains(value.toLowerCase()))
+            .where((app) => appLabels![app.packageName!]!
+                .toLowerCase()
+                .contains(value.toLowerCase()))
             .toList();
       });
     }
@@ -131,7 +162,19 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
                             await SharedPreferences.getInstance();
                         prefs.setStringList('pinnedApps', pinnedApps!);
                       }),
-                  title: Text(filteredApps[index].name!),
+                  title: FutureBuilder<String?>(
+                    future: filteredApps[index].getAppLabel(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(snapshot.data!);
+                      } else {
+                        return Skeletonizer(
+                            enabled: !snapshot.hasData,
+                            child: Text(
+                                "${filteredApps[index].packageName}")); // or some other loading indicator
+                      }
+                    },
+                  ),
                 );
               },
               itemCount: filteredApps.length),

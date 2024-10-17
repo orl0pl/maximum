@@ -214,7 +214,7 @@ class AppListEntry extends StatelessWidget {
           }
         },
       ),
-      subtitle: Text("${app.flags}"),
+      subtitle: Text(app.flags.toString()),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
       title: FutureBuilder<String?>(
         future: app.getAppLabel(),
@@ -229,7 +229,8 @@ class AppListEntry extends StatelessWidget {
           }
         },
       ),
-      onTap: () {
+      onTap: () async {
+        print(await AppLauncher.hasApp(androidApplicationId: app.packageName!));
         AndroidPackageManager().openApp(app.packageName!);
       },
     );

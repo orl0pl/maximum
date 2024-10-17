@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:android_package_manager/android_package_manager.dart';
+import 'package:app_launcher/app_launcher.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -34,6 +35,8 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
   String? pickedApp;
   List<ApplicationInfo>? allApps;
   List<ApplicationInfo> filteredApps = [];
+
+  Map<String, String>? appLabels;
   String searchQuery = '';
 
   @override
@@ -47,8 +50,35 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
 
   void fetchAllApps() async {
     List<ApplicationInfo> apps =
-        (await AndroidPackageManager().getInstalledApplications())!;
-    apps.sort((a, b) => a.name!.toLowerCase().compareTo(b.name!.toLowerCase()));
+        (await AndroidPackageManager().getInstalledApplications())!
+            .where((app) =>
+                app.name != null && app.icon != null && app.packageName != null)
+            .toList();
+
+    apps = await Future.wait(apps!.map((app) async {
+      return (await AppLauncher.hasApp(
+                  androidApplicationId: app.packageName!)) ==
+              true
+          ? app
+          : null;
+    })).then((values) => values
+        .where((element) => element != null)
+        .toList()
+        .cast<ApplicationInfo>());
+
+    // Get the labels before sorting
+    List<String> labels =
+        await Future.wait(apps.map((app) async => (await app.getAppLabel())!));
+
+    appLabels = Map.fromIterables(apps.map((app) => app.packageName!), labels);
+
+    // Sort the apps based on their labels
+    apps.sort((a, b) {
+      String labelA = appLabels![a.packageName!]!;
+      String labelB = appLabels![a.packageName!]!;
+      return labelA.toLowerCase().compareTo(labelB.toLowerCase());
+    });
+
     if (mounted) {
       setState(() {
         allApps = apps;
@@ -57,7 +87,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
     updateList(searchQuery);
   }
 
-  void updateList(value) {
+  void updateList(value) async {
     if (value.isEmpty && mounted) {
       setState(() {
         if (allApps != null) {
@@ -67,8 +97,9 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
     } else if (mounted && allApps != null) {
       setState(() {
         filteredApps = allApps!
-            .where(
-                (app) => app.name!.toLowerCase().contains(value.toLowerCase()))
+            .where((app) => appLabels![app.packageName!]!
+                .toLowerCase()
+                .contains(value.toLowerCase()))
             .toList();
       });
     }
@@ -141,7 +172,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                           pickedApp = value;
                         });
                       }),
-                  title: Text(filteredApps[index].splitNames!.join(",")),
+                  title: Text(appLabels![filteredApps[index].packageName]!),
                 );
               },
               itemCount: filteredApps.length),
