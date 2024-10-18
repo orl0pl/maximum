@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
@@ -14,6 +12,7 @@ import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
+import 'package:maximum/widgets/add_screen/task.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
@@ -96,6 +95,24 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
+  void updateDataForTask(Task task) {
+    setState(() {
+      taskDraft = task;
+    });
+  }
+
+  void updateTagsForTask(Set<int> tags) {
+    setState(() {
+      selectedTaskTagsIds = tags;
+    });
+  }
+
+  void updatePlaceForTask(int? place) {
+    setState(() {
+      taskDraft.placeId = place;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -107,54 +124,60 @@ class _AddScreenState extends State<AddScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Spacer(),
-          Row(
-            children: [
-              InputChip(
-                avatar: Icon(MdiIcons.calendarMonth),
-                label: Text("21/12/2022"),
-                onDeleted: () {},
-              ),
-              const SizedBox(width: 8),
-              InputChip(
-                avatar: Icon(MdiIcons.clock),
-                label: Text("12:00"),
-                onDeleted: () {},
-              ),
-              const SizedBox(width: 8),
-              InputChip(
-                avatar: Icon(MdiIcons.mapMarker),
-                label: Text("Home"),
-                onDeleted: () {},
-              ),
-            ],
-          )
+          TextField(
+            autofocus: true,
+            onChanged: (value) {
+              setState(() {
+                text = value.trim();
+                noteDraft.text = value.trim();
+                taskDraft.text = value.trim();
+              });
+            },
+            decoration: InputDecoration(
+                border: OutlineInputBorder(), labelText: l.content_to_add),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          if (entryType == EntryType.task)
+            TaskAdding(
+              updateDataForTask: updateDataForTask,
+              updateTagsForTask: updateTagsForTask,
+              updatePlaceForTask: updatePlaceForTask,
+              selectedTagsIds: selectedTaskTagsIds,
+              selectedPlaceId: taskDraft.placeId,
+              places: places,
+              tags: _taskTags,
+            )
         ]),
       )),
       persistentFooterAlignment: AlignmentDirectional.centerStart,
       persistentFooterButtons: [
         Row(
           children: [
-            Row(
-              children: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.calendar_month)),
-                IconButton(onPressed: () {}, icon: Icon(MdiIcons.clockOutline)),
-                IconButton(
-                    onPressed: () {}, icon: Icon(MdiIcons.mapMarkerOutline)),
-                IconButton(onPressed: () {}, icon: Icon(MdiIcons.counter)),
-                IconButton(
-                    onPressed: () {}, icon: Icon(MdiIcons.tagMultipleOutline)),
-              ],
-            ),
+            SizedBox(width: 8),
+            SegmentedButton(
+                showSelectedIcon: false,
+                multiSelectionEnabled: false,
+                segments: const [
+                  ButtonSegment(
+                      value: EntryType.note, icon: Icon(MdiIcons.noteOutline)),
+                  ButtonSegment(
+                      value: EntryType.task,
+                      icon: Icon(MdiIcons.checkboxMarkedCircleOutline)),
+                ],
+                selected: {entryType},
+                onSelectionChanged: (value) {
+                  setState(() {
+                    entryType = value.last;
+                  });
+                }),
             Spacer(),
-            Row(
-              children: [
-                FilledButton.icon(onPressed: () {}, label: Text("Save")),
-              ],
-            ),
+            FilledButton.icon(onPressed: () {}, label: Text("Save")),
           ],
         )
       ],
-      floatingActionButton: canAdd
+      floatingActionButton: false
           ? FloatingActionButton(
               onPressed: () async {
                 DatabaseHelper dh = DatabaseHelper();

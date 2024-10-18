@@ -110,7 +110,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   ],
                   if (task!.isTimeSet) ...[
                     const SizedBox(height: 16),
-                    Text(l.time, style: textTheme.labelMedium),
+                    Text(l.hour, style: textTheme.labelMedium),
                     Text(DateFormat.jm().format(task!.datetime!),
                         style: textTheme.bodyLarge),
                   ],

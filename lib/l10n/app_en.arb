@@ -221,7 +221,7 @@
             }
         }
     },
-    "@time": {},
+    "@hour": {},
     "@timeline": {
         "description": "Short title for timeline page and widget"
     },
@@ -316,6 +316,8 @@
     "precipitation_unit": "Precipitation unit",
     "preferences": "Preferences",
     "progress_title": "Progress",
+    "place": "Place",
+    "@place":{},
     "rain_tomorrow": "Rain tomorrow",
     "rain_will_end": "Rain will end in {time}",
     "rain_will_start": "Rain will start in {time}",
@@ -337,6 +339,8 @@
     "someday": "Someday",
     "steps": "{stepsNum} {stepsNum, plural, =0{steps} =1{step} =2{steps} few{steps} many{steps} other{steps}}",
     "steps_count": "Steps count",
+    "tags": "Tags",
+    "@tags": {},
     "tag_name": "Name",
     "task": "Task",
     "task_details": "Task details",
@@ -344,7 +348,9 @@
     "temperature_unit": "Temperature unit",
     "this_week": "This week",
     "thunderstorm_will_start": "Thunderstorm will start in {time}",
+    "hour": "Time",
     "time": "Time",
+    "@time": {},
     "timeline": "Timeline",
     "today": "Today",
     "tomorrow": "Tommorow",
