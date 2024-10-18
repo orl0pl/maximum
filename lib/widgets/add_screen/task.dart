@@ -85,6 +85,7 @@ class _TaskAddingState extends State<TaskAdding> {
             ],
           ),
         ),
+        SizedBox(height: 8),
         Text(
           l.tags,
           style: Theme.of(context).textTheme.labelLarge,

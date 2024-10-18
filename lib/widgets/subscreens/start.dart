@@ -89,96 +89,93 @@ class _StartWidgetState extends State<StartWidget> {
   Widget build(BuildContext context) {
     AppLocalizations? l = AppLocalizations.of(context);
     return SafeArea(
-      child: Expanded(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Top(),
-              const SizedBox(height: 32),
-              Expanded(
-                flex: 12,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const TimelineScreen(),
-                        maintainState: false));
-                  },
-                  onDoubleTap: () {
-                    fetchTasks();
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l.timeline,
-                        style: widget.textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      // TODO: Import events from calendar
-                      // ImportantEvent(textTheme: widget.textTheme),
-                      // const SizedBox(height: 16),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            int? tasksThatFit;
-                            try {
-                              if (kDebugMode) {
-                                print(
-                                    "${constraints.maxHeight} ${constraints.minHeight}");
-                              }
-                              tasksThatFit =
-                                  ((constraints.maxHeight - 24) / 64).floor();
-                            } on UnsupportedError catch (e) {
-                              if (kDebugMode) {
-                                print(e);
-                              }
-                              tasksThatFit = 6;
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Top(),
+            const SizedBox(height: 32),
+            Expanded(
+              flex: 12,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const TimelineScreen(),
+                      maintainState: false));
+                },
+                onDoubleTap: () {
+                  fetchTasks();
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.timeline,
+                      style: widget.textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    // TODO: Import events from calendar
+                    // ImportantEvent(textTheme: widget.textTheme),
+                    // const SizedBox(height: 16),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          int? tasksThatFit;
+                          try {
+                            if (kDebugMode) {
+                              print(
+                                  "${constraints.maxHeight} ${constraints.minHeight}");
                             }
-                            return allTasks.isEmpty
-                                ? Center(
-                                    child: Text(
-                                      l.no_tasks,
-                                      style: widget.textTheme.bodySmall,
-                                    ),
-                                  )
-                                : Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ...allTasks
-                                          .take(tasksThatFit < 0
-                                              ? 0
-                                              : tasksThatFit)
-                                          .map((Task task) {
-                                        return TaskItem(
-                                          task: task,
-                                          textUnderTaskText:
-                                              "Score: ${taskRanks[task.taskId]?.toString()}",
-                                          refresh: () {
-                                            fetchTasks();
-                                          },
-                                        );
-                                      }),
-                                      if (allTasks.length > tasksThatFit) ...[
-                                        Icon(MdiIcons.chevronDown,
-                                            color: widget
-                                                .textTheme.bodySmall!.color),
-                                      ]
-                                    ],
-                                  );
-                          },
-                        ),
+                            tasksThatFit =
+                                ((constraints.maxHeight - 24) / 64).floor();
+                          } on UnsupportedError catch (e) {
+                            if (kDebugMode) {
+                              print(e);
+                            }
+                            tasksThatFit = 6;
+                          }
+                          return allTasks.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    l.no_tasks,
+                                    style: widget.textTheme.bodySmall,
+                                  ),
+                                )
+                              : Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ...allTasks
+                                        .take(
+                                            tasksThatFit < 0 ? 0 : tasksThatFit)
+                                        .map((Task task) {
+                                      return TaskItem(
+                                        task: task,
+                                        textUnderTaskText:
+                                            "Score: ${taskRanks[task.taskId]?.toString()}",
+                                        refresh: () {
+                                          fetchTasks();
+                                        },
+                                      );
+                                    }),
+                                    if (allTasks.length > tasksThatFit) ...[
+                                      Icon(MdiIcons.chevronDown,
+                                          color: widget
+                                              .textTheme.bodySmall!.color),
+                                    ]
+                                  ],
+                                );
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const Spacer(),
-              const Inspiration()
-            ],
-          ),
+            ),
+            const Spacer(),
+            const Inspiration()
+          ],
         ),
       ),
     );

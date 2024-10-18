@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:android_package_manager/android_package_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:maximum/screens/add_redesgin.dart';
+import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/main.dart';
 import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/settings/pinned_apps.dart';
