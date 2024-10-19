@@ -6,17 +6,10 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/models/place.dart';
-import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
-import 'package:maximum/screens/add_place.dart';
 import 'package:maximum/utils/location.dart';
-import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/add_screen/task.dart';
-import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
-import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
-import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
-import 'package:maximum/widgets/common/tag_label.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen(
@@ -32,8 +25,8 @@ enum EntryType { note, task }
 
 class _AddScreenState extends State<AddScreen> {
   String text = "";
-  List<Tag> _taskTags = [];
-  List<Tag> _noteTags = [];
+  List<Tag>? _taskTags;
+  List<Tag>? _noteTags;
   Set<int> selectedTaskTagsIds = {};
   Set<int> selectedNoteTagsIds = {};
   EntryType entryType = EntryType.note;
@@ -113,6 +106,28 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
+  void submit() async {
+    DatabaseHelper dh = DatabaseHelper();
+    if (entryType == EntryType.note) {
+      int newNoteId = await dh.insertNote(noteDraft);
+      if (newNoteId != -1) {
+        dh.updateNoteTags(newNoteId, selectedNoteTagsIds);
+      }
+    } else if (entryType == EntryType.task) {
+      int newTaskId = await dh.insertTask(taskDraft);
+      if (newTaskId != -1) {
+        dh.updateTaskTags(newTaskId, selectedTaskTagsIds);
+      }
+    }
+    if (mounted) {
+      if (widget.returnToHome) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      } else {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -123,7 +138,7 @@ class _AddScreenState extends State<AddScreen> {
           child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Spacer(),
+          const Spacer(),
           TextField(
             autofocus: true,
             onChanged: (value) {
@@ -134,7 +149,8 @@ class _AddScreenState extends State<AddScreen> {
               });
             },
             decoration: InputDecoration(
-                border: OutlineInputBorder(), labelText: l.content_to_add),
+                border: const OutlineInputBorder(),
+                labelText: l.content_to_add),
           ),
           const SizedBox(
             height: 16,
@@ -155,7 +171,7 @@ class _AddScreenState extends State<AddScreen> {
       persistentFooterButtons: [
         Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             SegmentedButton(
                 showSelectedIcon: false,
                 multiSelectionEnabled: false,
@@ -172,37 +188,11 @@ class _AddScreenState extends State<AddScreen> {
                     entryType = value.last;
                   });
                 }),
-            Spacer(),
-            FilledButton.icon(onPressed: () {}, label: Text("Save")),
+            const Spacer(),
+            FilledButton.icon(onPressed: () {}, label: const Text("Save")),
           ],
         )
       ],
-      floatingActionButton: false
-          ? FloatingActionButton(
-              onPressed: () async {
-                DatabaseHelper dh = DatabaseHelper();
-                if (entryType == EntryType.note) {
-                  int newNoteId = await dh.insertNote(noteDraft);
-                  if (newNoteId != -1) {
-                    dh.updateNoteTags(newNoteId, selectedNoteTagsIds);
-                  }
-                } else if (entryType == EntryType.task) {
-                  int newTaskId = await dh.insertTask(taskDraft);
-                  if (newTaskId != -1) {
-                    dh.updateTaskTags(newTaskId, selectedTaskTagsIds);
-                  }
-                }
-                if (context.mounted) {
-                  if (widget.returnToHome) {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-              child: const Icon(Icons.check),
-            )
-          : null,
     );
   }
 }

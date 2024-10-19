@@ -5,7 +5,6 @@ import 'package:app_launcher/app_launcher.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<String?> launchAppPicker(
     BuildContext context, String? initialApp, String? title) {
@@ -55,7 +54,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                 app.name != null && app.icon != null && app.packageName != null)
             .toList();
 
-    apps = await Future.wait(apps!.map((app) async {
+    apps = await Future.wait(apps.map((app) async {
       return (await AppLauncher.hasApp(
                   androidApplicationId: app.packageName!)) ==
               true
@@ -127,7 +126,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
         title: widget.title == null ? Text(l.pick_app) : Text(widget.title!),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(40),
+          preferredSize: const Size.fromHeight(40),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -136,7 +135,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                   onChanged: updateList,
                   decoration: InputDecoration(
                     hintText: l.search_apps,
-                    suffixIcon: Icon(Icons.search),
+                    suffixIcon: const Icon(Icons.search),
                   ),
                 ),
               ],
@@ -155,7 +154,7 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                       if (snapshot.hasData) {
                         return Image.memory(snapshot.data!, width: 40);
                       } else {
-                        return CircularProgressIndicator(); // or some other loading indicator
+                        return const CircularProgressIndicator(); // or some other loading indicator
                       }
                     },
                   ),

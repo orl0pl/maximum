@@ -113,7 +113,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
       appBar: AppBar(
         title: Text(l.pinned_apps),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(40),
+          preferredSize: const Size.fromHeight(40),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -122,7 +122,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
                   onChanged: updateList,
                   decoration: InputDecoration(
                     hintText: l.search_apps,
-                    suffixIcon: Icon(Icons.search),
+                    suffixIcon: const Icon(Icons.search),
                   ),
                 ),
               ],
@@ -141,7 +141,7 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
                       if (snapshot.hasData) {
                         return Image.memory(snapshot.data!, width: 40);
                       } else {
-                        return CircularProgressIndicator(); // or some other loading indicator
+                        return const CircularProgressIndicator(); // or some other loading indicator
                       }
                     },
                   ),

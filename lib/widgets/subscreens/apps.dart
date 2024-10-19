@@ -210,7 +210,7 @@ class AppListEntry extends StatelessWidget {
               },
             );
           } else {
-            return CircularProgressIndicator(); // or some other loading indicator
+            return const CircularProgressIndicator(); // or some other loading indicator
           }
         },
       ),

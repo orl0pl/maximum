@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
                 app.name != null && app.icon != null && app.packageName != null)
             .toList();
         List<ApplicationInfo> filteredApps =
-            await Future.wait(apps!.map((app) async {
+            await Future.wait(apps.map((app) async {
           return (await AppLauncher.hasApp(
                       androidApplicationId: app.packageName!)) ==
                   true

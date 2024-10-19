@@ -314,7 +314,7 @@ class TimelineScreenState extends State<TimelineScreen> {
                         if (item.type == TimeLineListViewEntryType.task) {
                           return item.taskIndex != null
                               ? commonTaskItem(_tasks[item.taskIndex!])
-                              : Text("Null index (report issue)");
+                              : const Text("Null index (report issue)");
                         }
                         return const SizedBox();
                       },

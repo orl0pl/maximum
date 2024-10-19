@@ -164,7 +164,7 @@ class _WeatherState extends State<Weather> {
     String? weatherAppPackageName = prefs.getString('weatherApp');
 
     if (weatherAppPackageName != null) {
-      AppLauncher.openApp(androidApplicationId: weatherAppPackageName!);
+      AppLauncher.openApp(androidApplicationId: weatherAppPackageName);
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

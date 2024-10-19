@@ -87,10 +87,9 @@ String getDescription(AppLocalizations l, ApiResponse<WeatherApi> response,
         return entry.value > 0;
       }).isNotEmpty;
 
-  willSnowToday = minutelySnowfallEntries?.where((entry) {
-        return entry.value > 0;
-      }).isNotEmpty ??
-      willRainToday;
+  willSnowToday = minutelySnowfallEntries.where((entry) {
+    return entry.value > 0;
+  }).isNotEmpty;
 
   willShowerToday = minutelyRainEntries?.where((entry) {
         return entry.value > 0;

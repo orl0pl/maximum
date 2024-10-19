@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:android_package_manager/android_package_manager.dart';
 import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/material.dart';
 
