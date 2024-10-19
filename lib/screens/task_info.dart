@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/place.dart';
+import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/widgets/common/info_chip.dart';
+import 'package:maximum/widgets/common/tag_label.dart';
 
 class TaskInfoScreen extends StatefulWidget {
   final int taskId;
@@ -29,6 +31,7 @@ enum TaskInfoScreenLoadingState {
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   Task? task;
   Place? taskPlace;
+  List<Tag>? taskTags;
   List<TaskStatus>? statuses;
   TaskInfoScreenLoadingState _state = TaskInfoScreenLoadingState.loading;
   final DatabaseHelper _dh = DatabaseHelper();
@@ -54,6 +57,10 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
       _dh.getTaskStatuses(widget.taskId).then((value) => setState(() {
             statuses = value;
+          }));
+
+      _dh.getTagsForTask(widget.taskId).then((value) => setState(() {
+            taskTags = value;
           }));
     });
   }
@@ -94,7 +101,21 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(task!.text, style: textTheme.headlineLarge),
-                  Text("#${task!.taskId}", style: textTheme.labelLarge),
+                  const SizedBox(height: 16),
+                  Text(l.tags, style: textTheme.labelMedium),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        if (taskTags == null)
+                          Text(l.loading)
+                        else if (taskTags!.isEmpty)
+                          Text(l.no_tags)
+                        else
+                          for (Tag tag in taskTags!) ...[TagLabel(tag: tag)],
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   if (task!.isDateSet) ...[
                     Text(

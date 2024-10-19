@@ -208,7 +208,13 @@ class DatabaseHelper {
     List<Map<String, dynamic>> maps = await db.query(
       'Task',
       where:
-          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${tagIds.join(',')}))',
+          // ignore: prefer_interpolation_to_compose_strings
+          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId IN (${tagIds.join(',')})) AND ' +
+              List.generate(
+                      tagIds.length,
+                      (index) =>
+                          'taskId IN (SELECT taskId FROM TaskTag_Task WHERE tagId = ${tagIds[index]})')
+                  .join(' AND '),
     );
     return maps.map((e) => Task.fromMap(e)).toList();
   }
@@ -219,7 +225,13 @@ class DatabaseHelper {
     List<Map<String, dynamic>> maps = await db.query(
       'Note',
       where:
-          'noteId IN (SELECT noteId FROM NoteTag_Note WHERE tagId IN (${tagIds.join(',')}))',
+          // ignore: prefer_interpolation_to_compose_strings
+          'noteId IN (SELECT noteId FROM NoteTag_Note WHERE tagId IN (${tagIds.join(',')})) AND ' +
+              List.generate(
+                      tagIds.length,
+                      (index) =>
+                          'noteId IN (SELECT noteId FROM NoteTag_Note WHERE tagId = ${tagIds[index]})')
+                  .join(' AND '),
     );
     return maps.map((e) => Note.fromMap(e)).toList();
   }

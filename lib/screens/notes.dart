@@ -37,23 +37,29 @@ class NotesScreenState extends State<NotesScreen> {
         return selectedPlacesIds.contains(note.placeId);
       }).toList();
     }
-    setState(() {
-      this.notes = notes;
-    });
+    if (mounted) {
+      setState(() {
+        this.notes = notes;
+      });
+    }
   }
 
   void fetchPlaces() async {
     List<Place> places = await db.getPlaces();
-    setState(() {
-      this.places = places;
-    });
+    if (mounted) {
+      setState(() {
+        this.places = places;
+      });
+    }
   }
 
   void fetchTags() async {
     List<Tag> tags = await db.noteTags;
-    setState(() {
-      this.tags = tags;
-    });
+    if (mounted) {
+      setState(() {
+        this.tags = tags;
+      });
+    }
   }
 
   @override
