@@ -28,6 +28,7 @@ class _StartWidgetState extends State<StartWidget> {
   int? rankTune1;
   int? rankTune2;
   bool? showDebugScores;
+  bool? quotesEnabled;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _StartWidgetState extends State<StartWidget> {
     int? rankTune1Memory = prefs.getInt('rankTune1');
     int? rankTune2Memory = prefs.getInt('rankTune2');
     bool? showDebugScoresMemory = prefs.getBool('showDebugScores');
+    bool? quotesEnabledMemory = prefs.getBool('quotesEnabled');
     if (showDebugScoresMemory == null) {
       prefs.setBool('showDebugScores', false);
     }
@@ -52,9 +54,15 @@ class _StartWidgetState extends State<StartWidget> {
       prefs.setInt('rankTune2', defaultRankTune2);
     }
 
+    if (quotesEnabledMemory == null) {
+      prefs.setBool('quotesEnabled', true);
+    }
+
     showDebugScores = showDebugScoresMemory ?? false;
     rankTune1 = rankTune1Memory ?? defaultRankTune1;
     rankTune2 = rankTune2Memory ?? defaultRankTune2;
+
+    quotesEnabled = quotesEnabledMemory ?? true;
   }
 
   void fetchTasks() {
@@ -124,10 +132,6 @@ class _StartWidgetState extends State<StartWidget> {
                         builder: (context, constraints) {
                           int? tasksThatFit;
                           try {
-                            if (kDebugMode) {
-                              print(
-                                  "${constraints.maxHeight} ${constraints.minHeight}");
-                            }
                             tasksThatFit =
                                 ((constraints.maxHeight - 24) / 64).floor();
                           } on UnsupportedError catch (e) {
@@ -174,7 +178,7 @@ class _StartWidgetState extends State<StartWidget> {
               ),
             ),
             const Spacer(),
-            const Inspiration()
+            if (quotesEnabled == true) const Inspiration()
           ],
         ),
       ),

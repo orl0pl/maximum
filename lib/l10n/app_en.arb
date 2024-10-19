@@ -358,5 +358,7 @@
     "unknown_location": "Unknown location",
     "weeks_num_plural": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
     "wind_speed_unit": "Wind speed unit",
-    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}"
+    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
+    "enable_quotes": "Enable quotes",
+    "@enable_quotes": {}
 }

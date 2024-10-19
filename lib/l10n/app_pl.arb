@@ -111,5 +111,6 @@
     "unknown_location": "Nieznana lokalizacja",
     "weeks_num_plural": "{weeksNum, plural, =0{tygodnie} =1{tydzień} =2{tygodnie} few{tygodnie} many{tygodnie} other{tygodnie}}",
     "wind_speed_unit": "Jednostka prędkości wiatru",
-    "years_num_plural": "{yearsNum, plural, =0{lata} =1{rok} =2{lata} few{lata} many{lat} other{lat}}"
+    "years_num_plural": "{yearsNum, plural, =0{lata} =1{rok} =2{lata} few{lata} many{lat} other{lat}}",
+    "enable_quotes": "Włącz cytaty"
 }

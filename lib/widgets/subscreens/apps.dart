@@ -10,7 +10,6 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 enum ElementType { app, note }
 
@@ -177,6 +176,46 @@ class AppsWidgetState extends State<AppsWidget> {
   }
 }
 
+enum AppCategory {
+  accessibility,
+  audio,
+  game,
+  image,
+  maps,
+  news,
+  productivity,
+  social,
+  undefined,
+  video
+}
+
+AppCategory appCategoryFromInt(int i) {
+  switch (i) {
+    case -1:
+      return AppCategory.undefined;
+    case 8:
+      return AppCategory.accessibility;
+    case 1:
+      return AppCategory.audio;
+    case 0:
+      return AppCategory.game;
+    case 3:
+      return AppCategory.image;
+    case 6:
+      return AppCategory.maps;
+    case 5:
+      return AppCategory.news;
+    case 7:
+      return AppCategory.productivity;
+    case 4:
+      return AppCategory.social;
+    case 2:
+      return AppCategory.video;
+    default:
+      return AppCategory.undefined;
+  }
+}
+
 class AppListEntry extends StatelessWidget {
   const AppListEntry({
     super.key,
@@ -210,11 +249,18 @@ class AppListEntry extends StatelessWidget {
               },
             );
           } else {
-            return const CircularProgressIndicator(); // or some other loading indicator
+            return Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
+            );
           }
         },
       ),
-      subtitle: Text(app.flags.toString()),
+      //subtitle: Text(appCategoryFromInt(app.category ?? -1).toString()),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
       title: FutureBuilder<String?>(
         future: app.getAppLabel(),
@@ -222,10 +268,14 @@ class AppListEntry extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(snapshot.data!);
           } else {
-            return Skeletonizer(
-                enabled: !snapshot.hasData,
-                child: Text(
-                    "${app.packageName}")); // or some other loading indicator
+            return Container(
+              width: app.packageName!.length * 8,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              height: 16,
+            );
           }
         },
       ),

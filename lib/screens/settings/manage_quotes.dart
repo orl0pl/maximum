@@ -11,6 +11,7 @@ class ManageQuotesScreen extends StatefulWidget {
 
 class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
   SharedPreferences? prefs;
+  bool? quotesEnabled;
   bool? dywlQuotesEnabled;
 
   @override
@@ -24,12 +25,15 @@ class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
 
     setState(() {
       dywlQuotesEnabled = prefs?.getBool('dywlQuotesEnabled') ?? false;
+      quotesEnabled = prefs?.getBool('quotesEnabled') ?? false;
     });
   }
 
   void savePrefs() async {
     prefs?.setBool('dywlQuotesEnabled', dywlQuotesEnabled ?? false);
   }
+
+  bool get loading => quotesEnabled == null || dywlQuotesEnabled == null;
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +42,29 @@ class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
         appBar: AppBar(
           title: Text(l.manage_quotes),
         ),
-        body: ListView(children: [
-          SwitchListTile(
-              title: Text(l.api_enabled("dywl/quotes")),
-              value: dywlQuotesEnabled ?? false,
-              onChanged: (value) {
-                setState(() {
-                  dywlQuotesEnabled = value;
-                });
-                savePrefs();
-              }),
-        ]));
+        body: loading
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(children: [
+                SwitchListTile(
+                    title: Text(l.enable_quotes),
+                    value: quotesEnabled!,
+                    onChanged: (value) {
+                      setState(() {
+                        quotesEnabled = value;
+                      });
+                      savePrefs();
+                    }),
+                SwitchListTile(
+                    title: Text(l.api_enabled("dywl/quotes")),
+                    value: dywlQuotesEnabled!,
+                    onChanged: quotesEnabled!
+                        ? (value) {
+                            setState(() {
+                              dywlQuotesEnabled = value;
+                            });
+                            savePrefs();
+                          }
+                        : null),
+              ]));
   }
 }

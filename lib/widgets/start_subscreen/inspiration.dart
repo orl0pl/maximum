@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maximum/utils/quotesy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Inspiration extends StatefulWidget {
   const Inspiration({
@@ -14,6 +15,13 @@ class _InspirationState extends State<Inspiration> {
   String _quote =
       '„Tutaj być postawiony cytat, powitanie, cel długoterminowy, że zmienia się co jakiś czas.”';
   String _author = '– designer aplikacji';
+  bool? dywlQuotesEnabled;
+
+  void fetchPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    dywlQuotesEnabled = prefs.getBool('dywlQuotesEnabled');
+    print(dywlQuotesEnabled);
+  }
 
   void loadDywlQuote() async {
     var quote = await Quotes.random();
@@ -26,13 +34,27 @@ class _InspirationState extends State<Inspiration> {
   @override
   void initState() {
     super.initState();
-    loadDywlQuote();
+    loadQuote();
+  }
+
+  void loadQuote() async {
+    fetchPrefs();
+    if (dywlQuotesEnabled == true) {
+      loadDywlQuote();
+    } else {
+      var quote = 'No quotes available';
+      var author = 'No quotes available';
+      setState(() {
+        _quote = quote;
+        _author = author;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onLongPress: loadDywlQuote,
+      onLongPress: loadQuote,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
