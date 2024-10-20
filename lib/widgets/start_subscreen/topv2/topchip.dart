@@ -31,7 +31,7 @@ class TopChip extends StatefulWidget {
 
 class _TopChipState extends State<TopChip> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 2),
+    duration: const Duration(seconds: 1),
     vsync: this,
   );
 
@@ -62,6 +62,9 @@ class _TopChipState extends State<TopChip> with TickerProviderStateMixin {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     if (widget.icon == null && widget.title == null && widget.text == null) {
       throw Exception("Either icon, title or text must be provided");
+    }
+    if (!widget.iconSpinning) {
+      _controller.reset();
     }
     return InkWell(
       onTap: widget.onTap,
