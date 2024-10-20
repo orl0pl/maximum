@@ -8,6 +8,7 @@ import 'package:maximum/widgets/common/task_item.dart';
 import 'package:maximum/widgets/start_subscreen/inspiration.dart';
 import 'package:maximum/widgets/start_subscreen/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/widgets/start_subscreen/topv2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StartWidget extends StatefulWidget {
@@ -103,7 +104,7 @@ class _StartWidgetState extends State<StartWidget> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Top(),
+            const TopV2(),
             const SizedBox(height: 32),
             Expanded(
               flex: 12,
