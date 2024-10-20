@@ -13,6 +13,7 @@ import 'package:maximum/utils/weather/code_to_icon.dart';
 import 'package:maximum/utils/weather/stringMapping.dart';
 import 'package:maximum/utils/weather/temperature.dart';
 import 'package:maximum/utils/weather/weather_description.dart';
+import 'package:maximum/widgets/start_subscreen/topv2/topchip.dart';
 import 'package:open_meteo/open_meteo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,6 +41,12 @@ class _WeatherState extends State<Weather> {
   }
 
   void getWeather() async {
+    if (mounted) {
+      setState(() {
+        loadingState = WeatherLoadingState.loading;
+      });
+    }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String temperatureUnit = prefs.getString('temperatureUnit') ?? 'C';
     String windSpeedUnit = prefs.getString('windSpeedUnit') ?? 'm/s';
@@ -183,37 +190,41 @@ class _WeatherState extends State<Weather> {
     return loadingState == WeatherLoadingState.noInternet;
   }
 
+  IconData get widgetIcon {
+    if (isLoading) {
+      return MdiIcons.loading;
+    } else if (locationError) {
+      return MdiIcons.mapMarkerRemove;
+    } else if (noInternet) {
+      return MdiIcons.earthRemove;
+    } else {
+      return icon;
+    }
+  }
+
+  String get widgetText {
+    if (isLoading) {
+      return AppLocalizations.of(context).loading;
+    } else if (locationError) {
+      return AppLocalizations.of(context).unknown_location;
+    } else if (noInternet) {
+      return AppLocalizations.of(context).no_internet;
+    } else {
+      return description;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
     TextTheme textTheme = Theme.of(context).textTheme;
-    return InkWell(
+    return TopChip(
       onLongPress: getWeather,
       onTap: openWeatherApp,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-        Row(
-          children: [
-            isLoading
-                ? const Icon(MdiIcons.helpCircleOutline)
-                : locationError
-                    ? const Icon(MdiIcons.mapMarkerRemove)
-                    : noInternet
-                        ? const Icon(MdiIcons.earthRemove)
-                        : Icon(icon),
-            const SizedBox(width: 4),
-            Text(isLoading ? "???" : temperature, style: textTheme.titleLarge)
-          ],
-        ),
-        Text(
-            isLoading
-                ? l.loading
-                : locationError
-                    ? l.unknown_location
-                    : noInternet
-                        ? l.no_internet
-                        : description,
-            style: textTheme.titleSmall),
-      ]),
+      icon: widgetIcon,
+      title: temperature,
+      text: widgetText,
+      iconSpinning: isLoading,
     );
   }
 }

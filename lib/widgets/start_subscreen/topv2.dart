@@ -1,13 +1,12 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/utils/intents.dart';
-import 'package:maximum/widgets/start_subscreen/alarm.dart';
+import 'topv2/alarm.dart';
+import 'package:maximum/widgets/start_subscreen/topv2/topchip.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'weather.dart';
+import 'topv2/weather.dart';
 
 class TopV2 extends StatefulWidget {
   const TopV2({
@@ -48,6 +47,7 @@ class _TopV2State extends State<TopV2> {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -70,33 +70,33 @@ class _TopV2State extends State<TopV2> {
                 ],
               ),
               SizedBox(width: 16),
-              Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Icon(Icons.wb_shade_sharp),
-                          SizedBox(width: 8),
-                          Text("Replace me later", style: textTheme.titleSmall),
-                        ],
-                      ),
-                      Text(
-                          "Example text for the description of the day of the week and timer here",
-                          style: textTheme.bodySmall),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              )
+              // Flexible(
+              //   flex: 1,
+              //   fit: FlexFit.tight,
+              //   child: Container(
+              //     child: Column(
+              //       mainAxisSize: MainAxisSize.max,
+              //       children: [
+              //         Row(
+              //           mainAxisSize: MainAxisSize.max,
+              //           children: [
+              //             Icon(Icons.wb_shade_sharp),
+              //             SizedBox(width: 8),
+              //             Text("Replace me later", style: textTheme.titleSmall),
+              //           ],
+              //         ),
+              //         Text(
+              //             "Example text for the description of the day of the week and timer here",
+              //             style: textTheme.bodySmall),
+              //       ],
+              //     ),
+              //     padding: EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //       border: Border.all(color: colorScheme.outline),
+              //       borderRadius: BorderRadius.circular(16),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),
@@ -105,42 +105,9 @@ class _TopV2State extends State<TopV2> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Container(
-                padding: EdgeInsets.only(left: 6, right: 16, top: 6, bottom: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              MdiIcons.accessPoint,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                            ),
-                            SizedBox(width: 4),
-                            Text("123",
-                                style: textTheme.titleSmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer)),
-                          ],
-                        )),
-                    const SizedBox(width: 8),
-                    Text("Replace me later", style: textTheme.bodyMedium),
-                  ],
-                ),
-              ),
+              Alarm(),
+              const SizedBox(width: 8),
+              Weather(),
             ],
           ),
         )
