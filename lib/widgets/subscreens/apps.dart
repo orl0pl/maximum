@@ -7,6 +7,7 @@ import 'package:app_launcher/app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:maximum/data/database_helper.dart';
+import 'package:maximum/data/models/appopen.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -51,7 +52,7 @@ class AppsWidget extends StatefulWidget {
 
 class AppsWidgetState extends State<AppsWidget> {
   List<Element> allMatches = [];
-
+  Map<String, int>? appOpenMap;
   bool notesLoaded = false;
   List<Note> allnotes = [];
 
@@ -80,9 +81,24 @@ class AppsWidgetState extends State<AppsWidget> {
     return false;
   }
 
+  void fetchAppOpenMap() async {
+    appOpenMap = await DatabaseHelper().getRecentAppOpensMapPackageNameCount();
+    if (mounted) {
+      setState(() {
+        appOpenMap = appOpenMap;
+      });
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context);
+  void initState() {
+    super.initState();
+
+    fetchAppOpenMap();
+    fetchElements();
+  }
+
+  void fetchElements() {
     if (!notesLoaded) {
       DatabaseHelper().notes.then((notes) async {
         allnotes = notes;
@@ -90,7 +106,12 @@ class AppsWidgetState extends State<AppsWidget> {
     }
 
     if (widget.inputValue.isEmpty) {
-      allMatches = widget.apps.map((e) => Element.fromApp(e)).toList();
+      allMatches = widget.apps.map((e) => Element.fromApp(e)).toList()
+        ..sort((a, b) {
+          int? appOpenCountA = appOpenMap?[a.app!.packageName] ?? 0;
+          int? appOpenCountB = appOpenMap?[b.app!.packageName] ?? 0;
+          return appOpenCountB.compareTo(appOpenCountA);
+        });
     } else {
       Fuzzy<Element> fuse = Fuzzy(
           allnotes.map((e) => (Element.fromNote(e))).toList() +
@@ -110,7 +131,12 @@ class AppsWidgetState extends State<AppsWidget> {
       final matches = fuse.search(widget.inputValue.toLowerCase());
       allMatches = matches.map((e) => e.item).toList();
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+    fetchElements();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -144,7 +170,13 @@ class AppsWidgetState extends State<AppsWidget> {
                         itemBuilder: (context, index) {
                           if (allMatches[index].type == ElementType.app) {
                             return AppListEntry(
-                                widget: widget, app: allMatches[index].app!);
+                              widget: widget,
+                              app: allMatches[index].app!,
+                              appOpenCount: appOpenMap?[
+                                      allMatches[index].app!.packageName!] ??
+                                  0,
+                              isInSearchMode: widget.inputValue != "",
+                            );
                           } else if (allMatches[index].type ==
                               ElementType.note) {
                             return ListTile(
@@ -221,6 +253,8 @@ class AppListEntry extends StatelessWidget {
     super.key,
     required this.widget,
     required this.app,
+    required this.appOpenCount,
+    this.isInSearchMode = false,
     this.highlight = false,
   });
 
@@ -228,6 +262,10 @@ class AppListEntry extends StatelessWidget {
   final ApplicationInfo app;
 
   final bool highlight;
+
+  final int? appOpenCount;
+
+  final bool isInSearchMode;
 
   @override
   Widget build(BuildContext context) {
@@ -260,6 +298,7 @@ class AppListEntry extends StatelessWidget {
           }
         },
       ),
+      //subtitle: appOpenCount == null ? null : Text("$appOpenCount"),
       //subtitle: Text(appCategoryFromInt(app.category ?? -1).toString()),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
       title: FutureBuilder<String?>(
@@ -280,6 +319,14 @@ class AppListEntry extends StatelessWidget {
         },
       ),
       onTap: () async {
+        DatabaseHelper().insertAppOpen(AppOpen(
+          packageName: app.packageName!,
+          datetime: DateTime.now(),
+          weekQuarter: getWeekQuarter(DateTime.now()),
+          openedVia: isInSearchMode
+              ? AppOpenOpenedVia.search
+              : AppOpenOpenedVia.appList,
+        ));
         AndroidPackageManager().openApp(app.packageName!);
       },
     );

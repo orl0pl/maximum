@@ -1,3 +1,4 @@
+import 'package:maximum/data/models/appopen.dart';
 import 'package:maximum/data/models/note.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/place.dart';
@@ -23,11 +24,16 @@ class DatabaseHelper {
     return _database!;
   }
 
-  Future<Database> _initDatabase() async {
+  Future<String> getDatabasePath() async {
     String path = join(await getDatabasesPath(), 'data.db');
+    return path;
+  }
+
+  Future<Database> _initDatabase() async {
+    String path = await getDatabasePath();
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -137,9 +143,31 @@ class DatabaseHelper {
       PRIMARY KEY(noteId, tagId)
     )
     ''');
+
+    if (version == 2) {
+      await db.execute('''
+      CREATE TABLE AppOpen (
+        datetime INTEGER NOT NULL PRIMARY KEY,
+        packageName TEXT NOT NULL,
+        weekQuarter INTEGER NOT NULL,
+        openedVia INTEGER NOT NULL -- 0: app list, 1: search
+      );
+      ''');
+    }
   }
 
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {}
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion == 1 && newVersion == 2) {
+      await db.execute('''
+      CREATE TABLE AppOpen (
+        datetime INTEGER NOT NULL PRIMARY KEY,
+        packageName TEXT NOT NULL,
+        weekQuarter INTEGER NOT NULL,
+        openedVia INTEGER NOT NULL -- 0: app list, 1: search
+      );
+      ''');
+    }
+  }
 
   Future<Task?> getTask(int taskId) async {
     Database db = await database;
@@ -260,6 +288,26 @@ class DatabaseHelper {
     return maps.map((e) => TaskStatus.fromMap(e)).toList();
   }
 
+  Future<Map<String, int>> getRecentAppOpensMapPackageNameCount() async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.rawQuery('''
+       SELECT packageName, COUNT(*) as count 
+    FROM AppOpen 
+    WHERE datetime > ?
+      AND weekQuarter = ?
+    GROUP BY packageName
+      ''', [
+      DateTime.now().millisecondsSinceEpoch - 2629746000,
+      getWeekQuarter(DateTime.now())
+    ]);
+
+    Map<String, int> map = {};
+    for (var element in maps) {
+      map[element['packageName']] = element['count'];
+    }
+    return map;
+  }
+
   Future<int> insertTask(Task task) async {
     Database db = await database;
     return await db.insert('Task', task.toMap());
@@ -288,6 +336,11 @@ class DatabaseHelper {
   Future<int> insertNoteTag(Tag noteTag) async {
     Database db = await database;
     return await db.insert('NoteTag', noteTag.toMap());
+  }
+
+  Future<int> insertAppOpen(AppOpen appOpen) async {
+    Database db = await database;
+    return await db.insert('AppOpen', appOpen.toMap());
   }
 
   Future<int> addTagToTask(int taskId, int tagId) async {
