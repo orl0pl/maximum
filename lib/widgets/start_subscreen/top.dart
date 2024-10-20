@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/utils/intents.dart';
 import 'package:maximum/widgets/start_subscreen/alarm.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'weather.dart';
 
 class Top extends StatefulWidget {
@@ -18,17 +19,29 @@ class Top extends StatefulWidget {
 
 class _TopState extends State<Top> {
   DateTime currentDatetime = DateTime.now();
+  bool? showSecondsInClock;
 
   @override
   void initState() {
     super.initState();
+    fetchPreferences();
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
+        fetchPreferences();
         setState(() {
           currentDatetime = DateTime.now();
         });
       }
     });
+  }
+
+  void fetchPreferences() async {
+    var prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        showSecondsInClock = prefs.getBool('showSecondsInClock') ?? false;
+      });
+    }
   }
 
   @override
@@ -50,7 +63,8 @@ class _TopState extends State<Top> {
             InkWell(
               onTap: () => openAlarmClock.launch(),
               child: Text(
-                DateFormat('HH:mm:ss').format(DateTime.now()),
+                DateFormat('HH:mm${showSecondsInClock == true ? ':ss' : ''}')
+                    .format(DateTime.now()),
                 style: textTheme.displayLarge,
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/screens/add.dart';
+import 'package:maximum/screens/settings/apperance.dart';
 import 'package:maximum/screens/settings/manage_places.dart';
 import 'package:maximum/screens/settings/manage_quotes.dart';
 import 'package:maximum/screens/settings/manage_tags.dart';
@@ -124,6 +125,16 @@ ${packageInfo.packageName}
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return const PreferencesScreen();
+                }));
+              }),
+          ListTile(
+              title: Text(l.apperance),
+              leading: const Icon(Icons.palette),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const ApperanceScreen();
                 }));
               }),
           const Divider(),

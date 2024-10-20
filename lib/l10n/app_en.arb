@@ -360,5 +360,9 @@
     "wind_speed_unit": "Wind speed unit",
     "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
     "enable_quotes": "Enable quotes",
+    "show_seconds_in_clock": "Show seconds in clock",
+    "@show_seconds_in_clock": {},
+    "apperance": "Apperance",
+    "@apperance": {},
     "@enable_quotes": {}
 }

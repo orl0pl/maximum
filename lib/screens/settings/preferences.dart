@@ -76,6 +76,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ),
         body: ListView(
           children: [
+            const Divider(),
             ListTile(
               title: Text(l.set_weather_app),
               subtitle: Text(weatherAppName == null
