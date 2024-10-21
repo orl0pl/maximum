@@ -119,9 +119,6 @@ class _AddScreenState extends State<AddScreen> {
                 border: OutlineInputBorder(), labelText: l.content_to_add),
           ),
           Spacer(),
-          Text(entryType == EntryType.task
-              ? taskDraft.toMap().toString()
-              : noteDraft.toMap().toString()),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

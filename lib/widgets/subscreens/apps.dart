@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:android_package_manager/android_package_manager.dart';
 import 'package:app_launcher/app_launcher.dart';
 
@@ -50,28 +51,45 @@ class AppsWidget extends StatefulWidget {
   State<AppsWidget> createState() => AppsWidgetState();
 }
 
+enum OpenOutcome { notOpened, openedExternal }
+
 class AppsWidgetState extends State<AppsWidget> {
   List<Element> allMatches = [];
   Map<String, int>? appOpenMap;
   bool notesLoaded = false;
   List<Note> allnotes = [];
+  Map<String, String> appLabelsMap = {};
 
-  void openTopMatch() {
+  OpenOutcome openTopMatch() {
     if (widget.inputValue.trim().endsWith('.g')) {
       var intent =
-          AndroidIntent(action: 'android.intent.action.WEB_SEARCH', arguments: {
+          AndroidIntent(action: 'android.intent.action.WEB_SEARCH', flags: [
+        Flag.FLAG_ACTIVITY_NEW_TASK
+      ], arguments: {
         'query':
             widget.inputValue.trim().substring(0, widget.inputValue.length - 2)
       });
 
       intent.launch();
+
+      return OpenOutcome.openedExternal;
     } else if (allMatches.isNotEmpty) {
       if (allMatches[0].type == ElementType.app) {
+        DatabaseHelper().insertAppOpen(AppOpen(
+          packageName: allMatches[0].app!.packageName!,
+          datetime: DateTime.now(),
+          weekQuarter: getWeekQuarter(DateTime.now()),
+          openedVia: AppOpenOpenedVia.search,
+        ));
         AppLauncher.openApp(
           androidApplicationId: allMatches[0].app!.packageName!,
         );
+
+        return OpenOutcome.openedExternal;
       }
     }
+
+    return OpenOutcome.notOpened;
   }
 
   bool get searchExternal {
@@ -95,16 +113,36 @@ class AppsWidgetState extends State<AppsWidget> {
     super.initState();
 
     fetchAppOpenMap();
-    fetchElements();
+    fetchNotes();
+    fetchAppLabelsMap();
+    sortAndSearchElements();
   }
 
-  void fetchElements() {
-    if (!notesLoaded) {
-      DatabaseHelper().notes.then((notes) async {
-        allnotes = notes;
+  void fetchAppLabelsMap() async {
+    Map<String, String> appLabelsMapTemp = {};
+
+    for (var app in widget.apps) {
+      if (app.packageName != null) {
+        var label = (await app.getAppLabel());
+        if (label != null) {
+          appLabelsMapTemp[app.packageName!] = label;
+        }
+      }
+    }
+    if (mounted) {
+      setState(() {
+        appLabelsMap = appLabelsMapTemp;
       });
     }
+  }
 
+  void fetchNotes() async {
+    DatabaseHelper().notes.then((notes) async {
+      allnotes = notes;
+    });
+  }
+
+  void sortAndSearchElements() {
     if (widget.inputValue.isEmpty) {
       allMatches = widget.apps.map((e) => Element.fromApp(e)).toList()
         ..sort((a, b) {
@@ -116,18 +154,36 @@ class AppsWidgetState extends State<AppsWidget> {
       Fuzzy<Element> fuse = Fuzzy(
           allnotes.map((e) => (Element.fromNote(e))).toList() +
               widget.apps.map((e) => (Element.fromApp(e))).toList(),
-          options: FuzzyOptions(keys: [
-            WeightedKey(
-                name: 'name',
-                getter: (obj) {
-                  if (obj.type == ElementType.note) {
-                    return obj.note!.text.toLowerCase();
-                  } else {
-                    return obj.app!.name!;
-                  }
-                },
-                weight: 1)
-          ], threshold: 0.4));
+          options: FuzzyOptions(
+            keys: [
+              WeightedKey(
+                  name: 'name',
+                  getter: (obj) {
+                    if (obj.type == ElementType.note) {
+                      return obj.note!.text.toLowerCase();
+                    } else {
+                      return appLabelsMap[obj.app!.packageName]
+                              ?.toLowerCase() ??
+                          obj.app!.nonLocalizedLabel ??
+                          obj.app!.name!;
+                    }
+                  },
+                  weight: 1),
+            ],
+            threshold: 0.4,
+            sortFn: (a, b) {
+              if (a.item.type == ElementType.note && appOpenMap == null) {
+                return a.score.compareTo(b.score);
+              } else if (appOpenMap![a.item.app!.packageName] == null ||
+                  appOpenMap![b.item.app!.packageName] == null) {
+                return a.score.compareTo(b.score);
+              } else {
+                return a.score.compareTo(b.score) *
+                    appOpenMap![a.item.app!.packageName!]!
+                        .compareTo(appOpenMap![b.item.app!.packageName!]!);
+              }
+            },
+          ));
       final matches = fuse.search(widget.inputValue.toLowerCase());
       allMatches = matches.map((e) => e.item).toList();
     }
@@ -136,7 +192,6 @@ class AppsWidgetState extends State<AppsWidget> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
-    fetchElements();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -167,11 +222,17 @@ class AppsWidgetState extends State<AppsWidget> {
                     : ListView.builder(
                         // shrinkWrap: true,
                         itemCount: allMatches.length,
+
                         itemBuilder: (context, index) {
+                          if (allMatches.length <= index) {
+                            return Container();
+                          }
                           if (allMatches[index].type == ElementType.app) {
                             return AppListEntry(
                               widget: widget,
                               app: allMatches[index].app!,
+                              appLabel: appLabelsMap[
+                                  allMatches[index].app!.packageName],
                               appOpenCount: appOpenMap?[
                                       allMatches[index].app!.packageName!] ??
                                   0,
@@ -253,6 +314,7 @@ class AppListEntry extends StatelessWidget {
     super.key,
     required this.widget,
     required this.app,
+    required this.appLabel,
     required this.appOpenCount,
     this.isInSearchMode = false,
     this.highlight = false,
@@ -266,6 +328,8 @@ class AppListEntry extends StatelessWidget {
   final int? appOpenCount;
 
   final bool isInSearchMode;
+
+  final String? appLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -301,23 +365,26 @@ class AppListEntry extends StatelessWidget {
       //subtitle: appOpenCount == null ? null : Text("$appOpenCount"),
       //subtitle: Text(appCategoryFromInt(app.category ?? -1).toString()),
       trailing: highlight ? const Icon(Icons.chevron_right) : null,
-      title: FutureBuilder<String?>(
-        future: app.getAppLabel(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Text(snapshot.data!);
-          } else {
-            return Container(
-              width: app.packageName!.length * 8,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              height: 16,
-            );
-          }
-        },
-      ),
+      title: appLabel != null
+          ? Text(appLabel!)
+          : FutureBuilder<String?>(
+              future: app.getAppLabel(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data!);
+                } else {
+                  return Container(
+                    width: app.packageName!.length * 8,
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    height: 16,
+                  );
+                }
+              },
+            ),
       onTap: () async {
         DatabaseHelper().insertAppOpen(AppOpen(
           packageName: app.packageName!,

@@ -31,7 +31,7 @@ class TopChip extends StatefulWidget {
 
 class _TopChipState extends State<TopChip> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 1),
+    duration: Durations.long1,
     vsync: this,
   );
 
@@ -65,6 +65,9 @@ class _TopChipState extends State<TopChip> with TickerProviderStateMixin {
     }
     if (!widget.iconSpinning) {
       _controller.reset();
+    }
+    if (widget.iconSpinning && !_controller.isAnimating) {
+      _controller.repeat();
     }
     return InkWell(
       onTap: widget.onTap,

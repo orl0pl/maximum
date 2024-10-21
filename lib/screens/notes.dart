@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/database_helper.dart';
@@ -9,6 +11,15 @@ import 'package:maximum/widgets/common/note.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/widgets/common/tag_label.dart';
 
+enum NotesListViewEntryType { note, label }
+
+class NotesListViewEntry {
+  NotesListViewEntryType type;
+  Note? note;
+  Text? label;
+  NotesListViewEntry({required this.type, this.note, this.label});
+}
+
 class NotesScreen extends StatefulWidget {
   const NotesScreen({super.key});
 
@@ -17,6 +28,7 @@ class NotesScreen extends StatefulWidget {
 }
 
 class NotesScreenState extends State<NotesScreen> {
+  List<NotesListViewEntry>? entryList;
   List<Note>? notes;
   List<Place>? places;
   Set<int> selectedPlacesIds = {};
@@ -37,9 +49,24 @@ class NotesScreenState extends State<NotesScreen> {
         return selectedPlacesIds.contains(note.placeId);
       }).toList();
     }
+    List<NotesListViewEntry> entryListTemp = [];
+    var groupedNotes = groupNotesByDate(notes);
+
+    groupedNotes.forEach((key, value) {
+      entryListTemp.add(NotesListViewEntry(
+          type: NotesListViewEntryType.label,
+          label: Text(
+            DateFormat.yMMMMEEEEd().format(key),
+            style: Theme.of(context).textTheme.labelLarge,
+          )));
+      entryListTemp.addAll(value.map((note) =>
+          NotesListViewEntry(type: NotesListViewEntryType.note, note: note)));
+    });
+
     if (mounted) {
       setState(() {
         this.notes = notes;
+        entryList = entryListTemp;
       });
     }
   }
@@ -93,118 +120,118 @@ class NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
-    Map<DateTime, List<Note>> groupedNotes = groupNotesByDate(notes);
-    TextTheme textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l.notes),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          await Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) {
-            return const AddScreen(
-                entryType: EntryType.note, returnToHome: false);
-          }));
-          fetchNotes();
-        },
-      ),
-      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: IntrinsicHeight(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ...?tags?.map((tag) {
-                      return Row(
-                        children: [
-                          FilterChip(
-                              label: TagLabel(tag: tag),
-                              selected: selectedTagsIds.contains(tag.tagId),
-                              onSelected: (_) {
-                                setState(() {
-                                  if (selectedTagsIds.contains(tag.tagId)) {
-                                    selectedTagsIds.remove(tag.tagId);
-                                  } else {
-                                    selectedTagsIds.add(tag.tagId ?? -1);
-                                  }
-                                  fetchNotes();
-                                });
-                              }),
-                          const SizedBox(width: 8),
-                        ],
-                      );
-                    }),
-                    const VerticalDivider(),
-                    const SizedBox(width: 8),
-                    ...?places?.map((place) {
-                      return Row(
-                        children: [
-                          FilterChip(
-                              label: Text(place.name),
-                              selected:
-                                  selectedPlacesIds.contains(place.placeId),
-                              onSelected: (_) {
-                                setState(() {
-                                  if (selectedPlacesIds
-                                      .contains(place.placeId)) {
-                                    selectedPlacesIds.remove(place.placeId);
-                                  } else {
-                                    selectedPlacesIds.add(place.placeId ?? -1);
-                                  }
-                                  fetchNotes();
-                                });
-                              }),
-                          const SizedBox(width: 8),
-                        ],
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            )),
-        const Divider(),
-        notes == null
-            ? const Center(child: CircularProgressIndicator())
-            : notes!.isEmpty
-                ? Center(child: Text(l.no_notes))
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: groupedNotes.length,
-                      itemBuilder: (context, index) {
-                        DateTime date = groupedNotes.keys.elementAt(index);
-                        List<Note> notesForDate = groupedNotes[date]!;
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              DateFormat.yMMMMEEEEd().format(date),
-                              style: textTheme.labelLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            ...notesForDate.map((note) => Column(
-                                  children: [
-                                    NoteWidget(
-                                      note: note,
-                                      refresh: () => fetchNotes(),
-                                    ),
-                                    const SizedBox(height: 8),
-                                  ],
-                                )),
-                            const SizedBox(height: 16),
-                          ],
-                        );
-                      },
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l.notes),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            await Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) {
+              return const AddScreen(
+                  entryType: EntryType.note, returnToHome: false);
+            }));
+            fetchNotes();
+          },
+        ),
+        body: Expanded(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ...?tags?.map((tag) {
+                          return Row(
+                            children: [
+                              FilterChip(
+                                  label: TagLabel(tag: tag),
+                                  selected: selectedTagsIds.contains(tag.tagId),
+                                  onSelected: (_) {
+                                    setState(() {
+                                      if (selectedTagsIds.contains(tag.tagId)) {
+                                        selectedTagsIds.remove(tag.tagId);
+                                      } else {
+                                        selectedTagsIds.add(tag.tagId ?? -1);
+                                      }
+                                      fetchNotes();
+                                    });
+                                  }),
+                              const SizedBox(width: 8),
+                            ],
+                          );
+                        }),
+                        const VerticalDivider(),
+                        const SizedBox(width: 8),
+                        ...?places?.map((place) {
+                          return Row(
+                            children: [
+                              FilterChip(
+                                  label: Text(place.name),
+                                  selected:
+                                      selectedPlacesIds.contains(place.placeId),
+                                  onSelected: (_) {
+                                    setState(() {
+                                      if (selectedPlacesIds
+                                          .contains(place.placeId)) {
+                                        selectedPlacesIds.remove(place.placeId);
+                                      } else {
+                                        selectedPlacesIds
+                                            .add(place.placeId ?? -1);
+                                      }
+                                      fetchNotes();
+                                    });
+                                  }),
+                              const SizedBox(width: 8),
+                            ],
+                          );
+                        }),
+                      ],
                     ),
-                  )
-      ]),
+                  ),
+                )),
+            const Divider(),
+            entryList == null
+                ? const Center(child: CircularProgressIndicator())
+                : notes?.isNotEmpty == false
+                    ? Center(child: Text(l.no_notes))
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: entryList!.length,
+                            itemBuilder: (context, index) {
+                              if (entryList![index].type ==
+                                  NotesListViewEntryType.label) {
+                                return Container(
+                                  child: entryList![index].label!,
+                                  margin: EdgeInsets.only(bottom: 8, top: 16),
+                                );
+                              } else if (entryList![index].note != null) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  child: NoteWidget(
+                                    note: entryList![index].note!,
+                                    refresh: () => fetchNotes(),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          ),
+                        ),
+                      )
+          ]),
+        ),
+      ),
     );
   }
 }

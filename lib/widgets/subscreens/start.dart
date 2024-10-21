@@ -20,10 +20,10 @@ class StartWidget extends StatefulWidget {
   final TextTheme textTheme;
 
   @override
-  State<StartWidget> createState() => _StartWidgetState();
+  State<StartWidget> createState() => StartWidgetState();
 }
 
-class _StartWidgetState extends State<StartWidget> {
+class StartWidgetState extends State<StartWidget> {
   List<Task> allTasks = [];
   Map<int, int> taskRanks = {};
   int? rankTune1;
@@ -109,10 +109,11 @@ class _StartWidgetState extends State<StartWidget> {
             Expanded(
               flex: 12,
               child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
+                onTap: () async {
+                  await Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const TimelineScreen(),
                       maintainState: false));
+                  fetchTasks();
                 },
                 onDoubleTap: () {
                   fetchTasks();

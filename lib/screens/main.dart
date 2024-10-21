@@ -20,6 +20,7 @@ enum ActiveScreen { start, apps }
 
 class _MainScreenState extends State<MainScreen> {
   GlobalKey<AppsWidgetState> appsKey = GlobalKey<AppsWidgetState>();
+  GlobalKey<StartWidgetState> startKey = GlobalKey<StartWidgetState>();
   ActiveScreen activeScreen = ActiveScreen.start;
   String text = "";
   List<ApplicationInfo> _apps = [];
@@ -74,6 +75,7 @@ class _MainScreenState extends State<MainScreen> {
     if (mounted) {
       setState(() {
         activeScreen = newActiveScreen;
+        appsKey.currentState?.sortAndSearchElements();
       });
     }
   }
@@ -152,6 +154,7 @@ class _MainScreenState extends State<MainScreen> {
                         },
                         child: activeScreen == ActiveScreen.start
                             ? StartWidget(
+                                key: startKey,
                                 textTheme: textTheme,
                               )
                             : AppsWidget(
@@ -174,6 +177,11 @@ class _MainScreenState extends State<MainScreen> {
                   activeScreen: activeScreen,
                   setActiveScreen: setActiveScreen,
                   setInput: setInput,
+                  afterFABPressed: () {
+                    setState(() {
+                      startKey.currentState?.fetchTasks();
+                    });
+                  },
                 ),
               )
             ],

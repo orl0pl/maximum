@@ -20,11 +20,13 @@ class Bottom extends StatefulWidget {
     required this.setActiveScreen,
     required this.setInput,
     required this.appsKey,
+    required this.afterFABPressed,
   });
 
   final ActiveScreen activeScreen;
   final void Function(ActiveScreen) setActiveScreen;
   final void Function(String) setInput;
+  final void Function() afterFABPressed;
 
   final GlobalKey<AppsWidgetState> appsKey;
 
@@ -35,11 +37,31 @@ class Bottom extends StatefulWidget {
 class _BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
   Map<String, Uint8List>? pinnedApps;
+  String search = '';
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchPinnedApps();
+  }
+
+  void setInput(String input) {
+    if (mounted) {
+      setState(() {
+        widget.setInput(input);
+        search = input;
+      });
+    }
+  }
+
+  void clearInput() {
+    controller.value = TextEditingValue.empty;
+    if (mounted) {
+      setState(() {
+        search = '';
+      });
+    }
   }
 
   void fetchPinnedApps() async {
@@ -113,8 +135,12 @@ class _BottomState extends State<Bottom> {
               flex: 25,
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const AddScreen()));
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (context) => const AddScreen()))
+                      .then((value) {
+                    widget.afterFABPressed();
+                  });
 
                   widget.setActiveScreen(ActiveScreen.start);
                 },
@@ -123,14 +149,12 @@ class _BottomState extends State<Bottom> {
             ),
           ],
         ),
-        const SizedBox(height: 4),
-        const Divider(),
+        const SizedBox(height: 12),
         SearchBar(
             hintText: l.search_placeholder,
             focusNode: focus,
-            onChanged: (value) {
-              widget.setInput(value);
-            },
+            controller: controller,
+            onChanged: setInput,
             onTap: () {
               if (widget.activeScreen != ActiveScreen.apps) {
                 widget.setActiveScreen(ActiveScreen.apps);
@@ -139,7 +163,12 @@ class _BottomState extends State<Bottom> {
             onSubmitted: (value) {
               if (widget.activeScreen == ActiveScreen.apps &&
                   value.isNotEmpty) {
-                widget.appsKey.currentState?.openTopMatch();
+                var outcome = widget.appsKey.currentState?.openTopMatch();
+
+                if (outcome == OpenOutcome.openedExternal) {
+                  widget.setActiveScreen(ActiveScreen.start);
+                  clearInput();
+                }
               }
             },
             leading: PopupMenuButton(

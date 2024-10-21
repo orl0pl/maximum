@@ -20,7 +20,6 @@ class _InspirationState extends State<Inspiration> {
   void fetchPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     dywlQuotesEnabled = prefs.getBool('dywlQuotesEnabled');
-    print(dywlQuotesEnabled);
   }
 
   void loadDywlQuote() async {
