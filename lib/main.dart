@@ -119,7 +119,7 @@ class _MyAppState extends State<MyApp> {
             primarySwatch: Colors.amber, brightness: Brightness.dark);
       }
       return MaterialApp(
-          title: 'Maximum Launcher',
+          title: 'Maximum Launcher ${kDebugMode ? 'DEBUG' : ''}',
           locale: forceEnglish == true ? const Locale('en') : null,
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -131,6 +131,16 @@ class _MyAppState extends State<MyApp> {
             Locale('en'),
             Locale('pl'),
           ],
+          // builder: (context, child) {
+          //   if (!kDebugMode) {
+          //     ErrorWidget.builder =
+          //         (FlutterErrorDetails details) => ErrorScreen(
+          //               error: details.exception,
+          //               stackTrace: details.stack ?? StackTrace.empty,
+          //             );
+          //   }
+          //   return widget;
+          // },
           home: const MainScreen(),
           themeMode: ThemeMode.system,
           theme: ThemeData(

@@ -52,16 +52,18 @@ class NotesScreenState extends State<NotesScreen> {
     List<NotesListViewEntry> entryListTemp = [];
     var groupedNotes = groupNotesByDate(notes);
 
-    groupedNotes.forEach((key, value) {
-      entryListTemp.add(NotesListViewEntry(
-          type: NotesListViewEntryType.label,
-          label: Text(
-            DateFormat.yMMMMEEEEd().format(key),
-            style: Theme.of(context).textTheme.labelLarge,
-          )));
-      entryListTemp.addAll(value.map((note) =>
-          NotesListViewEntry(type: NotesListViewEntryType.note, note: note)));
-    });
+    if (mounted) {
+      groupedNotes.forEach((key, value) {
+        entryListTemp.add(NotesListViewEntry(
+            type: NotesListViewEntryType.label,
+            label: Text(
+              DateFormat.yMMMMEEEEd().format(key),
+              style: Theme.of(context).textTheme.labelLarge,
+            )));
+        entryListTemp.addAll(value.map((note) =>
+            NotesListViewEntry(type: NotesListViewEntryType.note, note: note)));
+      });
+    }
 
     if (mounted) {
       setState(() {
@@ -207,8 +209,8 @@ class NotesScreenState extends State<NotesScreen> {
                             if (entryList![index].type ==
                                 NotesListViewEntryType.label) {
                               return Container(
-                                child: entryList![index].label!,
                                 margin: EdgeInsets.only(bottom: 8, top: 16),
+                                child: entryList![index].label!,
                               );
                             } else if (entryList![index].note != null) {
                               return Container(

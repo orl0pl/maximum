@@ -2,6 +2,7 @@ import 'package:android_package_manager/android_package_manager.dart';
 import 'package:app_launcher/app_launcher.dart';
 
 import 'package:flutter/material.dart';
+import 'package:maximum/screens/error.dart';
 import 'package:maximum/screens/notes.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/main_screen/bottom.dart';
@@ -91,6 +92,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
+
+    FlutterError.onError = (details) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ErrorScreen(
+          error: details,
+          stackTrace: details.stack ?? StackTrace.empty,
+        ),
+      ));
+    };
 
     return PopScope(
       canPop: false,
