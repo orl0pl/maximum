@@ -76,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
     if (mounted) {
       setState(() {
         activeScreen = newActiveScreen;
-        appsKey.currentState?.sortAndSearchElements();
+        appsKey.currentState?.sortAndSearchElements(text);
       });
     }
   }
@@ -85,7 +85,11 @@ class _MainScreenState extends State<MainScreen> {
     if (mounted) {
       setState(() {
         text = newInput;
+        appsKey.currentState?.sortAndSearchElements(newInput);
       });
+      print((appsKey.currentState?.widget.inputValue ?? "") +
+          "=============" +
+          text);
     }
   }
 

@@ -59,6 +59,8 @@ class AppsWidgetState extends State<AppsWidget> {
   bool notesLoaded = false;
   List<Note> allnotes = [];
   Map<String, String> appLabelsMap = {};
+  String inputValue = '';
+  bool doneSortingAndSearching = false;
 
   OpenOutcome openTopMatch() {
     if (widget.inputValue.trim().endsWith('.g')) {
@@ -111,11 +113,11 @@ class AppsWidgetState extends State<AppsWidget> {
   @override
   void initState() {
     super.initState();
-
+    inputValue = widget.inputValue;
     fetchAppOpenMap();
     fetchNotes();
     fetchAppLabelsMap();
-    sortAndSearchElements();
+    sortAndSearchElements(null);
   }
 
   void fetchAppLabelsMap() async {
@@ -142,8 +144,14 @@ class AppsWidgetState extends State<AppsWidget> {
     });
   }
 
-  void sortAndSearchElements() {
-    if (widget.inputValue.isEmpty) {
+  void sortAndSearchElements(String? input) {
+    setState(() {
+      doneSortingAndSearching = false;
+      inputValue = input ?? widget.inputValue;
+    });
+
+    String inp = input ?? widget.inputValue;
+    if (inp.isEmpty) {
       allMatches = widget.apps.map((e) => Element.fromApp(e)).toList()
         ..sort((a, b) {
           int? appOpenCountA = appOpenMap?[a.app!.packageName] ?? 0;
@@ -174,6 +182,8 @@ class AppsWidgetState extends State<AppsWidget> {
             sortFn: (a, b) {
               if (a.item.type == ElementType.note && appOpenMap == null) {
                 return a.score.compareTo(b.score);
+              } else if ((a.item.app == null || b.item.app == null)) {
+                return a.score.compareTo(b.score);
               } else if (appOpenMap![a.item.app!.packageName] == null ||
                   appOpenMap![b.item.app!.packageName] == null) {
                 return a.score.compareTo(b.score);
@@ -184,9 +194,13 @@ class AppsWidgetState extends State<AppsWidget> {
               }
             },
           ));
-      final matches = fuse.search(widget.inputValue.toLowerCase());
+      final matches = fuse.search(inp.toLowerCase());
       allMatches = matches.map((e) => e.item).toList();
     }
+
+    setState(() {
+      doneSortingAndSearching = true;
+    });
   }
 
   @override
@@ -201,7 +215,7 @@ class AppsWidgetState extends State<AppsWidget> {
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-            child: widget.inputValue != ""
+            child: inputValue != ""
                 ? Text(
                     l.best_match,
                     style: widget.textTheme.titleSmall,
@@ -219,48 +233,53 @@ class AppsWidgetState extends State<AppsWidget> {
                     ? Center(
                         child: Text(l.nothing_found),
                       )
-                    : ListView.builder(
-                        // shrinkWrap: true,
-                        itemCount: allMatches.length,
+                    : AnimatedOpacity(
+                        opacity: doneSortingAndSearching ? 1.0 : 0.0,
+                        duration: Durations.medium1,
+                        child: ListView.builder(
+                          // shrinkWrap: true,
+                          itemCount: allMatches.length,
 
-                        itemBuilder: (context, index) {
-                          if (allMatches.length <= index) {
-                            return Container();
-                          }
-                          if (allMatches[index].type == ElementType.app) {
-                            return AppListEntry(
-                              widget: widget,
-                              app: allMatches[index].app!,
-                              appLabel: appLabelsMap[
-                                  allMatches[index].app!.packageName],
-                              appOpenCount: appOpenMap?[
-                                      allMatches[index].app!.packageName!] ??
-                                  0,
-                              isInSearchMode: widget.inputValue != "",
-                            );
-                          } else if (allMatches[index].type ==
-                              ElementType.note) {
-                            return ListTile(
-                              leading: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Icon(Icons.note_outlined),
-                              ),
-                              tileColor: index == 0 && widget.inputValue != ""
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                  : null,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              title: Text(allMatches[index].note!.text),
-                              subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
-                                  .format(DateTime.fromMillisecondsSinceEpoch(
-                                      allMatches[index].note!.datetime))),
-                            );
-                          }
-                          return null;
-                        },
+                          itemBuilder: (context, index) {
+                            if (allMatches.length <= index) {
+                              return Container();
+                            }
+                            if (allMatches[index].type == ElementType.app) {
+                              return AppListEntry(
+                                widget: widget,
+                                app: allMatches[index].app!,
+                                appLabel: appLabelsMap[
+                                    allMatches[index].app!.packageName],
+                                appOpenCount: appOpenMap?[
+                                        allMatches[index].app!.packageName!] ??
+                                    0,
+                                isInSearchMode: widget.inputValue != "",
+                              );
+                            } else if (allMatches[index].type ==
+                                ElementType.note) {
+                              return ListTile(
+                                leading: const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Icon(Icons.note_outlined),
+                                ),
+                                tileColor: index == 0 && widget.inputValue != ""
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer
+                                    : null,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: Text(allMatches[index].note!.text),
+                                subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
+                                    .format(DateTime.fromMillisecondsSinceEpoch(
+                                        allMatches[index].note!.datetime))),
+                              );
+                            }
+                            return null;
+                          },
+                        ),
                       ),
           )
         ],
