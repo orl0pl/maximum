@@ -297,7 +297,7 @@ class DatabaseHelper {
       AND weekQuarter = ?
     GROUP BY packageName
       ''', [
-      DateTime.now().millisecondsSinceEpoch - 2629746000,
+      DateTime.now().millisecondsSinceEpoch - Duration.millisecondsPerDay * 30,
       getWeekQuarter(DateTime.now())
     ]);
 

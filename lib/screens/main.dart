@@ -22,6 +22,7 @@ enum ActiveScreen { start, apps }
 class _MainScreenState extends State<MainScreen> {
   GlobalKey<AppsWidgetState> appsKey = GlobalKey<AppsWidgetState>();
   GlobalKey<StartWidgetState> startKey = GlobalKey<StartWidgetState>();
+  GlobalKey<BottomState> bottomKey = GlobalKey<BottomState>();
   ActiveScreen activeScreen = ActiveScreen.start;
   String text = "";
   List<ApplicationInfo> _apps = [];
@@ -87,9 +88,6 @@ class _MainScreenState extends State<MainScreen> {
         text = newInput;
         appsKey.currentState?.sortAndSearchElements(newInput);
       });
-      print((appsKey.currentState?.widget.inputValue ?? "") +
-          "=============" +
-          text);
     }
   }
 
@@ -111,6 +109,7 @@ class _MainScreenState extends State<MainScreen> {
       onPopInvokedWithResult: (didPop, result) {
         if (ActiveScreen.apps == activeScreen) {
           setActiveScreen(ActiveScreen.start);
+          bottomKey.currentState?.clearInput();
         }
       },
       child: Scaffold(
@@ -187,6 +186,7 @@ class _MainScreenState extends State<MainScreen> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Bottom(
+                  key: bottomKey,
                   appsKey: appsKey,
                   activeScreen: activeScreen,
                   setActiveScreen: setActiveScreen,

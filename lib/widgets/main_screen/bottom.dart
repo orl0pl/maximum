@@ -31,10 +31,10 @@ class Bottom extends StatefulWidget {
   final GlobalKey<AppsWidgetState> appsKey;
 
   @override
-  State<Bottom> createState() => _BottomState();
+  State<Bottom> createState() => BottomState();
 }
 
-class _BottomState extends State<Bottom> {
+class BottomState extends State<Bottom> {
   FocusNode focus = FocusNode();
   Map<String, Uint8List>? pinnedApps;
   String search = '';
