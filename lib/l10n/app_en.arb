@@ -363,6 +363,20 @@
     "show_seconds_in_clock": "Show seconds in clock",
     "@show_seconds_in_clock": {},
     "apperance": "Apperance",
+    "data": "Data",
+    "import_data": "Import data",
+    "export_data": "Export data",
+    "wipe_all_data": "Wipe all data",
+    "export_data_unknown_error": "Could not share backup file",
+    "import_data_unknown_error": "Could not import data",
+    "wipe_all_data_while_import_description": "Importing data will wipe all your current data. Are you sure you want to continue?",
+    "@data": {},
+    "@import_data": {},
+    "@export_data": {},
+    "@wipe_all_data": {},
+    "@export_data_unknown_error": {},
+    "@import_data_unknown_error": {},
     "@apperance": {},
-    "@enable_quotes": {}
+    "@enable_quotes": {},
+    "@wipe_all_data_while_import_description": {}
 }

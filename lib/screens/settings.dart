@@ -3,6 +3,7 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:maximum/screens/settings/apperance.dart';
+import 'package:maximum/screens/settings/data.dart';
 import 'package:maximum/screens/settings/manage_places.dart';
 import 'package:maximum/screens/settings/manage_quotes.dart';
 import 'package:maximum/screens/settings/manage_tags.dart';
@@ -129,7 +130,7 @@ ${packageInfo.packageName}
               }),
           ListTile(
               title: Text(l.apperance),
-              leading: const Icon(Icons.palette),
+              leading: const Icon(Icons.palette_outlined),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context)
@@ -137,6 +138,16 @@ ${packageInfo.packageName}
                   return const ApperanceScreen();
                 }));
               }),
+          ListTile(
+            title: Text(l.data),
+            leading: const Icon(MdiIcons.databaseOutline),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return const DataScreen();
+              }));
+            },
+          ),
           const Divider(),
           ListTile(
             title: Text(l.about),

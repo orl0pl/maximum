@@ -114,5 +114,12 @@
     "years_num_plural": "{yearsNum, plural, =0{lata} =1{rok} =2{lata} few{lata} many{lat} other{lat}}",
     "enable_quotes": "Włącz cytaty",
     "show_seconds_in_clock": "Pokazuj sekundy w zegarze",
-    "apperance": "Wygląd"
+    "apperance": "Wygląd",
+    "data": "Dane",
+    "import_data": "Importuj dane",
+    "export_data": "Eksportuj dane",
+    "wipe_all_data": "Wyczyść wszystkie dane",
+    "export_data_unknown_error": "Nie udało się wyeksportować pliku z kopią zapasową",
+    "import_data_unknown_error": "Nie udało się importować danych",
+    "wipe_all_data_while_import_description": "Importowanie danych czysci wszystkie dane. Czy na pewno chcesz kontynuować?"
 }
