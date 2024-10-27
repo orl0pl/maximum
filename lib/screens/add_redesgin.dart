@@ -128,6 +128,8 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
+  bool get canSubmit => false; //text.isNotEmpty;
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -135,12 +137,16 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l.add)),
       body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Spacer(),
-          TextField(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Spacer(),
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
             autofocus: true,
+            decoration: InputDecoration(
+              hintText: l.content_to_add,
+              border: InputBorder.none,
+            ),
             onChanged: (value) {
               setState(() {
                 text = value.trim();
@@ -148,51 +154,54 @@ class _AddScreenState extends State<AddScreen> {
                 taskDraft.text = value.trim();
               });
             },
-            decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: l.content_to_add),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(
-            height: 16,
+        ),
+        if (entryType == EntryType.task)
+          TaskAdding(
+            updateDataForTask: updateDataForTask,
+            updateTagsForTask: updateTagsForTask,
+            selectedTagsIds: selectedTaskTagsIds,
+            taskDraft: taskDraft,
+            places: places,
+            tags: _taskTags,
           ),
-          if (entryType == EntryType.task)
-            TaskAdding(
-              updateDataForTask: updateDataForTask,
-              updateTagsForTask: updateTagsForTask,
-              updatePlaceForTask: updatePlaceForTask,
-              selectedTagsIds: selectedTaskTagsIds,
-              selectedPlaceId: taskDraft.placeId,
-              places: places,
-              tags: _taskTags,
-            )
-        ]),
-      )),
-      persistentFooterAlignment: AlignmentDirectional.centerStart,
-      persistentFooterButtons: [
-        Row(
-          children: [
-            const SizedBox(width: 8),
-            SegmentedButton(
-                showSelectedIcon: false,
-                multiSelectionEnabled: false,
-                segments: const [
-                  ButtonSegment(
-                      value: EntryType.note, icon: Icon(MdiIcons.noteOutline)),
-                  ButtonSegment(
-                      value: EntryType.task,
-                      icon: Icon(MdiIcons.checkboxMarkedCircleOutline)),
-                ],
-                selected: {entryType},
-                onSelectionChanged: (value) {
-                  setState(() {
-                    entryType = value.last;
-                  });
-                }),
-            const Spacer(),
-            FilledButton.icon(onPressed: () {}, label: const Text("Save")),
-          ],
-        )
-      ],
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          margin: EdgeInsets.only(top: 16),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant),
+            ),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 8),
+              SegmentedButton(
+                  showSelectedIcon: false,
+                  multiSelectionEnabled: false,
+                  segments: const [
+                    ButtonSegment(
+                        value: EntryType.note,
+                        icon: Icon(MdiIcons.noteOutline)),
+                    ButtonSegment(
+                        value: EntryType.task,
+                        icon: Icon(MdiIcons.checkboxMarkedCircleOutline)),
+                  ],
+                  selected: {entryType},
+                  onSelectionChanged: (value) {
+                    setState(() {
+                      entryType = value.last;
+                    });
+                  }),
+              const Spacer(),
+              FilledButton.icon(
+                  onPressed: canSubmit ? submit : null, label: Text(l.save)),
+            ],
+          ),
+        ),
+      ])),
     );
   }
 }

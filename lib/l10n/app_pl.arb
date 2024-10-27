@@ -56,6 +56,7 @@
     "max_distance": "Maksymalny zasieg",
     "meters": "{num, plural, =0{metrów} =1{metr} =2{metry} few{metry} many{metrów} other{metrów}}",
     "months_num_plural": "{monthsNum, plural, =0{miesiący} =1{miesiąc} =2{miesiące} few{miesiące} many{miesiące} other{miesiące}}",
+    "more": "Więcej",
     "no_alarm": "Brak alarmów",
     "no_internet": "Brak internetu",
     "no_notes": "Brak notatek",

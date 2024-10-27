@@ -95,15 +95,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
 
-    FlutterError.onError = (details) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => ErrorScreen(
-          error: details,
-          stackTrace: details.stack ?? StackTrace.empty,
-        ),
-      ));
-    };
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {

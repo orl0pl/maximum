@@ -131,6 +131,7 @@
             }
         }
     },
+    "@more": {},
     "@no_alarm": {},
     "@no_internet": {},
     "@no_notes": {},
@@ -321,6 +322,7 @@
     "max_distance": "Max distance",
     "meters": "{num, plural, other{meters} zero{meters} one{meter} two{meters} few{meters} many{meters}}",
     "months_num_plural": "{monthsNum, plural, =0{months} =1{month} =2{months} few{months} many{months} other{months}}",
+    "more": "More",
     "no_alarm": "No alarm",
     "no_internet": "No internet",
     "no_notes": "No notes",
