@@ -223,8 +223,8 @@ class _WeatherState extends State<Weather> {
       onLongPress: getWeather,
       onTap: openWeatherApp,
       icon: widgetIcon,
-      title: temperature,
-      text: widgetText,
+      title: temperature.isEmpty ? null : temperature,
+      text: widgetText.isEmpty ? null : widgetText,
       iconSpinning: isLoading,
     );
   }

@@ -182,7 +182,8 @@ class AppsWidgetState extends State<AppsWidget> {
             sortFn: (a, b) {
               if (a.item.type == ElementType.note && appOpenMap == null) {
                 return a.score.compareTo(b.score);
-              } else if ((a.item.app == null || b.item.app == null)) {
+              } else if ((a.item.app == null || b.item.app == null) &&
+                  appOpenMap != null) {
                 return a.score.compareTo(b.score);
               } else if (appOpenMap![a.item.app!.packageName] == null ||
                   appOpenMap![b.item.app!.packageName] == null) {
@@ -215,72 +216,89 @@ class AppsWidgetState extends State<AppsWidget> {
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-            child: inputValue != ""
-                ? Text(
-                    l.best_match,
-                    style: widget.textTheme.titleSmall,
-                  )
-                : Text(
-                    l.all_apps,
-                    style: widget.textTheme.titleSmall,
-                  ),
+            child: Text(
+              inputValue != "" ? l.best_match : l.all_apps,
+              style: widget.textTheme.titleSmall,
+            ),
           ),
           Flexible(
             flex: 1,
-            child: widget.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : allMatches.isEmpty
-                    ? Center(
-                        child: Text(l.nothing_found),
-                      )
-                    : AnimatedOpacity(
-                        opacity: doneSortingAndSearching ? 1.0 : 0.0,
-                        duration: Durations.medium1,
-                        child: ListView.builder(
-                          // shrinkWrap: true,
-                          itemCount: allMatches.length,
+            child: searchExternal
+                ? ListView(
+                    children: [
+                      ListTile(
+                          leading: const Icon(Icons.search),
+                          title: Text(l.internet_search),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          tileColor:
+                              Theme.of(context).colorScheme.primaryContainer)
+                    ],
+                  )
+                : widget.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : allMatches.isEmpty
+                        ? Center(
+                            child: Text(l.nothing_found +
+                                "\n" +
+                                l.apps_internet_search_bang_hint(".g")),
+                          )
+                        : AnimatedOpacity(
+                            opacity: doneSortingAndSearching ? 1.0 : 0.0,
+                            duration: Durations.medium1,
+                            child: ListView.builder(
+                              // shrinkWrap: true,
+                              itemCount: allMatches.length,
 
-                          itemBuilder: (context, index) {
-                            if (allMatches.length <= index) {
-                              return Container();
-                            }
-                            if (allMatches[index].type == ElementType.app) {
-                              return AppListEntry(
-                                widget: widget,
-                                app: allMatches[index].app!,
-                                appLabel: appLabelsMap[
-                                    allMatches[index].app!.packageName],
-                                appOpenCount: appOpenMap?[
-                                        allMatches[index].app!.packageName!] ??
-                                    0,
-                                isInSearchMode: widget.inputValue != "",
-                              );
-                            } else if (allMatches[index].type ==
-                                ElementType.note) {
-                              return ListTile(
-                                leading: const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Icon(Icons.note_outlined),
-                                ),
-                                tileColor: index == 0 && widget.inputValue != ""
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer
-                                    : null,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                title: Text(allMatches[index].note!.text),
-                                subtitle: Text(DateFormat("dd.MM.yyyy HH:mm")
-                                    .format(DateTime.fromMillisecondsSinceEpoch(
-                                        allMatches[index].note!.datetime))),
-                              );
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
+                              itemBuilder: (context, index) {
+                                if (allMatches.length <= index) {
+                                  return Container();
+                                }
+                                if (allMatches[index].type == ElementType.app) {
+                                  return AppListEntry(
+                                    highlight:
+                                        index == 0 && widget.inputValue != "",
+                                    widget: widget,
+                                    app: allMatches[index].app!,
+                                    appLabel: appLabelsMap[
+                                        allMatches[index].app!.packageName],
+                                    appOpenCount: appOpenMap?[allMatches[index]
+                                            .app!
+                                            .packageName!] ??
+                                        0,
+                                    isInSearchMode: widget.inputValue != "",
+                                  );
+                                } else if (allMatches[index].type ==
+                                    ElementType.note) {
+                                  return ListTile(
+                                    leading: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: Icon(Icons.note_outlined),
+                                    ),
+                                    tileColor:
+                                        index == 0 && widget.inputValue != ""
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer
+                                            : null,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    title: Text(allMatches[index].note!.text),
+                                    subtitle: Text(
+                                        DateFormat("dd.MM.yyyy HH:mm").format(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                allMatches[index]
+                                                    .note!
+                                                    .datetime))),
+                                  );
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
           )
         ],
       ),

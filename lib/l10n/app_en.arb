@@ -20,6 +20,14 @@
             }
         }
     },
+    "@apperance": {},
+    "@apps_internet_search_bang_hint": {
+        "placeholders": {
+            "bang": {
+                "type": "String"
+            }
+        }
+    },
     "@asap": {},
     "@best_match": {},
     "@cancel": {},
@@ -29,6 +37,7 @@
     },
     "@copied_to_clipboard": {},
     "@copy": {},
+    "@data": {},
     "@date": {},
     "@days_num_plural": {
         "placeholders": {
@@ -45,7 +54,10 @@
     "@edit_place": {},
     "@edit_tag": {},
     "@edit_task": {},
+    "@enable_quotes": {},
     "@error": {},
+    "@export_data": {},
+    "@export_data_unknown_error": {},
     "@high_uv_index_today": {},
     "@high_uv_index_tomorrow": {},
     "@higher_temperature_tomorrow": {
@@ -55,6 +67,7 @@
             }
         }
     },
+    "@hour": {},
     "@hour_and_location": {
         "description": "Label for hour and location in note list",
         "placeholders": {
@@ -73,7 +86,10 @@
             }
         }
     },
+    "@import_data": {},
+    "@import_data_unknown_error": {},
     "@in_future": {},
+    "@internet_search": {},
     "@invalid_place_name": {},
     "@invalid_radius": {},
     "@license": {},
@@ -139,6 +155,7 @@
     "@pick_steps_count": {},
     "@pick_time": {},
     "@pinned_apps": {},
+    "@place": {},
     "@place_name": {},
     "@precipitation_unit": {},
     "@preferences": {},
@@ -175,6 +192,7 @@
     "@set_pinned_apps": {},
     "@set_weather_app": {},
     "@settings": {},
+    "@show_seconds_in_clock": {},
     "@shower_will_start": {
         "placeholders": {
             "time": {
@@ -207,6 +225,7 @@
     },
     "@steps_count": {},
     "@tag_name": {},
+    "@tags": {},
     "@task": {
         "description": "General name for task"
     },
@@ -221,7 +240,7 @@
             }
         }
     },
-    "@hour": {},
+    "@time": {},
     "@timeline": {
         "description": "Short title for timeline page and widget"
     },
@@ -237,6 +256,8 @@
         }
     },
     "@wind_speed_unit": {},
+    "@wipe_all_data": {},
+    "@wipe_all_data_while_import_description": {},
     "@years_num_plural": {
         "placeholders": {
             "yearsNum": {
@@ -252,6 +273,8 @@
     "api_enabled": "{name} API enabled",
     "app_not_selected": "App not selected",
     "apparent_temperature": "Feels like {temp}",
+    "apperance": "Apperance",
+    "apps_internet_search_bang_hint": "Write \"{bang}\" at the end to search the internet.",
     "asap": "ASAP",
     "best_match": "Best match:",
     "cancel": "Cancel",
@@ -259,6 +282,7 @@
     "content_to_add": "Content to add",
     "copied_to_clipboard": "Copied to clipboard",
     "copy": "Copy",
+    "data": "Data",
     "date": "Date",
     "days_num_plural": "{daysNum, plural, =0{days} =1{day} =2{days} few{days} many{days} other{days}}",
     "deadline": "Deadline",
@@ -268,13 +292,20 @@
     "edit_place": "Edit place",
     "edit_tag": "Edit tag",
     "edit_task": "Edit task",
+    "enable_quotes": "Enable quotes",
     "error": "Error",
+    "export_data": "Export data",
+    "export_data_unknown_error": "Could not share backup file",
     "high_uv_index_today": "High UV today",
     "high_uv_index_tomorrow": "High UV tomorrow",
     "higher_temperature_tomorrow": "Tommorow {temperature} warmer",
+    "hour": "Time",
     "hour_and_location": "{hour} at {location}",
     "hours_num": "{hoursNum} {hoursNum, plural, =0{hours} =1{hour} =2{hours} few{hours} many{hours} other{hours}}",
+    "import_data": "Import data",
+    "import_data_unknown_error": "Could not import data",
     "in_future": "In future",
+    "internet_search": "Internet search",
     "invalid_place_name": "Invalid place name",
     "invalid_radius": "Invalid radius",
     "license": "License",
@@ -312,12 +343,11 @@
     "pick_steps_count": "Pick steps count",
     "pick_time": "Pick time",
     "pinned_apps": "Pinned apps",
+    "place": "Place",
     "place_name": "Place name",
     "precipitation_unit": "Precipitation unit",
     "preferences": "Preferences",
     "progress_title": "Progress",
-    "place": "Place",
-    "@place":{},
     "rain_tomorrow": "Rain tomorrow",
     "rain_will_end": "Rain will end in {time}",
     "rain_will_start": "Rain will start in {time}",
@@ -332,6 +362,7 @@
     "set_pinned_apps": "Set pinned apps",
     "set_weather_app": "Set weather app",
     "settings": "Settings",
+    "show_seconds_in_clock": "Show seconds in clock",
     "shower_will_start": "Shower will start in {time}",
     "snow_tomorrow": "Snow tomorrow",
     "snow_will_end": "Snow will end in {time}",
@@ -339,18 +370,15 @@
     "someday": "Someday",
     "steps": "{stepsNum} {stepsNum, plural, =0{steps} =1{step} =2{steps} few{steps} many{steps} other{steps}}",
     "steps_count": "Steps count",
-    "tags": "Tags",
-    "@tags": {},
     "tag_name": "Name",
+    "tags": "Tags",
     "task": "Task",
     "task_details": "Task details",
     "task_not_found": "Task not found",
     "temperature_unit": "Temperature unit",
     "this_week": "This week",
     "thunderstorm_will_start": "Thunderstorm will start in {time}",
-    "hour": "Time",
     "time": "Time",
-    "@time": {},
     "timeline": "Timeline",
     "today": "Today",
     "tomorrow": "Tommorow",
@@ -358,25 +386,7 @@
     "unknown_location": "Unknown location",
     "weeks_num_plural": "{weeksNum, plural, =0{weeks} =1{week} =2{weeks} few{weeks} many{weeks} other{weeks}}",
     "wind_speed_unit": "Wind speed unit",
-    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
-    "enable_quotes": "Enable quotes",
-    "show_seconds_in_clock": "Show seconds in clock",
-    "@show_seconds_in_clock": {},
-    "apperance": "Apperance",
-    "data": "Data",
-    "import_data": "Import data",
-    "export_data": "Export data",
     "wipe_all_data": "Wipe all data",
-    "export_data_unknown_error": "Could not share backup file",
-    "import_data_unknown_error": "Could not import data",
     "wipe_all_data_while_import_description": "Importing data will wipe all your current data. Are you sure you want to continue?",
-    "@data": {},
-    "@import_data": {},
-    "@export_data": {},
-    "@wipe_all_data": {},
-    "@export_data_unknown_error": {},
-    "@import_data_unknown_error": {},
-    "@apperance": {},
-    "@enable_quotes": {},
-    "@wipe_all_data_while_import_description": {}
+    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}"
 }
