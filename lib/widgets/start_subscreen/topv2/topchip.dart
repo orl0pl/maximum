@@ -90,7 +90,7 @@ class _TopChipState extends State<TopChip> with TickerProviderStateMixin {
                 width: widget.icon != null && widget.title == null ? 36 : null,
                 padding: widget.title == null
                     ? EdgeInsets.zero
-                    : EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                    : const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                 decoration: BoxDecoration(
                   color: colorScheme.secondary,
                   shape: widget.icon != null && widget.title == null

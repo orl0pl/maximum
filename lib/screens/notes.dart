@@ -209,7 +209,8 @@ class NotesScreenState extends State<NotesScreen> {
                             if (entryList![index].type ==
                                 NotesListViewEntryType.label) {
                               return Container(
-                                margin: EdgeInsets.only(bottom: 8, top: 16),
+                                margin:
+                                    const EdgeInsets.only(bottom: 8, top: 16),
                                 child: entryList![index].label!,
                               );
                             } else if (entryList![index].note != null) {

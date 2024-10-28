@@ -6,7 +6,6 @@ import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/timeline.dart';
 import 'package:maximum/widgets/common/task_item.dart';
 import 'package:maximum/widgets/start_subscreen/inspiration.dart';
-import 'package:maximum/widgets/start_subscreen/top.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/widgets/start_subscreen/topv2.dart';
 import 'package:shared_preferences/shared_preferences.dart';

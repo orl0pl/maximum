@@ -69,7 +69,7 @@ class _TopV2State extends State<TopV2> {
                       style: textTheme.displayLarge),
                 ],
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               // Flexible(
               //   flex: 1,
               //   fit: FlexFit.tight,
@@ -101,12 +101,12 @@ class _TopV2State extends State<TopV2> {
           ),
         ),
         const SizedBox(height: 8),
-        SingleChildScrollView(
+        const SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
               Alarm(),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Weather(),
             ],
           ),

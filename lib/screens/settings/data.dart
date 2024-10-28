@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/data/database_helper.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DataScreen extends StatefulWidget {
@@ -20,22 +19,22 @@ class _DataScreenState extends State<DataScreen> {
   @override
   void initState() {
     super.initState();
-    fetchPreferences();
+    // fetchPreferences();
   }
 
-  void fetchPreferences() async {
-    var prefs = await SharedPreferences.getInstance();
+  // void fetchPreferences() async {
+  //   var prefs = await SharedPreferences.getInstance();
 
-    setState(() {});
+  //   setState(() {});
 
-    return;
-  }
+  //   return;
+  // }
 
-  void savePreferences() async {
-    var prefs = await SharedPreferences.getInstance();
+  // void savePreferences() async {
+  //   var prefs = await SharedPreferences.getInstance();
 
-    return;
-  }
+  //   return;
+  // }
 
   Future<bool> showImportWipeAlertDialog() async {
     return await showDialog(

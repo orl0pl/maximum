@@ -240,9 +240,8 @@ class AppsWidgetState extends State<AppsWidget> {
                     ? const Center(child: CircularProgressIndicator())
                     : allMatches.isEmpty
                         ? Center(
-                            child: Text(l.nothing_found +
-                                "\n" +
-                                l.apps_internet_search_bang_hint(".g")),
+                            child: Text(
+                                "${l.nothing_found}\n${l.apps_internet_search_bang_hint(".g")}"),
                           )
                         : AnimatedOpacity(
                             opacity: doneSortingAndSearching ? 1.0 : 0.0,

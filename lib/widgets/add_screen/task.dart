@@ -183,24 +183,27 @@ class _TaskAddingState extends State<TaskAdding> {
                 },
               ),
               if (widget.taskDraft.isDateSet) ...[
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 InputChip(
                   label: Text(l.repeat),
                   avatar: widget.taskDraft.repeat != null
-                      ? Icon(Icons.repeat)
-                      : Icon(MdiIcons.repeatOff),
+                      ? const Icon(Icons.repeat)
+                      : const Icon(MdiIcons.repeatOff),
                   showCheckmark: false,
                   selected: widget.taskDraft.repeat != null,
                   onSelected: (value) async {
                     if (value) {
-                      Future.delayed(Duration.zero, () async {
-                        RepeatData? newRepeat = await showDialog(
-                            context: context,
-                            builder: (context) =>
-                                PickRepeatDialog(taskDraft: widget.taskDraft));
-                        widget.taskDraft.replaceRepeat(newRepeat);
-                        widget.updateDataForTask(widget.taskDraft);
-                      });
+                      if (context.mounted) {
+                        Future.delayed(Duration.zero, () async {
+                          RepeatData? newRepeat = await showDialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              builder: (context) => PickRepeatDialog(
+                                  taskDraft: widget.taskDraft));
+                          widget.taskDraft.replaceRepeat(newRepeat);
+                          widget.updateDataForTask(widget.taskDraft);
+                        });
+                      }
                     } else {
                       widget.taskDraft.replaceRepeat(null);
                       widget.updateDataForTask(widget.taskDraft);
@@ -221,7 +224,7 @@ class _TaskAddingState extends State<TaskAdding> {
                 label: widget.taskDraft.targetValue == 1
                     ? Text(l.steps_count)
                     : Text(l.steps(widget.taskDraft.targetValue)),
-                avatar: Icon(MdiIcons.counter),
+                avatar: const Icon(MdiIcons.counter),
                 showCheckmark: false,
                 selected: widget.taskDraft.targetValue != 1,
                 onSelected: (value) async {

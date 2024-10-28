@@ -168,7 +168,7 @@ class _AddScreenState extends State<AddScreen> {
           ),
         Container(
           padding: const EdgeInsets.all(16.0),
-          margin: EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 16),
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
