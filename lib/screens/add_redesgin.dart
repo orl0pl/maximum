@@ -24,6 +24,9 @@ class AddScreen extends StatefulWidget {
 enum EntryType { note, task }
 
 class _AddScreenState extends State<AddScreen> {
+  ScrollController descriptionFieldScrollController = ScrollController();
+  FocusNode descriptionFieldFocusNode = FocusNode();
+  bool descriptionExpanded = false;
   String text = "";
   List<Tag>? _taskTags;
   List<Tag>? _noteTags;
@@ -130,6 +133,41 @@ class _AddScreenState extends State<AddScreen> {
 
   bool get canSubmit => false; //text.isNotEmpty;
 
+  bool get descriptionEmpty {
+    if (text.split("\n").length <= 1) {
+      return true;
+    } else if (text.split("\n")[1].isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  String? get descriptionText => descriptionEmpty ? null : text.split("\n")[1];
+
+  set descriptionText(String? value) {
+    if (value == null) {
+      text = "";
+    } else {
+      text = "$text\n$value";
+    }
+  }
+
+  void handleTextChange(String value) {
+    setState(() {
+      text = value;
+      noteDraft.text = value.trim();
+      taskDraft.text = value.trim();
+    });
+  }
+
+  void handleDescriptionChange(String value) {
+    setState(() {
+      descriptionText = value;
+      text = "$text\n$value";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -137,71 +175,114 @@ class _AddScreenState extends State<AddScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l.add)),
       body: SafeArea(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l.content_to_add,
-              border: InputBorder.none,
-            ),
-            onChanged: (value) {
-              setState(() {
-                text = value.trim();
-                noteDraft.text = value.trim();
-                taskDraft.text = value.trim();
-              });
-            },
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        if (entryType == EntryType.task)
-          TaskAdding(
-            updateDataForTask: updateDataForTask,
-            updateTagsForTask: updateTagsForTask,
-            selectedTagsIds: selectedTaskTagsIds,
-            taskDraft: taskDraft,
-            places: places,
-            tags: _taskTags,
-          ),
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          margin: const EdgeInsets.only(top: 16),
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant),
-            ),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 8),
-              SegmentedButton(
-                  showSelectedIcon: false,
-                  multiSelectionEnabled: false,
-                  segments: const [
-                    ButtonSegment(
-                        value: EntryType.note,
-                        icon: Icon(MdiIcons.noteOutline)),
-                    ButtonSegment(
-                        value: EntryType.task,
-                        icon: Icon(MdiIcons.checkboxMarkedCircleOutline)),
-                  ],
-                  selected: {entryType},
-                  onSelectionChanged: (value) {
+          child: Expanded(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          // const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText:
+                        entryType == EntryType.task ? l.new_task : l.new_note,
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) {
                     setState(() {
-                      entryType = value.last;
+                      text = value.trim();
+                      noteDraft.text = value.trim();
+                      taskDraft.text = value.trim();
                     });
-                  }),
-              const Spacer(),
-              FilledButton.icon(
-                  onPressed: canSubmit ? submit : null, label: Text(l.save)),
-            ],
+                  },
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  maxLines: 1,
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxHeight: descriptionExpanded ? double.infinity : 120.0),
+                  child: TextFormField(
+                    scrollController: descriptionFieldScrollController,
+                    minLines: 1,
+                    maxLines: 120,
+                    initialValue: descriptionText,
+                    focusNode: descriptionFieldFocusNode,
+                    onTapOutside: (event) {
+                      descriptionFieldFocusNode.unfocus();
+                    },
+                    decoration: InputDecoration(
+                      hintText: l.add_details,
+                      border: InputBorder.none,
+                      suffixIcon: IconButton.filled(
+                          icon: Icon(MdiIcons.arrowExpandAll),
+                          isSelected: descriptionExpanded,
+                          onPressed: () {
+                            setState(() {
+                              descriptionExpanded = !descriptionExpanded;
+                            });
+                          }),
+                    ),
+                    onChanged: handleDescriptionChange,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ])),
+          if (entryType == EntryType.task)
+            Expanded(
+              child: AnimatedFractionallySizedBox(
+                duration: Durations.medium1,
+                heightFactor: descriptionExpanded ? 0 : 1,
+                child: TaskAdding(
+                  updateDataForTask: updateDataForTask,
+                  updateTagsForTask: updateTagsForTask,
+                  selectedTagsIds: selectedTaskTagsIds,
+                  taskDraft: taskDraft,
+                  places: places,
+                  tags: _taskTags,
+                ),
+              ),
+            ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.only(top: 16),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant),
+              ),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 8),
+                SegmentedButton(
+                    showSelectedIcon: false,
+                    multiSelectionEnabled: false,
+                    segments: const [
+                      ButtonSegment(
+                          value: EntryType.note,
+                          icon: Icon(MdiIcons.noteOutline)),
+                      ButtonSegment(
+                          value: EntryType.task,
+                          icon: Icon(MdiIcons.checkboxMarkedCircleOutline)),
+                    ],
+                    selected: {entryType},
+                    onSelectionChanged: (value) {
+                      setState(() {
+                        entryType = value.last;
+                      });
+                    }),
+                const Spacer(),
+                FilledButton.icon(
+                    onPressed: canSubmit ? submit : null, label: Text(l.save)),
+              ],
+            ),
+          ),
+        ]),
+      )),
     );
   }
 }
