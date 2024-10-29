@@ -3,6 +3,7 @@ import 'package:maximum/data/database_helper.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/screens/add.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:maximum/widgets/alert_dialogs/tag_edit.dart';
 
 class ManageTagsScreen extends StatefulWidget {

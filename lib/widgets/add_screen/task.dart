@@ -6,6 +6,9 @@ import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:maximum/screens/settings/manage_places.dart';
+import 'package:maximum/screens/settings/manage_tags.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
@@ -66,7 +69,12 @@ class _TaskAddingState extends State<TaskAdding> {
                 ),
               const SizedBox(width: 8),
               OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return ManagePlacesScreen();
+                    }));
+                  },
                   icon: const Icon(MdiIcons.mapMarkerPlusOutline),
                   label: Text(l.manage_places))
             ],
@@ -98,7 +106,14 @@ class _TaskAddingState extends State<TaskAdding> {
                   ),
               const SizedBox(width: 8),
               OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return ManageTagsScreen(
+                        typeOfTags: EntryType.task,
+                      );
+                    }));
+                  },
                   icon: const Icon(Icons.edit),
                   label: Text(l.manage_task_tags))
             ],

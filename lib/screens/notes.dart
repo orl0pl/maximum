@@ -7,6 +7,7 @@ import 'package:maximum/data/models/note.dart';
 import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/screens/add.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:maximum/widgets/common/note.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:maximum/widgets/common/tag_label.dart';

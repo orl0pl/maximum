@@ -1,0 +1,1 @@
+enum EntryType { note, task }

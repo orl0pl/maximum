@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:maximum/utils/location.dart';
+import 'package:maximum/widgets/add_screen/note.dart';
 import 'package:maximum/widgets/add_screen/task.dart';
 
 class AddScreen extends StatefulWidget {
@@ -21,13 +23,12 @@ class AddScreen extends StatefulWidget {
   State<AddScreen> createState() => _AddScreenState();
 }
 
-enum EntryType { note, task }
-
 class _AddScreenState extends State<AddScreen> {
   ScrollController descriptionFieldScrollController = ScrollController();
   FocusNode descriptionFieldFocusNode = FocusNode();
   bool descriptionExpanded = false;
   String text = "";
+  String description = "";
   List<Tag>? _taskTags;
   List<Tag>? _noteTags;
   Set<int> selectedTaskTagsIds = {};
@@ -103,6 +104,12 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
+  void updateTagsForNote(Set<int> tags) {
+    setState(() {
+      selectedNoteTagsIds = tags;
+    });
+  }
+
   void updatePlaceForTask(int? place) {
     setState(() {
       taskDraft.placeId = place;
@@ -143,28 +150,22 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  String? get descriptionText => descriptionEmpty ? null : text.split("\n")[1];
-
-  set descriptionText(String? value) {
-    if (value == null) {
-      text = "";
-    } else {
-      text = "$text\n$value";
-    }
+  void saveToDrafts() {
+    setState(() {
+      noteDraft.text = '$text\n$description'.trim();
+      taskDraft.text = '$text\n$description'.trim();
+    });
   }
 
   void handleTextChange(String value) {
     setState(() {
       text = value;
-      noteDraft.text = value.trim();
-      taskDraft.text = value.trim();
     });
   }
 
   void handleDescriptionChange(String value) {
     setState(() {
-      descriptionText = value;
-      text = "$text\n$value";
+      description = value;
     });
   }
 
@@ -177,75 +178,87 @@ class _AddScreenState extends State<AddScreen> {
       body: SafeArea(
           child: Expanded(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          // const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText:
-                        entryType == EntryType.task ? l.new_task : l.new_note,
-                    border: InputBorder.none,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      text = value.trim();
-                      noteDraft.text = value.trim();
-                      taskDraft.text = value.trim();
-                    });
-                  },
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  maxLines: 1,
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxHeight: descriptionExpanded ? double.infinity : 120.0),
-                  child: TextFormField(
-                    scrollController: descriptionFieldScrollController,
-                    minLines: 1,
-                    maxLines: 120,
-                    initialValue: descriptionText,
-                    focusNode: descriptionFieldFocusNode,
-                    onTapOutside: (event) {
-                      descriptionFieldFocusNode.unfocus();
-                    },
+          if (!descriptionExpanded) const Spacer(),
+          Flexible(
+            flex: descriptionExpanded ? 1 : 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              height: descriptionExpanded ? null : 100,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    autofocus: true,
                     decoration: InputDecoration(
-                      hintText: l.add_details,
+                      hintText:
+                          entryType == EntryType.task ? l.new_task : l.new_note,
                       border: InputBorder.none,
-                      suffixIcon: IconButton.filled(
-                          icon: Icon(MdiIcons.arrowExpandAll),
-                          isSelected: descriptionExpanded,
-                          onPressed: () {
-                            setState(() {
-                              descriptionExpanded = !descriptionExpanded;
-                            });
-                          }),
                     ),
-                    onChanged: handleDescriptionChange,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    onChanged: (value) {
+                      setState(() {
+                        text = value.trim();
+                      });
+                    },
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    maxLines: 1,
                   ),
-                )
-              ],
-            ),
-          ),
-          if (entryType == EntryType.task)
-            Expanded(
-              child: AnimatedFractionallySizedBox(
-                duration: Durations.medium1,
-                heightFactor: descriptionExpanded ? 0 : 1,
-                child: TaskAdding(
-                  updateDataForTask: updateDataForTask,
-                  updateTagsForTask: updateTagsForTask,
-                  selectedTagsIds: selectedTaskTagsIds,
-                  taskDraft: taskDraft,
-                  places: places,
-                  tags: _taskTags,
-                ),
+                  Expanded(
+                    child: TextFormField(
+                      scrollController: descriptionFieldScrollController,
+                      maxLines: null,
+                      initialValue: description,
+                      focusNode: descriptionFieldFocusNode,
+                      expands: true,
+                      onTapOutside: (event) {
+                        descriptionFieldFocusNode.unfocus();
+                      },
+                      decoration: InputDecoration(
+                        hintText: l.add_details,
+                        border: InputBorder.none,
+                        suffixIcon: IconButton.filled(
+                            icon: Icon(MdiIcons.arrowExpandAll),
+                            isSelected: descriptionExpanded,
+                            onPressed: () {
+                              setState(() {
+                                descriptionExpanded = !descriptionExpanded;
+                              });
+                            }),
+                      ),
+                      onChanged: handleDescriptionChange,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  )
+                ],
               ),
             ),
+          ),
+          AnimatedSwitcher(
+            duration: Durations.medium1,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return SlideTransition(
+                  position:
+                      Tween<Offset>(begin: Offset(-1, 0), end: Offset.zero)
+                          .animate(animation),
+                  child: child);
+            },
+            child: entryType == EntryType.task && !descriptionExpanded
+                ? TaskAdding(
+                    updateDataForTask: updateDataForTask,
+                    updateTagsForTask: updateTagsForTask,
+                    selectedTagsIds: selectedTaskTagsIds,
+                    taskDraft: taskDraft,
+                    places: places,
+                    tags: _taskTags,
+                  )
+                : entryType == EntryType.note && !descriptionExpanded
+                    ? NoteAdding(
+                        updateTagsForNote: updateTagsForNote,
+                        selectedTagsIds: selectedNoteTagsIds,
+                        noteDraft: noteDraft,
+                        tags: _noteTags,
+                      )
+                    : null,
+          ),
           Container(
             padding: const EdgeInsets.all(16.0),
             margin: const EdgeInsets.only(top: 16),

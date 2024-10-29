@@ -9,6 +9,7 @@ import 'package:maximum/screens/settings/manage_quotes.dart';
 import 'package:maximum/screens/settings/manage_tags.dart';
 import 'package:maximum/screens/settings/pinned_apps.dart';
 import 'package:maximum/screens/settings/preferences.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 

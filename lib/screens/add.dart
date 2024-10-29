@@ -12,6 +12,7 @@ import 'package:maximum/data/models/repeat_data.dart';
 import 'package:maximum/data/models/tags.dart';
 import 'package:maximum/data/models/task.dart';
 import 'package:maximum/screens/add_place.dart';
+import 'package:maximum/utils/enums.dart';
 import 'package:maximum/utils/location.dart';
 import 'package:maximum/utils/relative_date.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
@@ -28,8 +29,6 @@ class AddScreen extends StatefulWidget {
   @override
   State<AddScreen> createState() => _AddScreenState();
 }
-
-enum EntryType { note, task }
 
 class _AddScreenState extends State<AddScreen> {
   String text = "";
