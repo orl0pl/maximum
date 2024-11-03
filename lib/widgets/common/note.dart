@@ -28,22 +28,28 @@ class _NoteWidgetState extends State<NoteWidget> {
   void fetchPlace() async {
     Place? place = await widget.note.getPlace(saveToDbIfMissing: true);
     if (place != null) {
-      setState(() {
-        placeName = place.name;
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          placeName = place.name;
+          loading = false;
+        });
+      }
     } else if (widget.note.lat != null && widget.note.lng != null) {
       Placemark? placemark = (await GeocodingPlatform.instance
               ?.placemarkFromCoordinates(widget.note.lat!, widget.note.lng!))
           ?.firstOrNull;
-      setState(() {
-        loading = false;
-        placeName = placemark?.locality;
-      });
+      if (mounted) {
+        setState(() {
+          loading = false;
+          placeName = placemark?.locality;
+        });
+      }
     } else {
-      setState(() {
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 

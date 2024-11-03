@@ -88,14 +88,16 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
                       keyboardType: TextInputType.number,
                       initialValue: placeDraft.maxDistance.toString(),
                       onChanged: (value) {
-                        setState(() {
-                          final int? maxDistance = int.tryParse(value);
-                          tempMaxDistance = maxDistance;
-                          if (maxDistance == null || maxDistance < 0) {
-                            return;
-                          }
-                          placeDraft.maxDistance = maxDistance;
-                        });
+                        if (mounted) {
+                          setState(() {
+                            final int? maxDistance = int.tryParse(value);
+                            tempMaxDistance = maxDistance;
+                            if (maxDistance == null || maxDistance < 0) {
+                              return;
+                            }
+                            placeDraft.maxDistance = maxDistance;
+                          });
+                        }
                       },
                       validator: (value) {
                         final int? radius = int.tryParse(value ?? '');
@@ -116,12 +118,14 @@ class AddOrEditPlaceState extends State<AddOrEditPlaceScreen> {
                     child: TextFormField(
                       initialValue: placeDraft.name,
                       onChanged: (value) {
-                        setState(() {
-                          if (value.trim().isEmpty) {
-                            return;
-                          }
-                          placeDraft.name = value;
-                        });
+                        if (mounted) {
+                          setState(() {
+                            if (value.trim().isEmpty) {
+                              return;
+                            }
+                            placeDraft.name = value;
+                          });
+                        }
                       },
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -202,18 +206,20 @@ class _NormalMapState extends State<NormalMap> {
           onTap: (tapPosition, point) {
             widget.placeDraft.lat = point.latitude;
             widget.placeDraft.lng = point.longitude;
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           },
         ),
         children: [
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             errorTileCallback: (tile, error, stackTrace) {
-              if (error is SocketException) {
+              if (error is SocketException && mounted) {
                 setState(() {
                   _mapState = MapState.noInternet;
                 });
-              } else {
+              } else if (mounted) {
                 setState(() {
                   _mapState = MapState.unknownError;
                 });
@@ -292,9 +298,11 @@ class _NormalMapState extends State<NormalMap> {
             Text(l.no_internet),
             FilledButton.icon(
                 onPressed: () {
-                  setState(() {
-                    _mapState = MapState.normal;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _mapState = MapState.normal;
+                    });
+                  }
                 },
                 label: Text(l.try_again),
                 icon: const Icon(Icons.refresh))

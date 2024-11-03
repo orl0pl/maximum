@@ -53,9 +53,11 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var forceEnglishPrefs = prefs.getBool('forceEnglish');
 
-    setState(() {
-      forceEnglish = forceEnglishPrefs ?? false;
-    });
+    if (mounted) {
+      setState(() {
+        forceEnglish = forceEnglishPrefs ?? false;
+      });
+    }
     findSystemLocale().then((value) {
       Intl.defaultLocale = forceEnglishPrefs == true ? 'en' : value;
     });

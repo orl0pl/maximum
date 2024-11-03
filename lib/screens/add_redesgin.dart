@@ -73,47 +73,61 @@ class _AddScreenState extends State<AddScreen> {
 
   void fetchTaskTags() async {
     List<Tag> tags = await _databaseHelper.taskTags;
-    setState(() {
-      _taskTags = tags;
-    });
+    if (mounted) {
+      setState(() {
+        _taskTags = tags;
+      });
+    }
   }
 
   void fetchNoteTags() async {
     List<Tag> tags = await _databaseHelper.noteTags;
-    setState(() {
-      _noteTags = tags;
-    });
+    if (mounted) {
+      setState(() {
+        _noteTags = tags;
+      });
+    }
   }
 
   void fetchPlaces() async {
     List<Place> places = await _databaseHelper.getPlaces();
-    setState(() {
-      this.places = places;
-    });
+    if (mounted) {
+      setState(() {
+        this.places = places;
+      });
+    }
   }
 
   void updateDataForTask(Task task) {
-    setState(() {
-      taskDraft = task;
-    });
+    if (mounted) {
+      setState(() {
+        taskDraft = task;
+      });
+    }
   }
 
   void updateTagsForTask(Set<int> tags) {
-    setState(() {
-      selectedTaskTagsIds = tags;
-    });
+    if (mounted) {
+      setState(() {
+        selectedTaskTagsIds = tags;
+      });
+    }
   }
 
   void updateTagsForNote(Set<int> tags) {
-    setState(() {
-      selectedNoteTagsIds = tags;
-    });
+    if (mounted) {
+      setState(() {
+        selectedNoteTagsIds = tags;
+      });
+    }
   }
 
   void updatePlaceForTask(int? place) {
-    setState(() {
-      taskDraft.placeId = place;
-    });
+    if (mounted) {
+      setState(() {
+        taskDraft.placeId = place;
+      });
+    }
   }
 
   void submit() async {
@@ -151,22 +165,28 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   void saveToDrafts() {
-    setState(() {
-      noteDraft.text = '$text\n$description'.trim();
-      taskDraft.text = '$text\n$description'.trim();
-    });
+    if (mounted) {
+      setState(() {
+        noteDraft.text = '$text\n$description'.trim();
+        taskDraft.text = '$text\n$description'.trim();
+      });
+    }
   }
 
   void handleTextChange(String value) {
-    setState(() {
-      text = value;
-    });
+    if (mounted) {
+      setState(() {
+        text = value;
+      });
+    }
   }
 
   void handleDescriptionChange(String value) {
-    setState(() {
-      description = value;
-    });
+    if (mounted) {
+      setState(() {
+        description = value;
+      });
+    }
   }
 
   @override
@@ -178,7 +198,7 @@ class _AddScreenState extends State<AddScreen> {
       body: SafeArea(
           child: Expanded(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          if (!descriptionExpanded) const Spacer(),
+          const Spacer(),
           Flexible(
             flex: descriptionExpanded ? 1 : 0,
             child: Container(
@@ -195,9 +215,11 @@ class _AddScreenState extends State<AddScreen> {
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {
-                      setState(() {
-                        text = value.trim();
-                      });
+                      if (mounted) {
+                        setState(() {
+                          text = value.trim();
+                        });
+                      }
                     },
                     style: Theme.of(context).textTheme.headlineSmall,
                     maxLines: 1,
@@ -219,9 +241,11 @@ class _AddScreenState extends State<AddScreen> {
                             icon: Icon(MdiIcons.arrowExpandAll),
                             isSelected: descriptionExpanded,
                             onPressed: () {
-                              setState(() {
-                                descriptionExpanded = !descriptionExpanded;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  descriptionExpanded = !descriptionExpanded;
+                                });
+                              }
                             }),
                       ),
                       onChanged: handleDescriptionChange,
@@ -232,15 +256,10 @@ class _AddScreenState extends State<AddScreen> {
               ),
             ),
           ),
-          AnimatedSwitcher(
+          // const Spacer(),
+          AnimatedSize(
             duration: Durations.medium1,
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return SlideTransition(
-                  position:
-                      Tween<Offset>(begin: Offset(-1, 0), end: Offset.zero)
-                          .animate(animation),
-                  child: child);
-            },
+            alignment: Alignment.bottomCenter,
             child: entryType == EntryType.task && !descriptionExpanded
                 ? TaskAdding(
                     updateDataForTask: updateDataForTask,
@@ -284,9 +303,11 @@ class _AddScreenState extends State<AddScreen> {
                     ],
                     selected: {entryType},
                     onSelectionChanged: (value) {
-                      setState(() {
-                        entryType = value.last;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          entryType = value.last;
+                        });
+                      }
                     }),
                 const Spacer(),
                 FilledButton.icon(
