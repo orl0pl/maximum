@@ -406,6 +406,17 @@
     "audio": "Audio",
     "document": "Document",
     "other": "Other",
+    "mark_as_done": "Mark as done",
+    "mark_as_not_done": "Mark as not done",
+    "@attachment_not_picked": {},
+    "@change_attachment": {},
+    "@image": {},
+    "@video": {},
+    "@audio": {},
+    "@document": {},
+    "@other": {},
+    "@mark_as_done": {},
+    "@mark_as_not_done": {},
     "@pick_attachment": {},
     "@add_attachment": {}
 }

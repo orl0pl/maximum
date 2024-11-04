@@ -1,3 +1,5 @@
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -31,6 +33,8 @@ class TaskAdding extends StatefulWidget {
 
   final void Function(List<String>) updateAttachments;
 
+  final bool attachmentsCanOpen;
+
   const TaskAdding(
       {super.key,
       required this.updateDataForTask,
@@ -40,6 +44,7 @@ class TaskAdding extends StatefulWidget {
       required this.tags,
       required this.places,
       required this.taskDraft,
+      this.attachmentsCanOpen = false,
       required this.attachments});
 
   final Task taskDraft;
@@ -281,6 +286,7 @@ class _TaskAddingState extends State<TaskAdding> {
                     setState(() {
                       widget.taskDraft.targetValue = newValue;
                     });
+                    widget.updateDataForTask(widget.taskDraft);
                   }
                 },
               ),
@@ -290,14 +296,41 @@ class _TaskAddingState extends State<TaskAdding> {
                 if (attachment.startsWith("media:")) {
                   file = XFile(attachment.split(":")[1]);
                 }
+                var path = attachment.split(":")[1];
+                var type = attachment.split(":")[0];
                 return Row(children: [
                   SizedBox(width: 8),
                   InputChip(
-                    label: Text(attachment.split(':')[0] == 'media'
-                        ? getLocalizedAttachmentType(file!.path, l)
+                    label: Text(type == 'media'
+                        ? getLocalizedAttachmentType(path, l)
                         : attachment),
-                    avatar: Icon(getAttachmentTypeIconFromPath(file!.path)),
+                    avatar: Icon(getAttachmentTypeIconFromPath(path)),
                     showCheckmark: false,
+                    onPressed: widget.attachmentsCanOpen
+                        ? () async {
+                            if (type == 'media' &&
+                                    getAttachmentType(path) ==
+                                        GeneralAttachmentType.image ||
+                                getAttachmentType(path) ==
+                                    GeneralAttachmentType.video) {
+                              final intent = AndroidIntent(
+                                action: 'android.intent.action.VIEW',
+                                data: 'file://$path',
+                                type: 'image/*',
+                                flags: [
+                                  Flag.FLAG_ACTIVITY_NEW_TASK,
+                                  Flag.FLAG_GRANT_READ_URI_PERMISSION
+                                ],
+                              );
+
+                              try {
+                                await intent.launch();
+                              } catch (e) {
+                                print("Error launching gallery: $e");
+                              }
+                            }
+                          }
+                        : null,
                     onDeleted: () {
                       removeAttachment(entry.key);
                       widget.updateDataForTask(widget.taskDraft);

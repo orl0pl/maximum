@@ -456,6 +456,16 @@ class DatabaseHelper {
     });
   }
 
+  Future<List<String>> getTaskAttachments(int taskId) async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'TaskAttachment',
+      where: 'taskId = ?',
+      whereArgs: [taskId],
+    );
+    return maps.map((e) => e['data'].toString()).toList();
+  }
+
   void updateTaskAttachments(int taskId, List<String> data) async {
     Database db = await database;
     db.transaction((txn) async {

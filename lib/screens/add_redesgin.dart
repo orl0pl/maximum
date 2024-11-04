@@ -288,6 +288,8 @@ class _AddScreenState extends State<AddScreen> {
                         selectedTagsIds: selectedNoteTagsIds,
                         noteDraft: noteDraft,
                         tags: _noteTags,
+                        updateAttachments: updateAttachments,
+                        attachments: attachments,
                       )
                     : null,
           ),
