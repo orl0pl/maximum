@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:maximum/data/models/place.dart';
 import 'package:maximum/data/models/repeat_data.dart';
@@ -8,8 +9,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:maximum/screens/settings/manage_places.dart';
 import 'package:maximum/screens/settings/manage_tags.dart';
+import 'package:maximum/utils/attachments.dart';
 import 'package:maximum/utils/enums.dart';
 import 'package:maximum/utils/relative_date.dart';
+import 'package:maximum/widgets/alert_dialogs/pick_attachment.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_repeat.dart';
 import 'package:maximum/widgets/alert_dialogs/pick_steps_count.dart';
 import 'package:maximum/widgets/common/tag_label.dart';
@@ -24,14 +27,20 @@ class TaskAdding extends StatefulWidget {
 
   final Set<int> selectedTagsIds;
 
+  final List<String> attachments;
+
+  final void Function(List<String>) updateAttachments;
+
   const TaskAdding(
       {super.key,
       required this.updateDataForTask,
       required this.updateTagsForTask,
+      required this.updateAttachments,
       required this.selectedTagsIds,
       required this.tags,
       required this.places,
-      required this.taskDraft});
+      required this.taskDraft,
+      required this.attachments});
 
   final Task taskDraft;
 
@@ -40,6 +49,25 @@ class TaskAdding extends StatefulWidget {
 }
 
 class _TaskAddingState extends State<TaskAdding> {
+  Future<bool> addAttachment() async {
+    var result = await showDialog(
+        context: context, builder: (context) => PickAttachmentDialog());
+
+    if (result != null) {
+      var tempAttachments = widget.attachments;
+      tempAttachments.add(result);
+      widget.updateAttachments(tempAttachments);
+    }
+
+    return result != null;
+  }
+
+  Future<void> removeAttachment(int index) async {
+    var tempAttachments = widget.attachments;
+    tempAttachments.removeAt(index);
+    widget.updateAttachments(tempAttachments);
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
@@ -256,7 +284,33 @@ class _TaskAddingState extends State<TaskAdding> {
                   }
                 },
               ),
-              // TODO: Attachments
+              ...widget.attachments.asMap().entries.map((entry) {
+                var attachment = entry.value;
+                XFile? file;
+                if (attachment.startsWith("media:")) {
+                  file = XFile(attachment.split(":")[1]);
+                }
+                return Row(children: [
+                  SizedBox(width: 8),
+                  InputChip(
+                    label: Text(attachment.split(':')[0] == 'media'
+                        ? getLocalizedAttachmentType(file!.path, l)
+                        : attachment),
+                    avatar: Icon(getAttachmentTypeIconFromPath(file!.path)),
+                    showCheckmark: false,
+                    onDeleted: () {
+                      removeAttachment(entry.key);
+                      widget.updateDataForTask(widget.taskDraft);
+                    },
+                  )
+                ]);
+              }),
+              const SizedBox(width: 8),
+              InputChip(
+                  label: Text(l.add_attachment),
+                  showCheckmark: false,
+                  onPressed: addAttachment,
+                  avatar: const Icon(MdiIcons.paperclip)),
             ],
           ),
         )

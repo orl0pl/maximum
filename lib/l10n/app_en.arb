@@ -396,5 +396,16 @@
     "wind_speed_unit": "Wind speed unit",
     "wipe_all_data": "Wipe all data",
     "wipe_all_data_while_import_description": "Importing data will wipe all your current data. Are you sure you want to continue?",
-    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}"
+    "years_num_plural": "{yearsNum, plural, =0{years} =1{year} =2{years} few{years} many{years} other{years}}",
+    "add_attachment": "Add attachment",
+    "pick_attachment": "Pick an attachment",
+    "attachment_not_picked": "No attachment picked",
+    "change_attachment": "Change attachment",
+    "image": "Image",
+    "video": "Video",
+    "audio": "Audio",
+    "document": "Document",
+    "other": "Other",
+    "@pick_attachment": {},
+    "@add_attachment": {}
 }

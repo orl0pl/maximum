@@ -35,6 +35,7 @@ class _AddScreenState extends State<AddScreen> {
   Set<int> selectedNoteTagsIds = {};
   EntryType entryType = EntryType.note;
   List<Place> places = [];
+  List<String> attachments = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Note noteDraft = Note(
@@ -137,11 +138,13 @@ class _AddScreenState extends State<AddScreen> {
       if (newNoteId != -1) {
         dh.updateNoteTags(newNoteId, selectedNoteTagsIds);
       }
+      dh.updateNoteAttachments(newNoteId, attachments);
     } else if (entryType == EntryType.task) {
       int newTaskId = await dh.insertTask(taskDraft);
       if (newTaskId != -1) {
         dh.updateTaskTags(newTaskId, selectedTaskTagsIds);
       }
+      dh.updateTaskAttachments(newTaskId, attachments);
     }
     if (mounted) {
       if (widget.returnToHome) {
@@ -152,7 +155,7 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  bool get canSubmit => false; //text.isNotEmpty;
+  bool get canSubmit => text.isNotEmpty;
 
   bool get descriptionEmpty {
     if (text.split("\n").length <= 1) {
@@ -185,6 +188,14 @@ class _AddScreenState extends State<AddScreen> {
     if (mounted) {
       setState(() {
         description = value;
+      });
+    }
+  }
+
+  void updateAttachments(List<String> attachments) {
+    if (mounted) {
+      setState(() {
+        this.attachments = attachments;
       });
     }
   }
@@ -268,6 +279,8 @@ class _AddScreenState extends State<AddScreen> {
                     taskDraft: taskDraft,
                     places: places,
                     tags: _taskTags,
+                    updateAttachments: updateAttachments,
+                    attachments: attachments,
                   )
                 : entryType == EntryType.note && !descriptionExpanded
                     ? NoteAdding(

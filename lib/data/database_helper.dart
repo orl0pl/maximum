@@ -455,4 +455,26 @@ class DatabaseHelper {
       }
     });
   }
+
+  void updateTaskAttachments(int taskId, List<String> data) async {
+    Database db = await database;
+    db.transaction((txn) async {
+      await txn
+          .delete('TaskAttachment', where: 'taskId = ?', whereArgs: [taskId]);
+      for (String d in data) {
+        await txn.insert('TaskAttachment', {'taskId': taskId, 'data': d});
+      }
+    });
+  }
+
+  void updateNoteAttachments(int noteId, List<String> data) async {
+    Database db = await database;
+    db.transaction((txn) async {
+      await txn
+          .delete('NoteAttachment', where: 'noteId = ?', whereArgs: [noteId]);
+      for (String d in data) {
+        await txn.insert('NoteAttachment', {'noteId': noteId, 'data': d});
+      }
+    });
+  }
 }
