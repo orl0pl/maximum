@@ -35,9 +35,11 @@ class PickTargetValueDialogState extends State<PickTargetValueDialog> {
         initialValue: _targetValue.toString(),
         keyboardType: TextInputType.number,
         onChanged: (value) {
-          setState(() {
-            _targetValue = int.tryParse(value);
-          });
+          if (mounted) {
+            setState(() {
+              _targetValue = int.tryParse(value);
+            });
+          }
         },
       ),
       actions: [

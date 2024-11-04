@@ -23,10 +23,12 @@ class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
   void fetchPrefs() async {
     prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      dywlQuotesEnabled = prefs?.getBool('dywlQuotesEnabled') ?? false;
-      quotesEnabled = prefs?.getBool('quotesEnabled') ?? false;
-    });
+    if (mounted) {
+      setState(() {
+        dywlQuotesEnabled = prefs?.getBool('dywlQuotesEnabled') ?? false;
+        quotesEnabled = prefs?.getBool('quotesEnabled') ?? false;
+      });
+    }
   }
 
   void savePrefs() async {
@@ -49,9 +51,11 @@ class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
                     title: Text(l.enable_quotes),
                     value: quotesEnabled!,
                     onChanged: (value) {
-                      setState(() {
-                        quotesEnabled = value;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          quotesEnabled = value;
+                        });
+                      }
                       savePrefs();
                     }),
                 SwitchListTile(
@@ -59,9 +63,11 @@ class _ManageQuotesScreenState extends State<ManageQuotesScreen> {
                     value: dywlQuotesEnabled!,
                     onChanged: quotesEnabled!
                         ? (value) {
-                            setState(() {
-                              dywlQuotesEnabled = value;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                dywlQuotesEnabled = value;
+                              });
+                            }
                             savePrefs();
                           }
                         : null),

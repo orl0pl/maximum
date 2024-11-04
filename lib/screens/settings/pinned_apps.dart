@@ -149,11 +149,11 @@ class _PinnedAppsScreenState extends State<PinnedAppsScreen> {
                       value:
                           pinnedApps!.contains(filteredApps[index].packageName),
                       onChanged: (value) async {
-                        if (value == true) {
+                        if (value == true && mounted) {
                           setState(() {
                             pinnedApps!.add(filteredApps[index].packageName!);
                           });
-                        } else {
+                        } else if (mounted) {
                           setState(() {
                             pinnedApps!.remove(filteredApps[index].packageName);
                           });

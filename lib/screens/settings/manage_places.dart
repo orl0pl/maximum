@@ -19,9 +19,13 @@ class _ManagePlacesScreenState extends State<ManagePlacesScreen> {
   @override
   void initState() {
     super.initState();
-    _dh.getPlaces().then((value) => setState(() {
+    _dh.getPlaces().then((value) {
+      if (mounted) {
+        setState(() {
           places = value;
-        }));
+        });
+      }
+    });
   }
 
   @override

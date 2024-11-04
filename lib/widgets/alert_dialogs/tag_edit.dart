@@ -56,9 +56,11 @@ class AddOrEditTagDialogState extends State<AddOrEditTagDialog> {
                 activeColor:
                     HSLColor.fromAHSL(1, _hue.toDouble(), 1, 0.5).toColor(),
                 onChanged: (value) {
-                  setState(() {
-                    _hue = value.toInt();
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _hue = value.toInt();
+                    });
+                  }
                 }),
           )
         ],

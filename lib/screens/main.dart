@@ -59,10 +59,12 @@ class _MainScreenState extends State<MainScreen> {
                 .where((element) => element != null)
                 .toList()
                 .cast<ApplicationInfo>());
-        setState(() {
-          _apps = filteredApps;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _apps = filteredApps;
+            _isLoading = false;
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -183,9 +185,11 @@ class _MainScreenState extends State<MainScreen> {
                   setActiveScreen: setActiveScreen,
                   setInput: setInput,
                   afterFABPressed: () {
-                    setState(() {
-                      startKey.currentState?.fetchTasks();
-                    });
+                    if (mounted) {
+                      setState(() {
+                        startKey.currentState?.fetchTasks();
+                      });
+                    }
                   },
                 ),
               )

@@ -63,10 +63,12 @@ class _WeatherState extends State<Weather> {
     final latitude = currentPosition?.latitude;
     final longitude = currentPosition?.longitude;
 
-    if (latitude == null || longitude == null) {
-      setState(() {
-        loadingState = WeatherLoadingState.noLocation;
-      });
+    if ((latitude == null || longitude == null)) {
+      if (mounted) {
+        setState(() {
+          loadingState = WeatherLoadingState.noLocation;
+        });
+      }
       return;
     }
 
@@ -112,24 +114,26 @@ class _WeatherState extends State<Weather> {
 
       if (!mounted) return;
       try {
-        setState(() {
-          description =
-              getDescription(AppLocalizations.of(context), response, prefs);
-          temperature =
-              response.currentData[WeatherCurrent.temperature_2m]?.value != null
-                  ? formatTemperature(
-                      response
-                          .currentData[WeatherCurrent.temperature_2m]!.value,
-                      prefs.getString('temperatureUnit') ?? 'C')
-                  : '??';
-          icon = codeToIcon(
-              response.currentData[WeatherCurrent.weather_code]?.value
-                      .toInt() ??
-                  0,
-              response.currentData[WeatherCurrent.is_day]?.value == 0);
+        if (mounted) {
+          setState(() {
+            description =
+                getDescription(AppLocalizations.of(context), response, prefs);
+            temperature = response
+                        .currentData[WeatherCurrent.temperature_2m]?.value !=
+                    null
+                ? formatTemperature(
+                    response.currentData[WeatherCurrent.temperature_2m]!.value,
+                    prefs.getString('temperatureUnit') ?? 'C')
+                : '??';
+            icon = codeToIcon(
+                response.currentData[WeatherCurrent.weather_code]?.value
+                        .toInt() ??
+                    0,
+                response.currentData[WeatherCurrent.is_day]?.value == 0);
 
-          loadingState = WeatherLoadingState.done;
-        });
+            loadingState = WeatherLoadingState.done;
+          });
+        }
       } catch (e) {
         if (kDebugMode) {
           print(e);
@@ -139,9 +143,11 @@ class _WeatherState extends State<Weather> {
                 "Error during weather request, send this to the developer: $e"));
       }
     } on SocketException {
-      setState(() {
-        loadingState = WeatherLoadingState.noInternet;
-      });
+      if (mounted) {
+        setState(() {
+          loadingState = WeatherLoadingState.noInternet;
+        });
+      }
     }
   }
 

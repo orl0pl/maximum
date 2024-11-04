@@ -54,30 +54,36 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                       label: Text(l.off),
                       selected: repeatData == null,
                       onSelected: (value) {
-                        setState(() {
-                          repeatData = null;
-                        });
+                        if (mounted) {
+                          setState(() {
+                            repeatData = null;
+                          });
+                        }
                       }),
                   const SizedBox(width: 8),
                   FilterChip(
                       label: Text(l.pick_repeat_dialog_each_x_days),
                       selected: repeatData?.repeatType == RepeatType.daily,
                       onSelected: (value) {
-                        setState(() {
-                          repeatData = RepeatData(
-                              repeatType: RepeatType.daily, repeatData: "1");
-                        });
+                        if (mounted) {
+                          setState(() {
+                            repeatData = RepeatData(
+                                repeatType: RepeatType.daily, repeatData: "1");
+                          });
+                        }
                       }),
                   const SizedBox(width: 8),
                   FilterChip(
                     label: Text(l.pick_repeat_dialog_weekdays),
                     selected: repeatData?.repeatType == RepeatType.dayOfWeek,
                     onSelected: (value) {
-                      setState(() {
-                        repeatData = RepeatData(
-                            repeatType: RepeatType.dayOfWeek,
-                            repeatData: "0000000");
-                      });
+                      if (mounted) {
+                        setState(() {
+                          repeatData = RepeatData(
+                              repeatType: RepeatType.dayOfWeek,
+                              repeatData: "0000000");
+                        });
+                      }
                     },
                   )
                 ],
@@ -90,12 +96,14 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                   keyboardType: TextInputType.number,
                   initialValue: repeatData!.repeatInterval.toString(),
                   onChanged: (value) {
-                    setState(() {
-                      final int? interval = int.tryParse(value);
-                      if (interval != null && interval > 0) {
-                        repeatData!.repeatInterval = interval;
-                      }
-                    });
+                    if (mounted) {
+                      setState(() {
+                        final int? interval = int.tryParse(value);
+                        if (interval != null && interval > 0) {
+                          repeatData!.repeatInterval = interval;
+                        }
+                      });
+                    }
                   },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
@@ -123,9 +131,11 @@ class PickRepeatDialogState extends State<PickRepeatDialog> {
                             Text(DateFormat.EEEE().dateSymbols.WEEKDAYS[index]),
                         selected: repeatData!.weekdays[index],
                         onSelected: (bool selected) {
-                          setState(() {
-                            repeatData!.setWeekday(index, selected);
-                          });
+                          if (mounted) {
+                            setState(() {
+                              repeatData!.setWeekday(index, selected);
+                            });
+                          }
                         },
                       ),
                     );

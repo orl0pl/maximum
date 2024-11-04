@@ -145,10 +145,12 @@ class AppsWidgetState extends State<AppsWidget> {
   }
 
   void sortAndSearchElements(String? input) {
-    setState(() {
-      doneSortingAndSearching = false;
-      inputValue = input ?? widget.inputValue;
-    });
+    if (mounted) {
+      setState(() {
+        doneSortingAndSearching = false;
+        inputValue = input ?? widget.inputValue;
+      });
+    }
 
     String inp = input ?? widget.inputValue;
     if (inp.isEmpty) {
@@ -199,9 +201,11 @@ class AppsWidgetState extends State<AppsWidget> {
       allMatches = matches.map((e) => e.item).toList();
     }
 
-    setState(() {
-      doneSortingAndSearching = true;
-    });
+    if (mounted) {
+      setState(() {
+        doneSortingAndSearching = true;
+      });
+    }
   }
 
   @override

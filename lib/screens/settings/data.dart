@@ -19,22 +19,7 @@ class _DataScreenState extends State<DataScreen> {
   @override
   void initState() {
     super.initState();
-    // fetchPreferences();
   }
-
-  // void fetchPreferences() async {
-  //   var prefs = await SharedPreferences.getInstance();
-
-  //   setState(() {});
-
-  //   return;
-  // }
-
-  // void savePreferences() async {
-  //   var prefs = await SharedPreferences.getInstance();
-
-  //   return;
-  // }
 
   Future<bool> showImportWipeAlertDialog() async {
     return await showDialog(

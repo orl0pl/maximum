@@ -75,9 +75,11 @@ class TimelineScreenState extends State<TimelineScreen> {
   }
 
   void fetchTasks() async {
-    setState(() {
-      tasksLoaded = false;
-    });
+    if (mounted) {
+      setState(() {
+        tasksLoaded = false;
+      });
+    }
     List<Task> tasks =
         await _databaseHelper.getTasksByTags(selectedTagsIds.toList());
     tasks.sort((a, b) =>
@@ -100,26 +102,32 @@ class TimelineScreenState extends State<TimelineScreen> {
           .cast<Task>();
     }
 
-    setState(() {
-      _tasks = tasks;
-      tasksLoaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        _tasks = tasks;
+        tasksLoaded = true;
+      });
+    }
 
     fetchListViewEntries();
   }
 
   void fetchTags() async {
     List<Tag> tags = await _databaseHelper.taskTags;
-    setState(() {
-      _tags = tags;
-    });
+    if (mounted) {
+      setState(() {
+        _tags = tags;
+      });
+    }
   }
 
   void fetchPlaces() async {
     List<Place> places = await _databaseHelper.getPlaces();
-    setState(() {
-      _places = places;
-    });
+    if (mounted) {
+      setState(() {
+        _places = places;
+      });
+    }
   }
 
   void refresh() {
@@ -187,9 +195,11 @@ class TimelineScreenState extends State<TimelineScreen> {
               taskIndex: _tasks.indexOf(task))));
     }
 
-    setState(() {
-      listViewEntries = tempListViewEntries;
-    });
+    if (mounted) {
+      setState(() {
+        listViewEntries = tempListViewEntries;
+      });
+    }
   }
 
   TaskItem commonTaskItem(Task task) {
@@ -216,9 +226,11 @@ class TimelineScreenState extends State<TimelineScreen> {
                 : MdiIcons.checkboxBlankOutline),
             isSelected: archiveMode,
             onPressed: () {
-              setState(() {
-                archiveMode = !archiveMode;
-              });
+              if (mounted) {
+                setState(() {
+                  archiveMode = !archiveMode;
+                });
+              }
               refresh();
             },
           ),
@@ -254,13 +266,16 @@ class TimelineScreenState extends State<TimelineScreen> {
                               (FilterChip(
                                   label: TagLabel(tag: tag),
                                   onSelected: (value) {
-                                    setState(() {
-                                      if (value) {
-                                        selectedTagsIds.add(tag.tagId ?? -1);
-                                      } else {
-                                        selectedTagsIds.remove(tag.tagId ?? -1);
-                                      }
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        if (value) {
+                                          selectedTagsIds.add(tag.tagId ?? -1);
+                                        } else {
+                                          selectedTagsIds
+                                              .remove(tag.tagId ?? -1);
+                                        }
+                                      });
+                                    }
                                     refresh();
                                   },
                                   selected:
@@ -275,15 +290,17 @@ class TimelineScreenState extends State<TimelineScreen> {
                               (FilterChip(
                                   label: Text(place.name),
                                   onSelected: (value) {
-                                    setState(() {
-                                      if (value) {
-                                        selectedPlacesIds
-                                            .add(place.placeId ?? -1);
-                                      } else {
-                                        selectedPlacesIds
-                                            .remove(place.placeId ?? -1);
-                                      }
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        if (value) {
+                                          selectedPlacesIds
+                                              .add(place.placeId ?? -1);
+                                        } else {
+                                          selectedPlacesIds
+                                              .remove(place.placeId ?? -1);
+                                        }
+                                      });
+                                    }
                                     refresh();
                                   },
                                   selected: selectedPlacesIds

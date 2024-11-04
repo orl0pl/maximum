@@ -24,10 +24,12 @@ class _InspirationState extends State<Inspiration> {
 
   void loadDywlQuote() async {
     var quote = await Quotes.random();
-    setState(() {
-      _quote = "„${quote.text}”";
-      _author = "– ${quote.author}";
-    });
+    if (mounted) {
+      setState(() {
+        _quote = "„${quote.text}”";
+        _author = "– ${quote.author}";
+      });
+    }
   }
 
   @override
@@ -43,10 +45,12 @@ class _InspirationState extends State<Inspiration> {
     } else {
       var quote = 'No quotes available';
       var author = 'No quotes available';
-      setState(() {
-        _quote = quote;
-        _author = author;
-      });
+      if (mounted) {
+        setState(() {
+          _quote = quote;
+          _author = author;
+        });
+      }
     }
   }
 

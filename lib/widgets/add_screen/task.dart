@@ -147,7 +147,7 @@ class _TaskAddingState extends State<TaskAdding> {
                             DateFormat('yyyyMMdd').format(selectedDate);
                       });
                     }
-                  } else {
+                  } else if (mounted) {
                     setState(() {
                       widget.taskDraft.date = '';
                       widget.taskDraft.time = null;
@@ -192,9 +192,11 @@ class _TaskAddingState extends State<TaskAdding> {
                     : Text(l.asap),
                 selected: widget.taskDraft.isAsap == 1,
                 onSelected: (value) {
-                  setState(() {
-                    widget.taskDraft.isAsap = value ? 1 : 0;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      widget.taskDraft.isAsap = value ? 1 : 0;
+                    });
+                  }
                 },
               ),
               if (widget.taskDraft.isDateSet) ...[

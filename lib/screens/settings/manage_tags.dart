@@ -26,13 +26,21 @@ class _ManageTagsScreenState extends State<ManageTagsScreen> {
 
   void fetchTags() {
     if (widget.typeOfTags == EntryType.task) {
-      _dh.taskTags.then((value) => setState(() {
+      _dh.taskTags.then((value) {
+        if (mounted) {
+          setState(() {
             tags = value;
-          }));
+          });
+        }
+      });
     } else {
-      _dh.noteTags.then((value) => setState(() {
+      _dh.noteTags.then((value) {
+        if (mounted) {
+          setState(() {
             tags = value;
-          }));
+          });
+        }
+      });
     }
   }
 

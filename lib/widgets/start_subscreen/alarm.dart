@@ -22,10 +22,12 @@ class _AlarmState extends State<Alarm> {
     super.initState();
 
     AlarmHelper.getNextAlarmDateTime().then((value) {
-      setState(() {
-        nextAlarm = value;
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          nextAlarm = value;
+          loading = false;
+        });
+      }
     });
   }
 

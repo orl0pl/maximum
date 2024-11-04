@@ -159,17 +159,21 @@ class _GenericPickAppScreenState extends State<GenericPickAppScreen> {
                     },
                   ),
                   onTap: () {
-                    setState(() {
-                      pickedApp = filteredApps[index].packageName;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        pickedApp = filteredApps[index].packageName;
+                      });
+                    }
                   },
                   trailing: Radio(
                       value: filteredApps[index].packageName,
                       groupValue: pickedApp,
                       onChanged: (value) {
-                        setState(() {
-                          pickedApp = value;
-                        });
+                        if (mounted) {
+                          setState(() {
+                            pickedApp = value;
+                          });
+                        }
                       }),
                   title: Text(appLabels![filteredApps[index].packageName]!),
                 );

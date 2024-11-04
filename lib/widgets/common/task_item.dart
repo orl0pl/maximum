@@ -216,6 +216,8 @@ class _TaskItemState extends State<TaskItem> with TickerProviderStateMixin {
       widget.refresh();
     }
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

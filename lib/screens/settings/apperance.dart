@@ -21,9 +21,11 @@ class _ApperanceScreenState extends State<ApperanceScreen> {
   void fetchPreferences() async {
     var prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      showSecondsInClock = prefs.getBool('showSecondsInClock') ?? false;
-    });
+    if (mounted) {
+      setState(() {
+        showSecondsInClock = prefs.getBool('showSecondsInClock') ?? false;
+      });
+    }
 
     return;
   }
@@ -49,10 +51,12 @@ class _ApperanceScreenState extends State<ApperanceScreen> {
                 value: showSecondsInClock ?? true,
                 title: Text(l.show_seconds_in_clock),
                 onChanged: (value) {
-                  setState(() {
-                    showSecondsInClock = value;
-                    savePreferences();
-                  });
+                  if (mounted) {
+                    setState(() {
+                      showSecondsInClock = value;
+                      savePreferences();
+                    });
+                  }
                 }),
           ],
         ),

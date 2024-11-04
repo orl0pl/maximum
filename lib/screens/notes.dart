@@ -155,14 +155,16 @@ class NotesScreenState extends State<NotesScreen> {
                                 label: TagLabel(tag: tag),
                                 selected: selectedTagsIds.contains(tag.tagId),
                                 onSelected: (_) {
-                                  setState(() {
-                                    if (selectedTagsIds.contains(tag.tagId)) {
-                                      selectedTagsIds.remove(tag.tagId);
-                                    } else {
-                                      selectedTagsIds.add(tag.tagId ?? -1);
-                                    }
-                                    fetchNotes();
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      if (selectedTagsIds.contains(tag.tagId)) {
+                                        selectedTagsIds.remove(tag.tagId);
+                                      } else {
+                                        selectedTagsIds.add(tag.tagId ?? -1);
+                                      }
+                                      fetchNotes();
+                                    });
+                                  }
                                 }),
                             const SizedBox(width: 8),
                           ],
@@ -178,16 +180,18 @@ class NotesScreenState extends State<NotesScreen> {
                                 selected:
                                     selectedPlacesIds.contains(place.placeId),
                                 onSelected: (_) {
-                                  setState(() {
-                                    if (selectedPlacesIds
-                                        .contains(place.placeId)) {
-                                      selectedPlacesIds.remove(place.placeId);
-                                    } else {
-                                      selectedPlacesIds
-                                          .add(place.placeId ?? -1);
-                                    }
-                                    fetchNotes();
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      if (selectedPlacesIds
+                                          .contains(place.placeId)) {
+                                        selectedPlacesIds.remove(place.placeId);
+                                      } else {
+                                        selectedPlacesIds
+                                            .add(place.placeId ?? -1);
+                                      }
+                                      fetchNotes();
+                                    });
+                                  }
                                 }),
                             const SizedBox(width: 8),
                           ],

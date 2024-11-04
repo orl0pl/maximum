@@ -30,12 +30,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   void fetchPreferences() async {
     prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      forceEnglish = prefs?.getBool('forceEnglish') ?? false;
-      temperatureUnit = prefs?.getString('temperatureUnit') ?? "C";
-      windSpeedUnit = prefs?.getString('windSpeedUnit') ?? "m/s";
-      precipitationUnit = prefs?.getString('precipitationUnit') ?? "mm";
-    });
+    if (mounted) {
+      setState(() {
+        forceEnglish = prefs?.getBool('forceEnglish') ?? false;
+        temperatureUnit = prefs?.getString('temperatureUnit') ?? "C";
+        windSpeedUnit = prefs?.getString('windSpeedUnit') ?? "m/s";
+        precipitationUnit = prefs?.getString('precipitationUnit') ?? "mm";
+      });
+    }
 
     return;
   }
@@ -56,13 +58,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     if (packageName != null) {
       var app = await AndroidPackageManager()
           .getApplicationLabel(packageName: packageName);
-      setState(() {
-        weatherAppName = app;
-      });
+      if (mounted) {
+        setState(() {
+          weatherAppName = app;
+        });
+      }
     } else {
-      setState(() {
-        weatherAppName = null;
-      });
+      if (mounted) {
+        setState(() {
+          weatherAppName = null;
+        });
+      }
     }
   }
 
@@ -112,10 +118,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     },
                     multiSelectionEnabled: false,
                     onSelectionChanged: (value) {
-                      setState(() {
-                        temperatureUnit = value.first;
-                        savePreferences();
-                      });
+                      if (mounted) {
+                        setState(() {
+                          temperatureUnit = value.first;
+                          savePreferences();
+                        });
+                      }
                     })),
             ListTile(
                 title: Text(l.wind_speed_unit),
@@ -140,10 +148,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     },
                     multiSelectionEnabled: false,
                     onSelectionChanged: (value) {
-                      setState(() {
-                        windSpeedUnit = value.first;
-                        savePreferences();
-                      });
+                      if (mounted) {
+                        setState(() {
+                          windSpeedUnit = value.first;
+                          savePreferences();
+                        });
+                      }
                     })),
             ListTile(
                 title: Text(l.precipitation_unit),
@@ -163,10 +173,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     },
                     multiSelectionEnabled: false,
                     onSelectionChanged: (value) {
-                      setState(() {
-                        precipitationUnit = value.first;
-                        savePreferences();
-                      });
+                      if (mounted) {
+                        setState(() {
+                          precipitationUnit = value.first;
+                          savePreferences();
+                        });
+                      }
                     })),
             const Divider(),
             ListTile(
@@ -174,9 +186,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               trailing: Switch(
                 value: forceEnglish ?? false,
                 onChanged: (value) {
-                  setState(() {
-                    forceEnglish = value;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      forceEnglish = value;
+                    });
+                  }
                   savePreferences();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
