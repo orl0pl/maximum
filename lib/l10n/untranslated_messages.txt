@@ -1,0 +1,17 @@
+{
+  "pl": [
+    "add_attachment",
+    "pick_attachment",
+    "attachment_not_picked",
+    "change_attachment",
+    "image",
+    "video",
+    "audio",
+    "document",
+    "other",
+    "mark_as_done",
+    "mark_as_not_done",
+    "marked_as_done",
+    "marked_as_not_done"
+  ]
+}

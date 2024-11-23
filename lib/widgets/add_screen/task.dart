@@ -242,22 +242,21 @@ class _TaskAddingState extends State<TaskAdding> {
                   showCheckmark: false,
                   selected: widget.taskDraft.repeat != null,
                   onSelected: (value) async {
-                    if (value) {
-                      if (context.mounted) {
-                        Future.delayed(Duration.zero, () async {
-                          RepeatData? newRepeat = await showDialog(
-                              // ignore: use_build_context_synchronously
-                              context: context,
-                              builder: (context) => PickRepeatDialog(
-                                  taskDraft: widget.taskDraft));
-                          widget.taskDraft.replaceRepeat(newRepeat);
-                          widget.updateDataForTask(widget.taskDraft);
-                        });
-                      }
-                    } else {
-                      widget.taskDraft.replaceRepeat(null);
-                      widget.updateDataForTask(widget.taskDraft);
+                    if (context.mounted) {
+                      Future.delayed(Duration.zero, () async {
+                        RepeatData? newRepeat = await showDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            builder: (context) =>
+                                PickRepeatDialog(taskDraft: widget.taskDraft));
+                        widget.taskDraft.replaceRepeat(newRepeat);
+                        widget.updateDataForTask(widget.taskDraft);
+                      });
                     }
+                    // } else {
+                    //   widget.taskDraft.replaceRepeat(null);
+                    //   widget.updateDataForTask(widget.taskDraft);
+                    // }
                   },
                 ),
               ]

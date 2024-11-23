@@ -8,6 +8,7 @@ import 'package:maximum/data/models/task.dart';
 import 'package:maximum/data/models/task_status.dart';
 import 'package:maximum/screens/edit_task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:maximum/screens/progress.dart';
 import 'package:maximum/widgets/add_screen/task.dart';
 import 'package:maximum/widgets/common/info_chip.dart';
 import 'package:maximum/widgets/common/tag_label.dart';
@@ -167,7 +168,10 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
             children: [
               TextButton.icon(
                 onPressed: () {
-                  // TODO
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => TaskProgressScreen(
+                            taskId: widget.taskId,
+                          )));
                 },
                 label: Text(l.progress_title),
                 icon: const Icon(Icons.timeline),
@@ -358,28 +362,5 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     setState(() {
       selectedTagsIds = updatedTags;
     });
-  }
-}
-
-class TaskStatusItem extends StatelessWidget {
-  final TaskStatus status;
-  final Task task;
-  const TaskStatusItem({super.key, required this.status, required this.task});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(DateFormat.jm().format(status.dt),
-                style: Theme.of(context).textTheme.bodyLarge),
-            InfoChip(
-              subtitle: "${status.value} / ${task.targetValue}",
-              variant: ChipVariant.secondary,
-            ),
-          ],
-        ));
   }
 }
