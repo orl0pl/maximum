@@ -7,6 +7,10 @@
 
 </p>
 
+## Announcement
+
+Project is going to be rewritten in Kotlin.
+
 ## Installation
 
 You can find stable version in [last release](https://github.com/orl0pl/maximum/releases/latest). You can find unstable version in [GitHub Actions](https://github.com/orl0pl/maximum/actions).
